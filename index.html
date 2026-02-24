@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="google-adsense-account" content="ca-pub-1833198052819976">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
     <title id="dynamicTitle">Psychology of Money & Relationship</title>
@@ -1066,8 +1065,13 @@
             }
         });
     })();
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1833198052819976"
-     crossorigin="anonymous"></script>
 </script>
+<!-- SQL for Supabase (run in SQL editor)
+ALTER TABLE ads ADD COLUMN IF NOT EXISTS type text DEFAULT 'image';
+ALTER TABLE ads ADD COLUMN IF NOT EXISTS html_code text;
+CREATE TABLE IF NOT EXISTS posts ( ... );
+CREATE TABLE IF NOT EXISTS site_settings ( id int PRIMARY KEY DEFAULT 1, browser_title text DEFAULT 'Psychology of Money & Relationship' );
+INSERT INTO site_settings (id, browser_title) VALUES (1, 'Psychology of Money & Relationship') ON CONFLICT (id) DO NOTHING;
+-->
 </body>
-  </html>
+</html>
