@@ -1075,5 +1075,8 @@ CREATE TABLE IF NOT EXISTS posts ( ... );
 CREATE TABLE IF NOT EXISTS site_settings ( id int PRIMARY KEY DEFAULT 1, browser_title text DEFAULT 'Psychology of Money & Relationship' );
 INSERT INTO site_settings (id, browser_title) VALUES (1, 'Psychology of Money & Relationship') ON CONFLICT (id) DO NOTHING;
 -->
+    <!-- 100% privacy-first analytics -->
+<script data-collect-dnt="true" async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+<noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif?collect-dnt=true" alt="" referrerpolicy="no-referrer-when-downgrade"/></noscript>
 </body>
 </html>
