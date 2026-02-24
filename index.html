@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+    <title id="dynamicTitle">Psychology of Money & Relationship</title>
+    <!-- Fonts for logo & body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=Source+Serif+4:opsz@8..60&family=Playfair+Display:ital,wght@0,300..900;1,300..900&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f5f2f0;
+            font-family: 'Inter', sans-serif;
+            color: #2b2b2b;
+            line-height: 1.5;
+            padding: 1.5rem 1rem;
+        }
+        .container { max-width: 1280px; margin: 0 auto; }
+
+        /* header with new SVG logo */
+        .blog-header {
+            display: flex; justify-content: center; align-items: center;
+            margin-bottom: 2rem;
+        }
+        .logo-svg {
+            max-width: 100%;
+            height: auto;
+            width: 600px;
+        }
+
+        /* hidden login trigger */
+        .footer-trigger {
+            text-align: right;
+            margin-top: 3rem;
+            padding: 1rem;
+            font-size: 1.5rem;
+            color: #b78c6a;
+            cursor: pointer;
+            user-select: none;
+        }
+        .footer-trigger:hover { color: #2c1810; }
+
+        /* posts grid */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.8rem;
+            margin-top: 1.5rem;
+        }
+
+        /* post card with image */
+        .post-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.02);
+            transition: 0.1s;
+            border: 1px solid #e6dad2;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .post-card:hover {
+            background: #fefcf9;
+            border-color: #cfbbae;
+            box-shadow: 0 8px 20px rgba(80,50,30,0.05);
+        }
+        .post-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 2px solid #e6dad2;
+        }
+        .post-content {
+            padding: 1.5rem 1.5rem 1.8rem;
+        }
+        .post-meta {
+            display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.3px;
+            margin-bottom: 1rem; color: #7f6e62;
+        }
+        .post-category {
+            background: #f0eae5; padding: 0.2rem 1rem; border-radius: 40px;
+            font-weight: 600; color: #5e3e2e;
+        }
+        .post-type {
+            font-weight: 500; color: #9b7b64;
+        }
+        .post-title {
+            font-family: 'Source Serif 4', serif;
+            font-size: 1.6rem; font-weight: 600; line-height: 1.3;
+            margin-bottom: 1rem; color: #2c1810;
+        }
+        .post-author {
+            display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem;
+            margin-top: 1rem; font-size: 0.9rem; color: #4f3f34;
+            border-top: 1px dashed #ddcfc4; padding-top: 1rem;
+        }
+        .post-author strong { font-weight: 600; color: #2c1810; }
+        .post-date { margin-left: auto; color: #8b7567; font-size: 0.9rem; }
+
+        /* action bar */
+        .post-actions {
+            display: flex; gap: 1rem; margin-top: 1rem;
+            border-top: 1px solid #eee5dd; padding-top: 1rem;
+        }
+        .action-btn {
+            background: none; border: none; display: inline-flex; align-items: center;
+            gap: 0.3rem; color: #5e4b3c; font-weight: 500; cursor: pointer;
+            font-size: 0.9rem; padding: 0.3rem 0.8rem; border-radius: 40px;
+            transition: background 0.1s;
+        }
+        .action-btn:hover { background: #f0eae5; }
+        .action-btn.liked { color: #b34a3c; }
+
+        /* ad card (base) */
+        .ad-card {
+            background: #f9f0e9; border: 2px dashed #cfa88e; cursor: default;
+            overflow: hidden;
+        }
+        .ad-card img {
+            border-bottom: none;
+        }
+        .ad-badge {
+            background: #d1b8a6; color: white; font-size: 0.7rem; font-weight: 600;
+            padding: 0.2rem 1rem; border-radius: 30px; text-transform: uppercase;
+            display: inline-block; margin-bottom: 0.8rem;
+        }
+        .ad-card a { word-break: break-word; }
+        /* for html ads (like AdSense) we just need to contain the code */
+        .ad-html-container {
+            width: 100%;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9f0e9;
+        }
+
+        /* modal (reused for article and footer pages) */
+        .modal-overlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2000; padding: 1rem;
+        }
+        .modal-card {
+            background: white; max-width: 800px; width:100%; max-height: 90vh;
+            border-radius: 40px; padding: 2rem 1.8rem; overflow-y: auto;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+        }
+        .modal-card img {
+            width: 100%; max-height: 300px; object-fit: cover;
+            border-radius: 24px; margin: 1rem 0;
+        }
+        .modal-close {
+            float: right; font-size: 2.2rem; line-height: 1; cursor: pointer;
+            color: #8b7567; background: none; border: none; padding: 0 0.5rem;
+        }
+        .modal-close:hover { color: #2c1810; }
+        .modal-title {
+            font-family: 'Source Serif 4', serif; font-size: 2.2rem; font-weight: 700;
+            color: #2c1810; margin-bottom: 0.5rem; padding-right: 2rem; line-height: 1.2;
+        }
+        .modal-meta { color: #7f6e62; margin-bottom: 1.5rem; font-size: 1rem; }
+        .modal-content {
+            font-size: 1.1rem; line-height: 1.7; color: #2b2b2b; white-space: pre-line;
+        }
+        /* updated share buttons – clean, minimal, brand colors */
+        .modal-share {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px dotted #decbbd;
+            display: flex;
+            gap: 1.2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .modal-share span {
+            font-weight: 600;
+            color: #5e3e2e;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .social-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            text-decoration: none;
+            transition: transform 0.2s ease;
+            color: #6b4f3a;
+        }
+        .social-icon:hover {
+            transform: scale(1.1);
+        }
+        #shareFacebook { color: #1877f2; }
+        #shareTwitter { color: #1da1f2; }
+        #shareLinkedIn { color: #0077b5; }
+        #shareCopy { color: #5e3e2e; }
+
+        /* footer links */
+        .site-footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px dotted #decbbd;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+        }
+        .footer-link {
+            color: #5e3e2e;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+        .footer-link:hover {
+            color: #2c1810;
+            text-decoration: underline;
+        }
+
+        /* admin panel */
+        .admin-panel {
+            background: white; border-radius: 32px; padding: 1.5rem; margin: 2rem 0;
+            border: 1px solid #d9cabe; box-shadow: 0 12px 30px rgba(70,40,20,0.08);
+            overflow-x: auto;
+        }
+        .admin-header {
+            display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1.5rem;
+        }
+        .admin-header svg { width: 40px; height: 40px; fill: #2c1810; }
+        .admin-tabs {
+            display: flex; gap: 0.5rem; border-bottom: 1px solid #eedfd5;
+            padding-bottom: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: none; border: none; padding: 0.7rem 1.5rem; font-weight: 600;
+            color: #5e4b3c; border-radius: 40px 40px 0 0; cursor: pointer;
+        }
+        .tab-btn.active { background: #efe4dc; color: #2c1810; }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label {
+            display: block; font-weight: 600; margin-bottom: 0.2rem; color: #3f2e23;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%; padding: 0.8rem 1.2rem; border: 1px solid #dacbbf;
+            border-radius: 30px; font-family: 'Inter', sans-serif;
+        }
+        .form-group textarea { border-radius: 24px; resize: vertical; }
+        .btn {
+            background: #2c1810; color: white; border: none; padding: 0.7rem 1.8rem;
+            border-radius: 40px; font-weight: 600; cursor: pointer; margin-right: 0.5rem;
+            border: 1px solid #2c1810;
+        }
+        .btn-outline { background: white; color: #2c1810; }
+        .post-list-item {
+            background: #faf6f2; border-radius: 60px; padding: 1rem;
+            margin-bottom: 0.8rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+        }
+        .login-overlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(3px);
+            display: flex; align-items: center; justify-content: center; z-index: 3000; padding: 1rem;
+        }
+        .login-card {
+            background: white; max-width: 400px; width:100%; padding: 2rem;
+            border-radius: 48px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .hidden { display: none; }
+        .small-note { color: #a48d7c; font-size: 0.85rem; margin-top: 0.5rem; }
+    </style>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="container" id="app">
+    <!-- header with new SVG logo (static) -->
+    <div class="blog-header" id="logoContainer">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 180" width="600" height="180" class="logo-svg">
+            <defs>
+                <linearGradient id="softGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#D4AF37" stop-opacity="0.9" />
+                    <stop offset="100%" stop-color="#AA8C30" stop-opacity="0.8" />
+                </linearGradient>
+                <linearGradient id="softTeal" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#5A7D7C" />
+                    <stop offset="100%" stop-color="#3F5E5D" />
+                </linearGradient>
+                <linearGradient id="softTerracotta" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#C96E4B" />
+                    <stop offset="100%" stop-color="#A65336" />
+                </linearGradient>
+                <filter id="gentleShadow" x="-0.5" y="-0.5" width="2" height="2">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+                    <feOffset dx="1" dy="1" />
+                    <feComponentTransfer>
+                        <feFuncA type="linear" slope="0.1" />
+                    </feComponentTransfer>
+                    <feMerge>
+                        <feMergeNode />
+                        <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                </filter>
+            </defs>
+            <rect width="600" height="180" fill="#FFFFFF" />
+            <g transform="translate(50, 50)" filter="url(#gentleShadow)">
+                <path d="M45,35 Q30,30 25,45 Q20,60 35,65 Q40,70 48,68 Q55,70 62,65 Q77,60 72,45 Q67,30 52,35 Q50,25 45,35" fill="url(#softTeal)" opacity="0.8" />
+                <path d="M38,48 Q45,55 52,48 Q59,41 66,48 Q73,55 66,65 Q55,72 44,65 Q35,58 38,48" stroke="#FFFFFF" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.9" />
+                <circle cx="40" cy="45" r="3" fill="url(#softGold)" />
+                <circle cx="52" cy="55" r="3" fill="url(#softTerracotta)" />
+                <circle cx="64" cy="45" r="3" fill="url(#softGold)" />
+            </g>
+            <g transform="translate(140, 55)">
+                <text x="0" y="30" font-family="'Playfair Display', Georgia, serif" font-size="20" font-weight="300" fill="#8A9A9A" letter-spacing="1.5">PSYCHOLOGY OF</text>
+                <text x="0" y="70" font-family="'Montserrat', Arial, sans-serif" font-size="38" font-weight="500" fill="#4A6A6A" letter-spacing="-0.3">MONEY</text>
+                <text x="140" y="70" font-family="'Playfair Display', Georgia, serif" font-size="32" font-weight="300" fill="#C96E4B" letter-spacing="0">&</text>
+                <text x="180" y="70" font-family="'Montserrat', Arial, sans-serif" font-size="38" font-weight="400" fill="#5A7D7C" letter-spacing="-0.3">RELATIONSHIP</text>
+                <text x="0" y="120" font-family="'Montserrat', Arial, sans-serif" font-size="42" font-weight="500" fill="#3F5E5D" letter-spacing="0.5">LIFESTYLE</text>
+                <text x="260" y="120" font-family="'Playfair Display', Georgia, serif" font-size="16" font-weight="300" fill="#AA8C30" font-style="italic">mental</text>
+                <text x="0" y="155" font-family="'Montserrat', Arial, sans-serif" font-size="11" font-weight="300" fill="#B0C4C4" letter-spacing="2">MIND · WEALTH · CONNECTION · WELLBEING</text>
+            </g>
+            <line x1="140" y1="135" x2="380" y2="135" stroke="#D4AF37" stroke-width="1" opacity="0.3" />
+        </svg>
+    </div>
+
+    <!-- posts feed -->
+    <div id="postsFeed" class="posts-grid"></div>
+
+    <!-- footer links -->
+    <div class="site-footer">
+        <a class="footer-link" id="privacyLink">Privacy Policy</a>
+        <a class="footer-link" id="termsLink">Terms of Service</a>
+        <a class="footer-link" id="aboutLink">About</a>
+    </div>
+
+    <!-- hidden login trigger (still works) -->
+    <div class="footer-trigger" id="adminTrigger" title="double‑click for admin">🔒</div>
+
+    <!-- login modal -->
+    <div id="loginModal" class="login-overlay hidden">
+        <div class="login-card">
+            <h2 style="margin-bottom:1.5rem;">admin access</h2>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="admin@example.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="••••••••">
+            </div>
+            <div style="display:flex; gap:1rem;">
+                <button class="btn" id="loginBtn">Login</button>
+                <button class="btn-outline btn" id="closeLoginBtn">Cancel</button>
+            </div>
+            <div class="small-note">Use Supabase Auth. First user must be created in Supabase dashboard.</div>
+        </div>
+    </div>
+
+    <!-- admin dashboard -->
+    <div id="adminDashboard" class="admin-panel hidden">
+        <div class="admin-header">
+            <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#d9cabe" stroke="#2c1810" stroke-width="2"/>
+                <path d="M30 40 Q50 20 70 40 L65 50 Q50 35 35 50 L30 40" fill="#2c1810"/>
+                <circle cx="35" cy="55" r="4" fill="white"/>
+                <circle cx="65" cy="55" r="4" fill="white"/>
+                <path d="M45 70 Q50 80 55 70" stroke="white" stroke-width="4" fill="none"/>
+            </svg>
+            <h2 style="font-family:'Source Serif 4';">admin studio</h2>
+            <button class="btn-outline btn" id="logoutBtn" style="margin-left:auto;">logout</button>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="tab-btn active" id="tabPosts">📄 posts</button>
+            <button class="tab-btn" id="tabAds">📢 ads</button>
+            <button class="tab-btn" id="tabSettings">⚙️ site settings</button>
+        </div>
+
+        <!-- posts admin -->
+        <div id="postsAdmin">
+            <h3>➕ add / edit post</h3>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" id="postTitle" placeholder="e.g. Stoic Principles Anxiety">
+            </div>
+            <div class="form-group">
+                <label>Content (full article)</label>
+                <textarea id="postContent" rows="3"></textarea>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" id="postCategory" placeholder="Self-care / Love">
+                </div>
+                <div class="form-group">
+                    <label>Author</label>
+                    <input type="text" id="postAuthor" placeholder="Jonathan Reyes">
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <div class="form-group">
+                    <label>Image URL (for card & article)</label>
+                    <input type="text" id="postImage" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="postType">
+                        <option value="Article">Article</option>
+                        <option value="Blog">Blog</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Date (YYYY-MM-DD)</label>
+                <input type="date" id="postDate">
+            </div>
+            <div>
+                <button class="btn" id="savePostBtn">📌 save post</button>
+                <button class="btn-outline btn" id="cancelEditPost">cancel</button>
+                <span id="editPostId" style="margin-left:1rem; color:#966b4e;"></span>
+            </div>
+            <hr style="margin:2rem 0; border-top:2px dotted #decbbd;">
+            <h3>📌 existing posts</h3>
+            <div id="postsList"></div>
+        </div>
+
+        <!-- ads admin (supports AdSense) -->
+        <div id="adsAdmin" style="display:none;">
+            <h3>📢 manage ads</h3>
+            <div class="form-group">
+                <label>Ad type</label>
+                <select id="adType">
+                    <option value="image">Image ad (with link)</option>
+                    <option value="html">HTML / AdSense code</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Title (internal use only)</label>
+                <input type="text" id="adTitle" placeholder="e.g. My AdSense Unit">
+            </div>
+            <div id="imageAdFields">
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="text" id="adImage" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>Link URL</label>
+                    <input type="text" id="adLink" placeholder="https://...">
+                </div>
+            </div>
+            <div id="htmlAdFields" style="display:none;">
+                <div class="form-group">
+                    <label>HTML / AdSense code</label>
+                    <textarea id="adHtml" rows="5" placeholder="Paste your AdSense script or HTML here..."></textarea>
+                </div>
+                <p class="small-note">⚠️ Make sure the code is valid and responsive.</p>
+            </div>
+            <div class="form-group">
+                <label>Position</label>
+                <select id="adPosition">
+                    <option value="feed">in feed (between posts)</option>
+                </select>
+            </div>
+            <div>
+                <button class="btn" id="saveAdBtn">➕ save ad</button>
+                <button class="btn-outline btn" id="cancelAdEdit">reset</button>
+            </div>
+            <hr style="margin:2rem 0;">
+            <h4>active ads</h4>
+            <div id="adsList"></div>
+        </div>
+
+        <!-- site settings (now only browser title) -->
+        <div id="settingsAdmin" style="display:none;">
+            <h3>⚙️ browser title</h3>
+            <div class="form-group">
+                <label>Browser tab title</label>
+                <input type="text" id="browserTitle" placeholder="Psychology of Money & Relationship" value="Psychology of Money & Relationship">
+            </div>
+            <button class="btn" id="saveSettingsBtn">💾 save settings</button>
+            <p class="small-note">The logo is fixed and cannot be edited.</p>
+        </div>
+    </div>
+
+    <!-- modal for full article (and also used for footer pages) -->
+    <div id="articleModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <button class="modal-close" id="closeModalBtn">&times;</button>
+            <div id="modalImage"></div>
+            <h2 id="modalTitle" class="modal-title"></h2>
+            <div id="modalMeta" class="modal-meta"></div>
+            <div id="modalContent" class="modal-content"></div>
+            <div class="modal-share">
+                <span>Share this article:</span>
+                <a href="#" id="shareFacebook" target="_blank" class="social-icon" aria-label="Share on Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" id="shareTwitter" target="_blank" class="social-icon" aria-label="Share on Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" id="shareLinkedIn" target="_blank" class="social-icon" aria-label="Share on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" id="shareCopy" class="social-icon" aria-label="Copy link"><i class="fas fa-link"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ===== Supabase config =====
+        const SUPABASE_URL = 'https://ymttysijmbdzphtofmbv.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_uHJkQNCGY-qCrPfWN0Z_1Q_i6rcxkN6';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ===== state =====
+        let posts = [];
+        let ads = [];
+        let editingPostId = null;
+        let currentUser = null;
+        let adEditId = null;
+        let siteSettings = { browserTitle: 'Psychology of Money & Relationship' };
+        let currentModalPostId = null;
+
+        // ===== DOM elements =====
+        const postsFeed = document.getElementById('postsFeed');
+        const loginModal = document.getElementById('loginModal');
+        const adminDashboard = document.getElementById('adminDashboard');
+        const adminTrigger = document.getElementById('adminTrigger');
+        const closeLoginBtn = document.getElementById('closeLoginBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassword = document.getElementById('loginPassword');
+        const tabPosts = document.getElementById('tabPosts');
+        const tabAds = document.getElementById('tabAds');
+        const tabSettings = document.getElementById('tabSettings');
+        const postsAdmin = document.getElementById('postsAdmin');
+        const adsAdmin = document.getElementById('adsAdmin');
+        const settingsAdmin = document.getElementById('settingsAdmin');
+        const postsListDiv = document.getElementById('postsList');
+        const adsListDiv = document.getElementById('adsList');
+        const savePostBtn = document.getElementById('savePostBtn');
+        const postTitle = document.getElementById('postTitle');
+        const postContent = document.getElementById('postContent');
+        const postCategory = document.getElementById('postCategory');
+        const postAuthor = document.getElementById('postAuthor');
+        const postImage = document.getElementById('postImage');
+        const postType = document.getElementById('postType');
+        const postDate = document.getElementById('postDate');
+        const cancelEditPost = document.getElementById('cancelEditPost');
+        const editPostIdSpan = document.getElementById('editPostId');
+        // ad elements
+        const adType = document.getElementById('adType');
+        const adTitle = document.getElementById('adTitle');
+        const adImage = document.getElementById('adImage');
+        const adLink = document.getElementById('adLink');
+        const adHtml = document.getElementById('adHtml');
+        const imageAdFields = document.getElementById('imageAdFields');
+        const htmlAdFields = document.getElementById('htmlAdFields');
+        const adPosition = document.getElementById('adPosition');
+        const saveAdBtn = document.getElementById('saveAdBtn');
+        const cancelAdEdit = document.getElementById('cancelAdEdit');
+        // site settings
+        const browserTitle = document.getElementById('browserTitle');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        // modal
+        const modal = document.getElementById('articleModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMeta = document.getElementById('modalMeta');
+        const modalContent = document.getElementById('modalContent');
+        const modalImage = document.getElementById('modalImage');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const shareFacebook = document.getElementById('shareFacebook');
+        const shareTwitter = document.getElementById('shareTwitter');
+        const shareLinkedIn = document.getElementById('shareLinkedIn');
+        const shareCopy = document.getElementById('shareCopy');
+        // footer links
+        const privacyLink = document.getElementById('privacyLink');
+        const termsLink = document.getElementById('termsLink');
+        const aboutLink = document.getElementById('aboutLink');
+
+        // ===== helper: toggle ad fields based on type =====
+        adType.addEventListener('change', () => {
+            if (adType.value === 'image') {
+                imageAdFields.style.display = 'block';
+                htmlAdFields.style.display = 'none';
+            } else {
+                imageAdFields.style.display = 'none';
+                htmlAdFields.style.display = 'block';
+            }
+        });
+
+        // ===== load site settings (only browser title) =====
+        async function loadSiteSettings() {
+            const { data, error } = await supabase
+                .from('site_settings')
+                .select('browser_title')
+                .single();
+            if (!error && data && data.browser_title) {
+                siteSettings.browserTitle = data.browser_title;
+            }
+            browserTitle.value = siteSettings.browserTitle;
+            document.getElementById('dynamicTitle').textContent = siteSettings.browserTitle;
+        }
+
+        // ===== save site settings =====
+        async function saveSiteSettings() {
+            const newTitle = browserTitle.value.trim() || 'Psychology of Money & Relationship';
+            const { error } = await supabase
+                .from('site_settings')
+                .upsert({ id: 1, browser_title: newTitle });
+            if (error) alert('Error saving settings: ' + error.message);
+            else {
+                siteSettings.browserTitle = newTitle;
+                document.getElementById('dynamicTitle').textContent = newTitle;
+            }
+        }
+
+        // ===== load posts and ads =====
+        async function loadPublicPosts() {
+            const { data, error } = await supabase
+                .from('posts')
+                .select('*')
+                .order('date', { ascending: false });
+            if (error) console.warn(error);
+            else posts = data || [];
+
+            const { data: adsData, error: adsErr } = await supabase
+                .from('ads')
+                .select('*')
+                .eq('active', true);
+            if (!adsErr) ads = adsData || [];
+
+            renderPublicFeed();
+            openPostFromUrl();
+        }
+
+        // ===== render feed (with images on post cards) =====
+        function renderPublicFeed() {
+            let html = '';
+            const allItems = [];
+            posts.forEach((p, idx) => {
+                allItems.push({ type: 'post', data: p });
+                if ((idx + 1) % 3 === 0 && ads.length > 0) {
+                    const ad = ads[Math.floor(Math.random() * ads.length)];
+                    allItems.push({ type: 'ad', data: ad });
+                }
+            });
+
+            allItems.forEach(item => {
+                if (item.type === 'post') {
+                    const p = item.data;
+                    const imgUrl = p.image_url || 'https://picsum.photos/400/200?grayscale&random=' + p.id;
+                    html += `<div class="post-card" data-post-id="${p.id}">
+                        <img src="${imgUrl}" alt="${p.title}" onerror="this.src='https://picsum.photos/400/200?grayscale'">
+                        <div class="post-content">
+                            <div class="post-meta">
+                                <span class="post-category">${p.category || 'General'}</span>
+                                <span class="post-type">${p.type || 'Article'}</span>
+                            </div>
+                            <div class="post-title">${p.title}</div>
+                            <div class="post-author">
+                                <strong>${p.author || 'Unknown'}</strong>
+                                <span class="post-date">${p.date ? new Date(p.date).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}) : ''}</span>
+                            </div>
+                            <div class="post-actions">
+                                <button class="action-btn like-btn" data-id="${p.id}">👍 <span class="like-count">${p.likes || 0}</span></button>
+                                <button class="action-btn share-btn" data-id="${p.id}">🔗 share</button>
+                            </div>
+                        </div>
+                    </div>`;
+                } else {
+                    const ad = item.data;
+                    if (ad.type === 'image') {
+                        html += `<div class="post-card ad-card" onclick="event.stopPropagation()">
+                            <img src="${ad.image_url || 'https://picsum.photos/400/200?grayscale'}" style="height:200px; object-fit:cover;">
+                            <div class="post-content">
+                                <div class="ad-badge">📢 sponsored</div>
+                                <div class="post-title">${ad.title}</div>
+                                <a href="${ad.link || '#'}" target="_blank" style="color:#b75f3a; word-break:break-word;">learn more →</a>
+                            </div>
+                        </div>`;
+                    } else {
+                        // HTML/AdSense ad – inject raw HTML
+                        html += `<div class="post-card ad-card" onclick="event.stopPropagation()">
+                            <div class="ad-badge">📢 sponsored</div>
+                            <div class="ad-html-container">${ad.html_code || ''}</div>
+                        </div>`;
+                    }
+                }
+            });
+            postsFeed.innerHTML = html || '<p style="text-align:center;">No posts yet.</p>';
+
+            // attach event listeners
+            document.querySelectorAll('.post-card[data-post-id]').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('.action-btn')) return;
+                    const postId = card.dataset.postId;
+                    openPostModal(postId);
+                });
+            });
+            document.querySelectorAll('.like-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const postId = btn.dataset.id;
+                    await handleLike(postId);
+                });
+            });
+            document.querySelectorAll('.share-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const postId = btn.dataset.id;
+                    const post = posts.find(p => p.id === postId);
+                    const url = window.location.href.split('?')[0] + '?post=' + postId;
+                    if (navigator.share) {
+                        navigator.share({ title: post.title, text: post.content, url: url });
+                    } else {
+                        navigator.clipboard?.writeText(url);
+                        alert('Link copied to clipboard: ' + url);
+                    }
+                });
+            });
+        }
+
+        // ===== like handler =====
+        async function handleLike(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+            const newLikes = (post.likes || 0) + 1;
+            const { error } = await supabase.from('posts').update({ likes: newLikes }).eq('id', postId);
+            if (!error) {
+                post.likes = newLikes;
+                renderPublicFeed();
+            }
+        }
+
+        // ===== open modal and set social share links =====
+        async function openPostModal(postId) {
+            currentModalPostId = postId;
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+
+            const newUrl = window.location.pathname + '?post=' + postId;
+            window.history.pushState({ postId }, '', newUrl);
+
+            modalTitle.textContent = post.title;
+            modalMeta.textContent = `${post.author || 'Unknown'} · ${post.category || 'General'} · ${post.type || 'Article'} · ${post.date ? new Date(post.date).toLocaleDateString() : ''}`;
+            modalContent.textContent = post.content;
+            modalImage.innerHTML = post.image_url ? `<img src="${post.image_url}" alt="${post.title}">` : '';
+
+            const shareUrl = encodeURIComponent(window.location.href.split('?')[0] + '?post=' + postId);
+            const shareTitle = encodeURIComponent(post.title);
+            shareFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+            shareTwitter.href = `https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`;
+            shareLinkedIn.href = `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`;
+            shareCopy.onclick = (e) => {
+                e.preventDefault();
+                navigator.clipboard?.writeText(decodeURIComponent(shareUrl));
+                alert('Link copied to clipboard!');
+            };
+
+            modal.classList.remove('hidden');
+        }
+
+        // ===== open post from URL parameter =====
+        function openPostFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('post');
+            if (postId) {
+                setTimeout(() => {
+                    const post = posts.find(p => p.id === postId);
+                    if (post) openPostModal(postId);
+                }, 200);
+            }
+        }
+
+        // ===== open static page (privacy/terms/about) =====
+        function openStaticPage(title, content) {
+            modalTitle.textContent = title;
+            modalMeta.textContent = '';
+            modalContent.textContent = content;
+            modalImage.innerHTML = '';
+            // hide share buttons for these pages
+            document.querySelector('.modal-share').style.display = 'none';
+            modal.classList.remove('hidden');
+        }
+
+        privacyLink.addEventListener('click', () => {
+            openStaticPage('Privacy Policy', 
+                'Your privacy is important to us. This policy explains how we collect, use, and protect your personal information when you visit our blog. We do not share your data with third parties except as necessary to operate our services or as required by law. By using this site, you consent to our privacy practices.');
+        });
+        termsLink.addEventListener('click', () => {
+            openStaticPage('Terms of Service', 
+                'By accessing this blog, you agree to be bound by these terms. All content is for informational purposes only and may not be copied or reproduced without permission. We reserve the right to modify or discontinue any part of the site without notice. You are responsible for your own conduct and any content you post (e.g., comments).');
+        });
+        aboutLink.addEventListener('click', () => {
+            openStaticPage('About', 
+                'Stoic Posts is a blog dedicated to exploring psychology, discipline, and daily wisdom. Our mission is to provide thoughtful articles that help readers cultivate resilience, focus, and deeper understanding. Founded in 2026, we draw inspiration from ancient philosophy and modern science.');
+        });
+
+        // ===== admin functions =====
+        async function loadPostsAndAds() {
+            await loadPublicPosts();
+            renderPostsList();
+            renderAdsList();
+        }
+
+        function renderPostsList() {
+            let html = '';
+            posts.forEach(p => {
+                html += `<div class="post-list-item">
+                    <div style="flex:1;"><strong>${p.title}</strong> <span style="color:#946b54;">(${p.date})</span></div>
+                    <div>
+                        <button class="btn-outline btn" style="padding:0.3rem 1.2rem;" onclick="editPost('${p.id}')">✎ edit</button>
+                        <button class="btn-outline btn" style="padding:0.3rem 1.2rem;" onclick="deletePost('${p.id}')">🗑️ del</button>
+                    </div>
+                </div>`;
+            });
+            postsListDiv.innerHTML = html || '<p>No posts. Add one.</p>';
+        }
+
+        function renderAdsList() {
+            let html = '';
+            ads.forEach(a => {
+                html += `<div class="post-list-item">
+                    <div style="flex:1;"><strong>${a.title}</strong> (${a.type})</div>
+                    <div>
+                        <button class="btn-outline btn" style="padding:0.3rem 1.2rem;" onclick="editAd('${a.id}')">✎ edit</button>
+                        <button class="btn-outline btn" style="padding:0.3rem 1.2rem;" onclick="deleteAd('${a.id}')">🗑️ del</button>
+                    </div>
+                </div>`;
+            });
+            adsListDiv.innerHTML = html || '<p>No ads. Create one.</p>';
+        }
+
+        window.editPost = (id) => {
+            const post = posts.find(p => p.id === id);
+            if (!post) return;
+            editingPostId = id;
+            postTitle.value = post.title || '';
+            postContent.value = post.content || '';
+            postCategory.value = post.category || '';
+            postAuthor.value = post.author || '';
+            postImage.value = post.image_url || '';
+            postType.value = post.type || 'Article';
+            postDate.value = post.date || '';
+            editPostIdSpan.innerText = `✏️ editing: ${post.title.substring(0,30)}`;
+        };
+
+        window.deletePost = async (id) => {
+            if (!confirm('Delete post?')) return;
+            const { error } = await supabase.from('posts').delete().eq('id', id);
+            if (error) alert(error.message);
+            else loadPostsAndAds();
+        };
+
+        window.editAd = (id) => {
+            const ad = ads.find(a => a.id === id);
+            if (!ad) return;
+            adEditId = id;
+            adTitle.value = ad.title || '';
+            adType.value = ad.type || 'image';
+            adImage.value = ad.image_url || '';
+            adLink.value = ad.link || '';
+            adHtml.value = ad.html_code || '';
+            adPosition.value = ad.position || 'feed';
+            // toggle fields
+            if (adType.value === 'image') {
+                imageAdFields.style.display = 'block';
+                htmlAdFields.style.display = 'none';
+            } else {
+                imageAdFields.style.display = 'none';
+                htmlAdFields.style.display = 'block';
+            }
+        };
+
+        window.deleteAd = async (id) => {
+            if (!confirm('Delete ad?')) return;
+            const { error } = await supabase.from('ads').delete().eq('id', id);
+            if (error) alert(error.message);
+            else loadPostsAndAds();
+        };
+
+        savePostBtn.addEventListener('click', async () => {
+            const title = postTitle.value.trim();
+            const content = postContent.value.trim();
+            const category = postCategory.value.trim();
+            const author = postAuthor.value.trim();
+            const image_url = postImage.value.trim() || null;
+            const type = postType.value;
+            const date = postDate.value;
+
+            if (!title || !content || !category || !author || !date) {
+                return alert('Please fill all fields (image optional)');
+            }
+
+            const postData = { title, content, category, author, image_url, type, date, likes: 0 };
+
+            if (editingPostId) {
+                const { error } = await supabase.from('posts').update(postData).eq('id', editingPostId);
+                if (error) alert(error.message);
+                else editingPostId = null;
+            } else {
+                const { error } = await supabase.from('posts').insert([postData]);
+                if (error) alert(error.message);
+            }
+            postTitle.value = postContent.value = postCategory.value = postAuthor.value = postImage.value = '';
+            postDate.value = '';
+            editPostIdSpan.innerText = '';
+            loadPostsAndAds();
+        });
+
+        cancelEditPost.addEventListener('click', () => {
+            editingPostId = null;
+            editPostIdSpan.innerText = '';
+            postTitle.value = postContent.value = postCategory.value = postAuthor.value = postImage.value = '';
+            postDate.value = '';
+        });
+
+        saveAdBtn.addEventListener('click', async () => {
+            const title = adTitle.value.trim();
+            const type = adType.value;
+            const position = adPosition.value;
+            let image_url = null, link = null, html_code = null;
+
+            if (type === 'image') {
+                image_url = adImage.value.trim() || null;
+                link = adLink.value.trim() || null;
+                if (!image_url || !link) {
+                    return alert('Image URL and Link are required for image ads.');
+                }
+            } else {
+                html_code = adHtml.value.trim();
+                if (!html_code) {
+                    return alert('HTML code cannot be empty.');
+                }
+            }
+
+            const adData = { title, type, image_url, link, html_code, position, active: true };
+
+            if (adEditId) {
+                const { error } = await supabase.from('ads').update(adData).eq('id', adEditId);
+                if (error) alert(error.message);
+                adEditId = null;
+            } else {
+                const { error } = await supabase.from('ads').insert([adData]);
+                if (error) alert(error.message);
+            }
+            // reset form
+            adTitle.value = '';
+            adType.value = 'image';
+            adImage.value = '';
+            adLink.value = '';
+            adHtml.value = '';
+            adPosition.value = 'feed';
+            imageAdFields.style.display = 'block';
+            htmlAdFields.style.display = 'none';
+            loadPostsAndAds();
+        });
+
+        cancelAdEdit.addEventListener('click', () => {
+            adEditId = null;
+            adTitle.value = '';
+            adType.value = 'image';
+            adImage.value = '';
+            adLink.value = '';
+            adHtml.value = '';
+            adPosition.value = 'feed';
+            imageAdFields.style.display = 'block';
+            htmlAdFields.style.display = 'none';
+        });
+
+        saveSettingsBtn.addEventListener('click', saveSiteSettings);
+
+        // ===== tab switching =====
+        tabPosts.addEventListener('click', () => {
+            tabPosts.classList.add('active');
+            tabAds.classList.remove('active');
+            tabSettings.classList.remove('active');
+            postsAdmin.style.display = 'block';
+            adsAdmin.style.display = 'none';
+            settingsAdmin.style.display = 'none';
+        });
+        tabAds.addEventListener('click', () => {
+            tabAds.classList.add('active');
+            tabPosts.classList.remove('active');
+            tabSettings.classList.remove('active');
+            postsAdmin.style.display = 'none';
+            adsAdmin.style.display = 'block';
+            settingsAdmin.style.display = 'none';
+        });
+        tabSettings.addEventListener('click', () => {
+            tabSettings.classList.add('active');
+            tabPosts.classList.remove('active');
+            tabAds.classList.remove('active');
+            postsAdmin.style.display = 'none';
+            adsAdmin.style.display = 'none';
+            settingsAdmin.style.display = 'block';
+        });
+
+        // ===== login / logout =====
+        adminTrigger.addEventListener('dblclick', () => {
+            loginModal.classList.remove('hidden');
+        });
+
+        closeLoginBtn.addEventListener('click', () => loginModal.classList.add('hidden'));
+
+        loginBtn.addEventListener('click', async () => {
+            const email = loginEmail.value.trim();
+            const password = loginPassword.value;
+            if (!email || !password) return alert('Enter credentials');
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                currentUser = data.user;
+                loginModal.classList.add('hidden');
+                adminDashboard.classList.remove('hidden');
+                loadPostsAndAds();
+            } catch (err) {
+                alert('Login error: ' + err.message);
+            }
+        });
+
+        logoutBtn.addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            currentUser = null;
+            adminDashboard.classList.add('hidden');
+            loadPublicPosts();
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            // restore share buttons visibility for next article
+            document.querySelector('.modal-share').style.display = 'flex';
+            window.history.pushState({}, '', window.location.pathname);
+        });
+        window.addEventListener('click', (e) => { if (e.target === modal) {
+            modal.classList.add('hidden');
+            document.querySelector('.modal-share').style.display = 'flex';
+            window.history.pushState({}, '', window.location.pathname);
+        }});
+
+        // ===== initial load =====
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                currentUser = session.user;
+                adminDashboard.classList.remove('hidden');
+                Promise.all([loadSiteSettings(), loadPostsAndAds()]);
+            } else {
+                Promise.all([loadSiteSettings(), loadPublicPosts()]);
+            }
+        });
+
+        window.addEventListener('popstate', (event) => {
+            if (event.state && event.state.postId) {
+                openPostModal(event.state.postId);
+            } else {
+                modal.classList.add('hidden');
+                document.querySelector('.modal-share').style.display = 'flex';
+            }
+        });
+    })();
+</script>
+</body>
+  </html>
