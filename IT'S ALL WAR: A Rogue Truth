@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT'S ALL WAR: A Rogue Truth · Nyabando Ochoki</title>
+  <style>
+    /* RESET & PRINT-FRIENDLY BASE */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #f5f3f0;
+      font-family: 'Georgia', 'Times New Roman', Times, serif;
+      line-height: 1.6;
+      color: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      padding: 2rem 0.5rem;
+    }
+
+    .book {
+      max-width: 1100px;
+      width: 100%;
+      background-color: white;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      padding: 2rem 2.5rem;
+      border-radius: 4px;
+    }
+
+    @media print {
+      body {
+        background-color: white;
+        padding: 0;
+      }
+      .book {
+        max-width: 100%;
+        box-shadow: none;
+        padding: 0.25in 0.5in;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+      h1, h2, h3, h4 {
+        page-break-after: avoid;
+      }
+      p, li, blockquote {
+        page-break-inside: avoid;
+      }
+      .cover, .title-page, .copyright, .toc, .part, .chapter, .appendix {
+        page-break-before: always;
+      }
+      .cover {
+        page-break-before: avoid;
+      }
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: bold;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      font-size: 2rem;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #111;
+      padding-bottom: 0.3rem;
+    }
+    h3 {
+      font-size: 1.5rem;
+      margin: 1.5rem 0 1rem;
+    }
+    h4 {
+      font-size: 1.2rem;
+      font-style: italic;
+      margin: 1.2rem 0 0.5rem;
+    }
+    p {
+      margin-bottom: 1rem;
+      text-align: justify;
+      hyphens: auto;
+    }
+    blockquote {
+      margin: 1.5rem 2rem;
+      font-style: italic;
+      border-left: 4px solid #aaa;
+      padding-left: 1rem;
+      color: #2c2c2c;
+    }
+    .swahili {
+      font-style: normal;
+      font-weight: 500;
+      color: #3a2e1f;
+    }
+    hr {
+      border: none;
+      border-top: 1px dashed #aaa;
+      margin: 2rem 0;
+    }
+    .toc-list {
+      list-style: none;
+      margin: 1rem 0 2rem;
+    }
+    .toc-list li {
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: baseline;
+    }
+    .toc-chapter {
+      font-weight: bold;
+      min-width: 3rem;
+    }
+    .toc-title {
+      flex: 1;
+    }
+    .part-head {
+      font-size: 1.8rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin: 2.5rem 0 1rem;
+      color: #3e2e23;
+    }
+    .chapter-number {
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      color: #5e4b3a;
+      margin-bottom: 0.2rem;
+    }
+    .chapter-title {
+      font-size: 2.2rem;
+      font-weight: bold;
+      margin-bottom: 2rem;
+    }
+    .subtitle {
+      font-size: 1.2rem;
+      color: #3f3f3f;
+      margin-top: -1rem;
+      margin-bottom: 2rem;
+    }
+    .cover {
+      text-align: center;
+      padding: 4rem 0 3rem;
+      border: 1px solid #ddd;
+      background: #faf9f7;
+    }
+    .cover h1 {
+      font-size: 4rem;
+      margin: 2rem 0 0.5rem;
+    }
+    .cover h2 {
+      font-size: 1.8rem;
+      font-weight: normal;
+      border: none;
+      color: #444;
+    }
+    .cover .author {
+      font-size: 2rem;
+      margin: 3rem 0 1rem;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+    }
+    .copyright {
+      font-size: 0.9rem;
+      color: #444;
+      border-top: 1px solid #ccc;
+      padding-top: 1rem;
+      margin-top: 2rem;
+    }
+    .footer-note {
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      text-align: center;
+      color: #666;
+    }
+    .placeholder-note {
+      font-style: italic;
+      background: #f0ede9;
+      padding: 0.8rem;
+      border-left: 3px solid #b3a28f;
+      margin: 1.5rem 0;
+    }
+  </style>
+</head>
+<body>
+<div class="book">
+
+  <!-- COVER PAGE -->
+  <div class="cover">
+    <h2>THE ROGUE TRUTH</h2>
+    <h1>IT'S ALL WAR</h1>
+    <h2 style="border: none; font-size: 2rem;">A Rogue Truth</h2>
+    <div class="author">NYABANDO OCHOKI</div>
+    <div style="margin-top: 4rem; font-size: 1.1rem;">✧  UNFILTERED  ✧  UNAPOLOGETIC  ✧  KENYAN VOICE  ✧</div>
+  </div>
+
+  <!-- TITLE PAGE (internal) -->
+  <div class="title-page page-break">
+    <h1 style="margin-top: 3rem;">IT'S ALL WAR</h1>
+    <h2 style="border: none; font-size: 2rem; font-weight: normal;">A Rogue Truth</h2>
+    <p style="margin-top: 4rem; font-size: 1.5rem;">Nyabando Ochoki</p>
+    <p style="margin-top: 6rem; font-size: 1rem; color: #333;">© 2026 Nyabando Ochoki · All rights reserved.</p>
+  </div>
+
+  <!-- COPYRIGHT PAGE -->
+  <div class="copyright page-break">
+    <p>© 2026 by Nyabando Ochoki</p>
+    <p>All rights reserved. No part of this book may be reproduced in any form or by any electronic or mechanical means, including information storage and retrieval systems, without written permission from the author, except for the use of brief quotations in a review.</p>
+    <p>First edition: 2026</p>
+    <p>Cover design: the author</p>
+    <p>ISBN: 978-9966-111-26-5 (paperback)</p>
+    <p style="margin-top: 2rem;">To the men who refuse to sleepwalk.</p>
+  </div>
+
+  <!-- TABLE OF CONTENTS (numbers removed) -->
+  <div class="toc page-break">
+    <h2 style="border-bottom: 2px solid #222;">CONTENTS</h2>
+    <ul class="toc-list">
+      <li><span class="toc-chapter"></span><span class="toc-title">Introduction</span></li>
+      <li><span class="toc-chapter">PART I</span><span class="toc-title"> SEEING THE CAGE</span></li>
+      <li><span class="toc-chapter">1.</span><span class="toc-title"> The Cage You Call a Life</span></li>
+      <li><span class="toc-chapter">2.</span><span class="toc-title"> The Great Lie They Sold You</span></li>
+      <li><span class="toc-chapter">3.</span><span class="toc-title"> Your Job is Modern Slavery</span></li>
+      <li><span class="toc-chapter">4.</span><span class="toc-title"> Your Relationship is a Contract, Not a Love Story</span></li>
+      <li><span class="toc-chapter">5.</span><span class="toc-title"> Your Friends Are Just Associates</span></li>
+      <li><span class="toc-chapter">PART II</span><span class="toc-title"> THE ENEMY WITHIN</span></li>
+      <li><span class="toc-chapter">6.</span><span class="toc-title"> Fear is Your Real Master</span></li>
+      <li><span class="toc-chapter">7.</span><span class="toc-title"> Comfort is Addiction</span></li>
+      <li><span class="toc-chapter">8.</span><span class="toc-title"> Excuses Are Lies You Tell Yourself</span></li>
+      <li><span class="toc-chapter">9.</span><span class="toc-title"> Your Phone is a Leash</span></li>
+      <li><span class="toc-chapter">PART III</span><span class="toc-title"> THE CODE</span></li>
+      <li><span class="toc-chapter">10.</span><span class="toc-title"> What Harry Understood (Loyalty, Duty, Sacrifice)</span></li>
+      <li><span class="toc-chapter">11.</span><span class="toc-title"> Building Your Own Rules</span></li>
+      <li><span class="toc-chapter">12.</span><span class="toc-title"> The Art of Saying No</span></li>
+      <li><span class="toc-chapter">13.</span><span class="toc-title"> Why Being Disliked is Freedom</span></li>
+      <li><span class="toc-chapter">PART IV</span><span class="toc-title"> THE FIGHT</span></li>
+      <li><span class="toc-chapter">14.</span><span class="toc-title"> Creation Over Consumption</span></li>
+      <li><span class="toc-chapter">15.</span><span class="toc-title"> Money is Freedom (Not Happiness)</span></li>
+      <li><span class="toc-chapter">16.</span><span class="toc-title"> Women, Sex, and the Trap of Validation</span></li>
+      <li><span class="toc-chapter">17.</span><span class="toc-title"> The Loneliness of the Wolf</span></li>
+      <li><span class="toc-chapter"></span><span class="toc-title">Conclusion: Die With Zero</span></li>
+      <li><span class="toc-chapter"></span><span class="toc-title">Appendix: 28 Commandments</span></li>
+    </ul>
+  </div>
+
+  <!-- INTRODUCTION -->
+  <div class="chapter page-break">
+    <h2>INTRODUCTION</h2>
+    <p><span class="swahili">Sikiliza.</span> Listen. This book is not a lullaby. It’s a cold slap at 4 a.m. I’m not here to make you feel good about yourself—your mama already did that, and look where you are. I’m here to show you the cage, bar by bar. Most of you are sleepwalking, chasing things you never chose. Degrees, jobs, relationships, debts—all someone else’s dream. I’m Nyabando Ochoki, and I don’t sell hope; I sell truth. And the truth is: life is war. Once you accept that, you can stop pretending and start fighting. This book will walk you through the four walls of your prison, the enemy inside your head, and the code you need to carve your own path. <span class="swahili">Tuanze.</span> Let’s begin.</p>
+  </div>
+
+  <!-- PART ONE: SEEING THE CAGE -->
+  <div class="part page-break">
+    <div class="part-head">PART ONE · SEEING THE CAGE</div>
+  </div>
+
+  <!-- CHAPTER 1 -->
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER ONE</div>
+    <div class="chapter-title">The Cage You Call a Life</div>
+    <p>Let me ask you something. And I want you to be honest with yourself, because lying to me is pointless—I can't hear you—but lying to yourself? That's how you ended up here, reading this book, feeling like something is wrong but unable to name it.</p>
+    <p>Here's the question: <strong>Are you living your life, or are you just occupying space in someone else's dream?</strong></p>
+    <p>Think about it.</p>
+    <p>You wake up to an alarm you didn't choose. You put on clothes that aren't really yours—they're just what's acceptable. You go to a job that drains you so you can pay for things you don't need to impress people you don't even like. You come home to a woman who respects you conditionally—as long as you provide, as long as you don't show weakness, as long as you fit the image she had of you when she said "yes."</p>
+    <p>And at the end of the week, you're so tired that "relaxing" means scrolling through your phone, watching other people live, while your own life slips through your fingers like sand.</p>
+    <p><span class="swahili">Hiyo ndio maisha yako?</span> That's your life?</p>
+    <p>Let me tell you something about Harry. Not the actor, the character. Harry from <em>MobLand</em>. Harry is a fixer for a crime family. His job is violence, deception, and cleaning up messes that would make you vomit. By any standard, he lives on the wrong side of the law.</p>
+    <p>But here's what Harry understands that you don't: <strong>He knows he's in a cage.</strong></p>
+    <p>He knows the Harrigans own him. He knows the loyalty that binds him—forged in a prison years ago—is both his strength and his chain. He looks at his life with clear eyes. He doesn't pretend. When he says "It's all war," he's not being dramatic. He's stating a fact. Life is combat. For resources, for respect, for survival.</p>
+    <p>You? You think life is peaceful. You think if you just follow the rules, be a "good man," work hard, and stay loyal, everything will work out.</p>
+    <p><span class="swahili">Wewe ni mshenzi.</span> You're a fool.</p>
+    <h3>The Great Lie</h3>
+    <p>They sold you a story. From childhood, they've been feeding you lies. School told you: study hard, get good grades, and you'll get a good job. Lie. I know people with degrees who can't afford rent. I know dropouts who run businesses. Your parents told you: respect your elders, listen to authority, don't rock the boat. Lie. The elders you're respecting? They're the ones who ran this country into the ground...</p>
+    <p>Harry doesn't fit. He's a wolf in the hen house. And he's miserable. But at least he knows what he is.</p>
+    <p>You? You don't have a clue. And that's a worse kind of miserable.</p>
+    <h4>Wall Four: Yourself</h4>
+    <p>This is the hardest wall to see because it's made of glass. You can see through it, but you can't break it. Because the glass is your own reflection. Your fears. Your excuses. Your comfort zone. <span class="swahili">Unajidanganya.</span> You're lying to yourself.</p>
+    <h3>So What's the Answer?</h3>
+    <p>You think I'm just here to depress you? To tell you life is shit and leave you there? <span class="swahili">Hapana.</span> I'm here to wake you up. The first step to getting out of the cage is <strong>seeing the cage.</strong> ...</p>
+    <p>Life is short. It's brutal. It's fucked up. But it's yours. You can either whine about it, or you can look at it clearly—without the delusions, without the excuses, without the lies—and say what Harry says: <strong>"It's all war."</strong> And then you fight. Not against other people. Against your own weakness. Against the system that wants you asleep. Against the fear that keeps you small. Fight to wake up. Fight to see clearly. Fight to build something real.</p>
+    <p class="swahili">That's the only way out of the cage. The door was always unlocked. You just had to stop pretending the walls were real.</p>
+  </div>
+
+  <!-- CHAPTER 2 -->
+  <div class="chapter page-break">
+    <div class="chapter-number">CHAPTER TWO</div>
+    <div class="chapter-title">The Great Lie They Sold You</div>
+    <p>You’ve been fed myths since you could walk: that education guarantees success, that being a “good guy” earns you love, that hard work alone lifts you up. Lies wrapped in flags and holy books. In this chapter we dissect the four biggest cons—school, family, religion, and romance—and show how each one keeps you tame. Because the first step to freedom is calling the lie by its name. <span class="swahili">Ukweli ni mchungu</span> – the truth is bitter, but it heals.</p>
+  </div>
+
+  <!-- CHAPTER 3 -->
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER THREE</div>
+    <div class="chapter-title">Your Job is Modern Slavery</div>
+    <p>You call yourself a professional. I call you a tenant in someone else's empire. You sell your hours—the only non-renewable resource—for coins, then spend those coins to forget you're dying. This chapter compares the 9-to5 to a plantation: same fear, different uniform. You'll learn why "passion" is a trap and how to start treating work as a temporary heist, not an identity.</p>
+  </div>
+
+  <!-- CHAPTER 4 -->
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER FOUR</div>
+    <div class="chapter-title">Your Relationship is a Contract, Not a Love Story</div>
+    <p>Before you throw rocks, listen. I'm not against love—I'm against the fairy tale that makes you weak. Most relationships are transactions: comfort for status, sex for security. And when the terms change, the "love" vanishes. We'll look at the unspoken clauses in your contract, and why a man must first be whole alone before he can stand beside a woman without crumbling.</p>
+  </div>
+
+  <!-- CHAPTER 5 -->
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER FIVE</div>
+    <div class="chapter-title">Your Friends Are Just Associates</div>
+    <p>Friendship today is a club of mutual benefit. When the money dries up, when the status drops, watch who stays. This isn't cynicism—it's clarity. I'll show you how to distinguish between allies and passengers, and why a pack of two is stronger than a crowd of fifty. <span class="swahili">Rafiki ni nani?</span> We'll answer that.</p>
+  </div>
+
+  <!-- PART TWO : THE ENEMY WITHIN -->
+  <div class="part page-break">
+    <div class="part-head">PART TWO · THE ENEMY WITHIN</div>
+  </div>
+
+  <!-- CHAPTER 6-9 with short original blurbs -->
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER SIX</div>
+    <div class="chapter-title">Fear is Your Real Master</div>
+    <p>You think your boss owns you? No. It's fear—of poverty, of loneliness, of looking stupid. Fear whispers and you obey. This chapter names the fear, traces it back to the cave, and gives you the only weapon that works: action that terrifies you. Do it scared or die a slave.</p>
+  </div>
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER SEVEN</div>
+    <div class="chapter-title">Comfort is Addiction</div>
+    <p>Your warm bed, your Netflix queue, your evening beer—that’s the new opium den. Comfort kills more dreams than failure ever will. We'll explore how to starve your comfort addiction and why discomfort is the only gym for your spirit.</p>
+  </div>
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER EIGHT</div>
+    <div class="chapter-title">Excuses Are Lies You Tell Yourself</div>
+    <p>"I don't have time." "The economy is bad." "I'm too old." All elegant lies. This chapter shreds the twelve most common excuses men use to stay small. After reading it, you'll either act or shut up forever.</p>
+  </div>
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER NINE</div>
+    <div class="chapter-title">Your Phone is a Leash</div>
+    <p>You check it 150 times a day. It pings, you jump. It's not a tool—it's a trainer, and you're the lab rat. We'll talk about digital minimalism, attention as the new gold, and how to cut the leash without going off the grid.</p>
+  </div>
+
+  <!-- PART THREE : THE CODE -->
+  <div class="part page-break">
+    <div class="part-head">PART THREE · THE CODE</div>
+  </div>
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER TEN</div>
+    <div class="chapter-title">What Harry Understood</div>
+    <p>Harry from <em>MobLand</em> lives by a code: loyalty, duty, sacrifice. Not for applause—because without a code you're just weather. This chapter breaks down the architecture of a personal code and why discipline is the new rebellion.</p>
+  </div>
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER ELEVEN</div>
+    <div class="chapter-title">Building Your Own Rules</div>
+    <p>Forget the Ten Commandments—you need your own ten. I'll walk you through constructing values that fit your life, not your grandmother's. Because generic morality produces generic men.</p>
+  </div>
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER TWELVE</div>
+    <div class="chapter-title">The Art of Saying No</div>
+    <p>Every idiot says yes—to drinks, to debt, to drama. Power is the ability to say no without guilt. We'll practice refusal as a muscle, and you'll see how your time and respect multiply when you guard your mouth.</p>
+  </div>
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER THIRTEEN</div>
+    <div class="chapter-title">Why Being Disliked is Freedom</div>
+    <p>You're terrified of being the villain in someone's story. So you perform, you please, you disappear. The moment you accept that some people will hate you—for no reason or good reason—you become uncageable. This is the chapter that sets you free.</p>
+  </div>
+
+  <!-- PART FOUR : THE FIGHT -->
+  <div class="part page-break">
+    <div class="part-head">PART FOUR · THE FIGHT</div>
+  </div>
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER FOURTEEN</div>
+    <div class="chapter-title">Creation Over Consumption</div>
+    <p>You are what you make, not what you buy. Builders own the world; consumers are owned. I'll show you how to shift from passive scroll to active creation, even if you start with a pen and a notebook.</p>
+  </div>
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER FIFTEEN</div>
+    <div class="chapter-title">Money is Freedom (Not Happiness)</div>
+    <p>Money won't make you smile, but it will stop people from laughing at you. It buys time, options, silence. We'll discuss a rogue relationship with cash: earn it, use it, die with zero—but never worship it.</p>
+  </div>
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER SIXTEEN</div>
+    <div class="chapter-title">Women, Sex, and the Trap of Validation</div>
+    <p>The hardest chapter to write, and the one most needed. We'll dissect the male hunger for female validation, how it weakens your spine, and how to redirect that energy into purpose. No blame—just hard mirror work.</p>
+  </div>
+  <div class="chapter">
+    <div class="chapter-number">CHAPTER SEVENTEEN</div>
+    <div class="chapter-title">The Loneliness of the Wolf</div>
+    <p>Walking alone is not a punishment; it's a tax on greatness. This chapter prepares you for the silence that comes when you outgrow the crowd. It's not depression—it's distinction. Learn to sit with yourself, because you'll be there until the end.</p>
+  </div>
+
+  <!-- CONCLUSION -->
+  <div class="chapter page-break">
+    <h2>CONCLUSION: Die With Zero</h2>
+    <p>You've heard "save for retirement," "leave an inheritance." Bullshit. Die with your account at zero. Spend your health, your wealth, your voice on what matters. Hoarding is fear. Giving, creating, burning—that's life. I'll tell you how to plan your exit so that you leave nothing but stories and a few scars on the world.</p>
+  </div>
+
+  <!-- APPENDIX: 28 COMMANDMENTS -->
+  <div class="appendix page-break">
+    <h2>APPENDIX: 28 COMMANDMENTS FOR LIVING UNFILTERED</h2>
+    <p><em>by Nyabando Ochoki</em></p>
+    <ol style="margin-left: 2rem; columns: 2; column-gap: 3rem;">
+      <li>Never explain yourself. Your enemies don't believe it, your friends don't need it.</li>
+      <li>Wake up before the sun, because your competitors are asleep.</li>
+      <li>Own your story or someone else will write it for you—and you'll hate the ending.</li>
+      <li>If it costs you your peace, it's too expensive.</li>
+      <li>A woman who loves you will respect you; if respect vanishes, love was never there.</li>
+      <li>Comfort is a slow death. Seek the uncomfortable.</li>
+      <li>Nobody is coming to save you. Not God, not the government, not your father.</li>
+      <li>Build something before you die. A business, a book, a tree—leave a dent.</li>
+      <li>Your word is your only collateral. Break it and you're bankrupt.</li>
+      <li>Learn to say no without a paragraph.</li>
+      <li>Jealousy is admiration misunderstood. Move.</li>
+      <li>Die with zero—spend your money, your energy, your love. You can't take it with you.</li>
+      <li>Silence is a weapon. Use it.</li>
+      <li>Don't trust a man who laughs too loud or a woman who cries too easily.</li>
+      <li>Your phone is a leash. Cut the cord twice a week.</li>
+      <li>... and twelve more you'll discover when you live them.</li>
+    </ol>
+    <p class="placeholder-note">(Full list available in the complete manuscript — these are sparks to ignite your own rules.)</p>
+  </div>
+
+  <!-- BACK PAGE -->
+  <div class="copyright page-break" style="text-align: center; border: none;">
+    <p>✦ END OF THE ROGUE TRUTH ✦</p>
+    <p>If you're not angry, you weren't reading. If you're not moved, you're still asleep. Wake up. It's all war.</p>
+    <p style="margin-top: 2rem;">— Nyabando Ochoki, 2026</p>
+  </div>
+
+  <!-- PRINT NOTE -->
+  <div class="footer-note" style="page-break-before: avoid;">This book was designed for print. Use your browser’s print function (Ctrl+P) and choose “Save as PDF” for a professional PDF.</div>
+
+</div>
+</body>
+</html>
