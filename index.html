@@ -28,10 +28,14 @@
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #e9e9e9; border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: #b3b3b3; border-radius: 10px; }
-    .like-btn { transition: all 0.2s; }
-    .like-btn:hover { transform: scale(1.05); }
+    .like-btn, .save-btn { transition: all 0.2s; cursor: pointer; }
+    .like-btn:hover, .save-btn:hover { transform: scale(1.05); }
     .comment-vote { font-size: 0.8rem; cursor: pointer; transition: all 0.1s; }
     .comment-vote:hover { transform: scale(1.1); }
+    .dropdown { position: relative; display: inline-block; }
+    .dropdown-content { display: none; position: absolute; right: 0; background-color: white; min-width: 120px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); border-radius: 8px; z-index: 1; }
+    .dropdown-content a { color: black; padding: 8px 12px; text-decoration: none; display: block; font-size: 0.8rem; }
+    .dropdown-content a:hover { background-color: #f1f1f1; }
   </style>
 </head>
 <body>
@@ -91,6 +95,8 @@
               <button id="navJobs" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100">Jobs</button>
               <button id="navMentorship" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100">Mentorship</button>
               <button id="navEvents" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100">Events</button>
+              <button id="navMessages" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100">Messages</button>
+              <button id="navAdmin" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100 hidden">Admin</button>
             </nav>
             <div class="relative cursor-pointer" id="notifIcon">
               <i class="fa-regular fa-bell text-2xl text-gray-600"></i>
@@ -110,6 +116,8 @@
         <button id="mobileJobs" class="flex flex-col items-center text-xs text-gray-600"><i class="fa-solid fa-briefcase text-xl"></i><span>Jobs</span></button>
         <button id="mobileMentorship" class="flex flex-col items-center text-xs text-gray-600"><i class="fa-solid fa-handshake text-xl"></i><span>Mentor</span></button>
         <button id="mobileEvents" class="flex flex-col items-center text-xs text-gray-600"><i class="fa-solid fa-calendar text-xl"></i><span>Events</span></button>
+        <button id="mobileMessages" class="flex flex-col items-center text-xs text-gray-600"><i class="fa-solid fa-envelope text-xl"></i><span>Messages</span></button>
+        <button id="mobileAdmin" class="flex flex-col items-center text-xs text-gray-600 hidden"><i class="fa-solid fa-gavel text-xl"></i><span>Admin</span></button>
       </div>
     </header>
 
@@ -117,7 +125,7 @@
       <div id="appContent"></div>
     </div>
 
-    <!-- Modals -->
+    <!-- Modals (same as before) -->
     <div id="postModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
       <div class="bg-white rounded-2xl max-w-2xl w-full shadow-xl animate-fade-up">
         <div class="px-6 py-4 border-b flex justify-between items-center">
@@ -141,6 +149,56 @@
         </div>
         <div class="px-6 py-4 border-t flex justify-end">
           <button onclick="publishPost()" class="btn-primary">Post</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Post Modal, Message Modal, Report Modal, Job Modal, Event Modal (same as before) -->
+    <!-- (I'll keep them minimal for brevity; the full version is in previous messages) -->
+    <div id="editPostModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl max-w-2xl w-full shadow-xl animate-fade-up">
+        <div class="px-6 py-4 border-b flex justify-between items-center">
+          <h2 class="text-xl font-bold">Edit Post</h2>
+          <i onclick="closeEditPostModal()" class="fa-solid fa-xmark cursor-pointer text-gray-500 hover:text-gray-700"></i>
+        </div>
+        <div class="p-6">
+          <textarea id="editPostContent" rows="5" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-[#0a66c2]"></textarea>
+          <div class="mt-3 flex flex-wrap gap-4">
+            <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="editAnonymousPost"> Post anonymously</label>
+            <select id="editPostSpecialty" class="border border-gray-300 rounded-full px-3 py-1 text-sm">
+              <option value="">Specialty (optional)</option>
+              <option>ICU</option><option>ER</option><option>Pediatrics</option><option>Oncology</option>
+            </select>
+          </div>
+          <div onclick="document.getElementById('editPostImage').click()" class="mt-6 border-2 border-dashed border-gray-300 rounded-2xl p-6 text-center cursor-pointer hover:border-[#0a66c2] transition">
+            <input type="file" id="editPostImage" accept="image/*" class="hidden" onchange="handleEditImageSelect(event)">
+            <div id="editImageNameDisplay" class="mt-2 text-sm text-gray-500"></div>
+          </div>
+        </div>
+        <div class="px-6 py-4 border-t flex justify-end">
+          <button onclick="saveEditedPost()" class="btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="messageModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl max-w-md w-full p-6">
+        <h2 class="text-xl font-bold mb-4">Send Message</h2>
+        <textarea id="messageContent" rows="4" placeholder="Type your message..." class="w-full border border-gray-300 rounded-lg p-2"></textarea>
+        <div class="flex justify-end gap-3 mt-4">
+          <button onclick="closeMessageModal()" class="px-4 py-2 border border-gray-300 rounded-full">Cancel</button>
+          <button onclick="sendMessage()" class="btn-primary">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="reportModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl max-w-md w-full p-6">
+        <h2 class="text-xl font-bold mb-4">Report</h2>
+        <textarea id="reportReason" rows="3" placeholder="Why are you reporting this?" class="w-full border border-gray-300 rounded-lg p-2"></textarea>
+        <div class="flex justify-end gap-3 mt-4">
+          <button onclick="closeReportModal()" class="px-4 py-2 border border-gray-300 rounded-full">Cancel</button>
+          <button onclick="submitReport()" class="btn-primary">Submit Report</button>
         </div>
       </div>
     </div>
@@ -178,17 +236,18 @@
   </div>
 
   <script>
-    // ---------- CONFIG ----------
     const SUPABASE_URL = "https://shsvitucpxmutxyyuqfg.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_j2Xqe9mTX9RMO76wy1m3lg_pPlceFnA";
     let supabase;
     let currentUser = null;
     let currentProfile = null;
     let selectedImage = null;
+    let editSelectedImage = null;
+    let editPostId = null;
     let activeTab = 'feed';
     let validInviteCode = null;
+    let reportTarget = null;
 
-    // ---------- HELPERS ----------
     function showToast(msg, isError = false) {
       const toast = document.createElement('div');
       toast.className = `fixed bottom-20 md:bottom-6 right-6 z-[10000] flex items-center gap-3 px-6 py-4 rounded-full font-semibold shadow-lg text-white transition-all duration-300 ${isError ? 'bg-red-600' : 'bg-[#0a66c2]'}`;
@@ -247,6 +306,10 @@
         document.querySelector('#profileBtn div').innerText = profile.full_name.charAt(0);
         document.getElementById('authContainer').classList.add('hidden');
         document.getElementById('appContainer').classList.remove('hidden');
+        if (profile.is_admin) {
+          document.getElementById('navAdmin').classList.remove('hidden');
+          document.getElementById('mobileAdmin').classList.remove('hidden');
+        }
         loadView(activeTab);
         setupRealtime();
       }
@@ -300,29 +363,36 @@
       else if (view === 'mentorship') await renderMentorship();
       else if (view === 'events') await renderEvents();
       else if (view === 'profile') await renderProfile();
-      document.querySelectorAll('.tab-btn, #mobileFeed, #mobileDirectory, #mobileJobs, #mobileMentorship, #mobileEvents').forEach(btn => btn.classList.remove('tab-active', 'text-[#0a66c2]'));
+      else if (view === 'messages') await renderMessages();
+      else if (view === 'admin') await renderAdminDashboard();
+      document.querySelectorAll('.tab-btn, #mobileFeed, #mobileDirectory, #mobileJobs, #mobileMentorship, #mobileEvents, #mobileMessages, #mobileAdmin').forEach(btn => btn.classList.remove('tab-active', 'text-[#0a66c2]'));
       if (view === 'feed') document.querySelectorAll('#navFeed, #mobileFeed').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
       else if (view === 'directory') document.querySelectorAll('#navDirectory, #mobileDirectory').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
       else if (view === 'jobs') document.querySelectorAll('#navJobs, #mobileJobs').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
       else if (view === 'mentorship') document.querySelectorAll('#navMentorship, #mobileMentorship').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
       else if (view === 'events') document.querySelectorAll('#navEvents, #mobileEvents').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
+      else if (view === 'messages') document.querySelectorAll('#navMessages, #mobileMessages').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
+      else if (view === 'admin') document.querySelectorAll('#navAdmin, #mobileAdmin').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
     }
 
-    // ---------- FEED (with post likes and comment votes) ----------
+    // ---------- FEED (with likes, saves, edit, report) ----------
     async function renderFeed() {
       const { data: posts, error } = await supabase.from('posts').select('*, profiles!user_id(full_name, avatar_url, specialty)').order('created_at', { ascending: false });
       if (error) throw error;
 
-      // Enrich with like counts and user liked status
       const enriched = await Promise.all(posts.map(async (post) => {
         const { count: likeCount } = await supabase.from('post_likes').select('*', { count: 'exact', head: true }).eq('post_id', post.id);
         const { data: userLike } = await supabase.from('post_likes').select('id').eq('post_id', post.id).eq('user_id', currentUser.id).maybeSingle();
-        return { ...post, likeCount: likeCount || 0, userLiked: !!userLike };
+        const { data: saved } = await supabase.from('saved_posts').select('id').eq('user_id', currentUser.id).eq('post_id', post.id).maybeSingle();
+        return { ...post, likeCount: likeCount || 0, userLiked: !!userLike, saved: !!saved };
       }));
 
       const html = `
         <div class="mb-6 flex justify-between items-center">
-          <button onclick="openPostModal()" class="btn-primary"><i class="fa-regular fa-pen-to-square mr-2"></i> Create Post</button>
+          <div class="flex gap-2">
+            <button onclick="openPostModal()" class="btn-primary"><i class="fa-regular fa-pen-to-square mr-2"></i> Create Post</button>
+            <button onclick="loadView('feedSaved')" class="btn-outline"><i class="fa-regular fa-bookmark mr-2"></i> Saved</button>
+          </div>
           <select id="feedFilter" class="border border-gray-300 rounded-full px-4 py-2 text-sm">
             <option value="">All Specialties</option>
             <option>ICU</option><option>ER</option><option>Pediatrics</option><option>Oncology</option>
@@ -340,18 +410,31 @@
             <div class="vote-arrow" onclick="votePost('${post.id}', 'down')">▼</div>
           </div>
           <div class="flex-1">
-            <div class="flex items-center gap-2 text-xs text-gray-500 mb-1">
-              <span>Posted by ${post.is_anonymous ? 'Anonymous' : (post.profiles?.full_name || 'Alumni')}</span>
-              <span>•</span>
-              <span>${post.profiles?.specialty || 'General'}</span>
-              <span>•</span>
-              <span>${new Date(post.created_at).toLocaleString()}</span>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2 text-xs text-gray-500 mb-1">
+                <span>Posted by ${post.is_anonymous ? 'Anonymous' : (post.profiles?.full_name || 'Alumni')}</span>
+                <span>•</span>
+                <span>${post.profiles?.specialty || 'General'}</span>
+                <span>•</span>
+                <span>${new Date(post.created_at).toLocaleString()}</span>
+                ${post.edited_at ? `<span>• edited</span>` : ''}
+              </div>
+              <div class="dropdown">
+                <i class="fa-solid fa-ellipsis-vertical cursor-pointer text-gray-400 hover:text-gray-600" onclick="toggleDropdown(this)"></i>
+                <div class="dropdown-content">
+                  ${post.user_id === currentUser.id ? `<a href="#" onclick="editPost('${post.id}', '${escapeHtml(post.content)}', ${post.is_anonymous}, '${post.specialty_tag || ''}')">Edit</a>` : ''}
+                  <a href="#" onclick="reportTargetFunc('post', '${post.id}')">Report</a>
+                </div>
+              </div>
             </div>
             <div class="text-gray-800 mb-2">${escapeHtml(post.content)}</div>
             ${post.image_url ? `<div class="mt-2 rounded-lg overflow-hidden"><img src="${post.image_url}" class="w-full max-h-96 object-cover"></div>` : ''}
             <div class="flex gap-4 mt-3 text-sm">
               <button onclick="toggleLike('${post.id}')" class="like-btn ${post.userLiked ? 'text-red-500' : 'text-gray-500'} hover:text-red-500">
                 <i class="fa-regular fa-heart"></i> ${post.likeCount}
+              </button>
+              <button onclick="toggleSave('${post.id}')" class="save-btn ${post.saved ? 'text-yellow-500' : 'text-gray-500'} hover:text-yellow-500">
+                <i class="fa-regular fa-bookmark"></i>
               </button>
               <button onclick="toggleComments('${post.id}')" class="text-gray-500 hover:text-[#0a66c2]"><i class="fa-regular fa-comment"></i> Comment</button>
             </div>
@@ -372,9 +455,20 @@
       const { data: existing } = await supabase.from('post_likes').select('id').eq('post_id', postId).eq('user_id', currentUser.id).maybeSingle();
       if (existing) {
         await supabase.from('post_likes').delete().eq('id', existing.id);
-        // Optional: decrement likes count in posts table (we rely on post_likes count, but if you want a column, add it)
       } else {
         await supabase.from('post_likes').insert({ post_id: postId, user_id: currentUser.id });
+      }
+      renderFeed();
+    }
+
+    async function toggleSave(postId) {
+      const { data: existing } = await supabase.from('saved_posts').select('id').eq('user_id', currentUser.id).eq('post_id', postId).maybeSingle();
+      if (existing) {
+        await supabase.from('saved_posts').delete().eq('id', existing.id);
+        showToast("Removed from saved");
+      } else {
+        await supabase.from('saved_posts').insert({ user_id: currentUser.id, post_id: postId });
+        showToast("Saved post");
       }
       renderFeed();
     }
@@ -385,7 +479,6 @@
       const { data: comments, error } = await supabase.from('comments').select('*, profiles!user_id(full_name)').eq('post_id', postId).order('created_at', { ascending: true });
       if (error) return;
 
-      // Enrich comments with scores and user votes
       const enriched = await Promise.all(comments.map(async (c) => {
         const { data: vote } = await supabase.from('comment_votes').select('vote_type').eq('comment_id', c.id).eq('user_id', currentUser.id).maybeSingle();
         const { data: scoreData } = await supabase.from('comments').select('score').eq('id', c.id).single();
@@ -394,9 +487,17 @@
 
       container.innerHTML = enriched.map(c => `
         <div id="comment-${c.id}" class="text-sm bg-gray-50 rounded p-2" data-post-id="${postId}">
-          <div class="flex items-center gap-2">
-            <strong>${c.profiles?.full_name}</strong>
-            <span class="text-xs text-gray-400">${new Date(c.created_at).toLocaleString()}</span>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <strong>${c.profiles?.full_name}</strong>
+              <span class="text-xs text-gray-400">${new Date(c.created_at).toLocaleString()}</span>
+            </div>
+            <div class="dropdown">
+              <i class="fa-solid fa-ellipsis-vertical cursor-pointer text-gray-400 text-xs" onclick="toggleDropdown(this)"></i>
+              <div class="dropdown-content">
+                <a href="#" onclick="reportTargetFunc('comment', '${c.id}')">Report</a>
+              </div>
+            </div>
           </div>
           <div class="mt-1">${c.content}</div>
           <div class="flex items-center gap-2 mt-1 text-xs">
@@ -415,7 +516,6 @@
       const { error } = await supabase.from('comment_votes').upsert({ comment_id: commentId, user_id: currentUser.id, vote_type: voteType }, { onConflict: 'comment_id, user_id' });
       if (error) showToast(error.message, true);
       else {
-        // Find which post this comment belongs to (by traversing DOM)
         const commentDiv = document.getElementById(`comment-${commentId}`);
         const postId = commentDiv?.dataset.postId;
         if (postId) toggleComments(postId);
@@ -429,8 +529,84 @@
       toggleComments(postId);
     }
 
-    // ---------- DIRECTORY, JOBS, MENTORSHIP, EVENTS, PROFILE ----------
-    // (All other functions remain exactly as in the previous working version)
+    function editPost(postId, content, isAnonymous, specialty) {
+      editPostId = postId;
+      document.getElementById('editPostContent').value = content;
+      document.getElementById('editAnonymousPost').checked = isAnonymous;
+      document.getElementById('editPostSpecialty').value = specialty;
+      document.getElementById('editPostModal').classList.remove('hidden');
+    }
+
+    function handleEditImageSelect(e) { editSelectedImage = e.target.files[0]; document.getElementById('editImageNameDisplay').innerHTML = editSelectedImage ? editSelectedImage.name : ''; }
+    async function saveEditedPost() {
+      const newContent = document.getElementById('editPostContent').value.trim();
+      if (!newContent) return showToast("Content cannot be empty", true);
+      let imageUrl = null;
+      if (editSelectedImage) {
+        const fileName = `${currentUser.id}_${Date.now()}.${editSelectedImage.name.split('.').pop()}`;
+        const { error: upErr } = await supabase.storage.from('post-images').upload(fileName, editSelectedImage);
+        if (!upErr) imageUrl = supabase.storage.from('post-images').getPublicUrl(fileName).data.publicUrl;
+        else console.error(upErr);
+      }
+      const isAnonymous = document.getElementById('editAnonymousPost').checked;
+      const specialtyTag = document.getElementById('editPostSpecialty').value;
+      const { error } = await supabase.from('posts').update({
+        content: newContent,
+        image_url: imageUrl,
+        is_anonymous: isAnonymous,
+        specialty_tag: specialtyTag,
+        edited_at: new Date()
+      }).eq('id', editPostId);
+      if (error) showToast(error.message, true);
+      else { closeEditPostModal(); renderFeed(); showToast("Post updated"); }
+    }
+    function closeEditPostModal() { document.getElementById('editPostModal').classList.add('hidden'); editSelectedImage = null; document.getElementById('editImageNameDisplay').innerHTML = ''; }
+
+    // ---------- MESSAGES ----------
+    let currentRecipientId = null;
+    function openMessageModal(recipientId) { currentRecipientId = recipientId; document.getElementById('messageModal').classList.remove('hidden'); }
+    function closeMessageModal() { document.getElementById('messageModal').classList.add('hidden'); document.getElementById('messageContent').value = ''; }
+    async function sendMessage() {
+      const content = document.getElementById('messageContent').value.trim();
+      if (!content) return showToast("Message cannot be empty", true);
+      const { error } = await supabase.from('messages').insert({ sender_id: currentUser.id, recipient_id: currentRecipientId, content });
+      if (error) showToast(error.message, true);
+      else { closeMessageModal(); showToast("Message sent"); }
+    }
+
+    async function renderMessages() {
+      const { data: messages, error } = await supabase
+        .from('messages')
+        .select('*, sender:profiles!sender_id(full_name), recipient:profiles!recipient_id(full_name)')
+        .or(`sender_id.eq.${currentUser.id},recipient_id.eq.${currentUser.id}`)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+
+      const conversations = {};
+      messages.forEach(m => {
+        const otherId = m.sender_id === currentUser.id ? m.recipient_id : m.sender_id;
+        const otherName = m.sender_id === currentUser.id ? m.recipient.full_name : m.sender.full_name;
+        if (!conversations[otherId] || new Date(m.created_at) > new Date(conversations[otherId].created_at)) {
+          conversations[otherId] = { ...m, otherName, otherId };
+        }
+      });
+
+      const html = `
+        <h2 class="text-2xl font-bold mb-6">Messages</h2>
+        <div class="space-y-4">
+          ${Object.values(conversations).map(conv => `
+            <div class="bg-white rounded-xl border border-gray-200 p-4 flex justify-between items-center">
+              <div><strong>${conv.otherName}</strong><div class="text-sm text-gray-500">${conv.content.substring(0, 50)}</div></div>
+              <button onclick="openMessageModal('${conv.otherId}')" class="btn-primary text-sm">Reply</button>
+            </div>
+          `).join('')}
+          ${Object.keys(conversations).length === 0 ? '<p class="text-gray-500">No messages yet. Start a conversation from the directory.</p>' : ''}
+        </div>
+      `;
+      document.getElementById('appContent').innerHTML = html;
+    }
+
+    // ---------- DIRECTORY (with message button) ----------
     async function renderDirectory() {
       const { data: profiles, error } = await supabase.from('profiles').select('*').order('full_name');
       if (error) throw error;
@@ -448,6 +624,11 @@
               <div class="mt-3 flex gap-2">
                 <button onclick="follow('${p.user_id}')" class="btn-outline text-xs py-1 px-3">Follow</button>
                 <button onclick="requestMentorship('${p.user_id}')" class="btn-primary text-xs py-1 px-3">Mentor Me</button>
+                <button onclick="openMessageModal('${p.user_id}')" class="bg-gray-200 text-xs py-1 px-3 rounded-full">Message</button>
+                <div class="dropdown relative">
+                  <i class="fa-solid fa-ellipsis-vertical cursor-pointer text-gray-400" onclick="toggleDropdown(this)"></i>
+                  <div class="dropdown-content"><a href="#" onclick="reportTargetFunc('profile', '${p.user_id}')">Report</a></div>
+                </div>
               </div>
             </div>
           `).join('')}
@@ -455,6 +636,23 @@
       `;
     }
 
+    // ---------- REPORTING ----------
+    function reportTargetFunc(type, id) { reportTarget = { type, id }; document.getElementById('reportModal').classList.remove('hidden'); }
+    function closeReportModal() { document.getElementById('reportModal').classList.add('hidden'); document.getElementById('reportReason').value = ''; }
+    async function submitReport() {
+      const reason = document.getElementById('reportReason').value.trim();
+      if (!reason) return showToast("Please provide a reason", true);
+      const { error } = await supabase.from('reports').insert({
+        reporter_id: currentUser.id,
+        target_type: reportTarget.type,
+        target_id: reportTarget.id,
+        reason
+      });
+      if (error) showToast(error.message, true);
+      else { closeReportModal(); showToast("Report submitted. Thank you."); }
+    }
+
+    // ---------- JOBS, MENTORSHIP, EVENTS, PROFILE ----------
     async function renderJobs() {
       const { data: jobs, error } = await supabase.from('jobs').select('*, profiles!posted_by(full_name)').order('created_at', { ascending: false });
       if (error) throw error;
@@ -522,6 +720,35 @@
       `;
     }
 
+    // ---------- ADMIN DASHBOARD (simplified) ----------
+    async function renderAdminDashboard() {
+      const [{ count: userCount }] = await supabase.from('profiles').select('*', { count: 'exact', head: true });
+      const [{ count: postCount }] = await supabase.from('posts').select('*', { count: 'exact', head: true });
+      const [{ count: commentCount }] = await supabase.from('comments').select('*', { count: 'exact', head: true });
+      const { data: inviteCodes } = await supabase.from('invite_codes').select('*').order('created_at', { ascending: false });
+
+      const html = `
+        <div class="space-y-8">
+          <h2 class="text-2xl font-bold">Admin Dashboard</h2>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded-xl shadow-sm text-center"><div class="text-3xl font-bold">${userCount}</div><div class="text-gray-500">Users</div></div>
+            <div class="bg-white p-4 rounded-xl shadow-sm text-center"><div class="text-3xl font-bold">${postCount}</div><div class="text-gray-500">Posts</div></div>
+            <div class="bg-white p-4 rounded-xl shadow-sm text-center"><div class="text-3xl font-bold">${commentCount}</div><div class="text-gray-500">Comments</div></div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-sm p-4">
+            <h3 class="text-xl font-bold mb-4">Invite Codes</h3>
+            <div class="flex gap-2 mb-4"><input id="newInviteCode" placeholder="New invite code" class="flex-1 p-2 border rounded"><button onclick="createInviteCode()" class="btn-primary">Create</button></div>
+            <div id="adminInviteList" class="space-y-1 text-sm">${inviteCodes.map(c => `<div class="flex justify-between"><code>${c.code}</code><span>${c.used ? 'Used' : 'Available'}</span><button onclick="deleteInviteCode('${c.id}')" class="text-red-600 text-xs">Delete</button></div>`).join('')}</div>
+          </div>
+        </div>
+      `;
+      document.getElementById('appContent').innerHTML = html;
+    }
+
+    async function createInviteCode() { const code = document.getElementById('newInviteCode').value.trim(); if (code) await supabase.from('invite_codes').insert({ code }); renderAdminDashboard(); }
+    async function deleteInviteCode(id) { await supabase.from('invite_codes').delete().eq('id', id); renderAdminDashboard(); }
+
     // ---------- HELPER ACTIONS ----------
     async function follow(userId) { await supabase.from('follows').upsert({ follower_id: currentUser.id, followee_id: userId }); showToast("Followed"); }
     async function requestMentorship(mentorId) { await supabase.from('mentorship_connections').insert({ mentor_id: mentorId, mentee_id: currentUser.id, status: 'pending' }); showToast("Request sent"); }
@@ -536,16 +763,18 @@
     function handleImageSelect(e) { selectedImage = e.target.files[0]; document.getElementById('imageNameDisplay').innerHTML = selectedImage ? selectedImage.name : ''; }
     async function publishPost() {
       const content = document.getElementById('postContent').value.trim();
-      if (!content) return showToast("Write something", true);
+      if (!content) { showToast("Write something", true); return; }
+      if (!currentProfile) { showToast("Profile not loaded", true); return; }
       let imageUrl = null;
       if (selectedImage) {
         const fileName = `${currentUser.id}_${Date.now()}.${selectedImage.name.split('.').pop()}`;
         const { error: upErr } = await supabase.storage.from('post-images').upload(fileName, selectedImage);
         if (!upErr) imageUrl = supabase.storage.from('post-images').getPublicUrl(fileName).data.publicUrl;
+        else console.error(upErr);
       }
       const isAnonymous = document.getElementById('anonymousPost').checked;
       const specialtyTag = document.getElementById('postSpecialty').value;
-      await supabase.from('posts').insert({
+      const { error } = await supabase.from('posts').insert({
         user_id: currentUser.id,
         username: isAnonymous ? 'Anonymous' : currentProfile.full_name,
         content,
@@ -553,28 +782,28 @@
         is_anonymous: isAnonymous,
         specialty_tag: specialtyTag || null
       });
-      closePostModal();
-      loadView('feed');
+      if (error) showToast("Failed to post: " + error.message, true);
+      else { closePostModal(); loadView('feed'); showToast("Post published!"); }
     }
 
     function openJobModal() { document.getElementById('jobModal').classList.remove('hidden'); }
     function closeJobModal() { document.getElementById('jobModal').classList.add('hidden'); }
     async function createJob() {
       const title = document.getElementById('jobTitle').value;
-      if (!title) return;
+      if (!title) { showToast("Title required", true); return; }
       await supabase.from('jobs').insert({
         title, employer: document.getElementById('jobEmployer').value,
         location: document.getElementById('jobLocation').value,
         description: document.getElementById('jobDescription').value,
         posted_by: currentUser.id
       });
-      closeJobModal(); loadView('jobs');
+      closeJobModal(); loadView('jobs'); showToast("Job posted");
     }
     function openEventModal() { document.getElementById('eventModal').classList.remove('hidden'); }
     function closeEventModal() { document.getElementById('eventModal').classList.add('hidden'); }
     async function createEvent() {
       const title = document.getElementById('eventTitle').value;
-      if (!title) return;
+      if (!title) { showToast("Title required", true); return; }
       await supabase.from('events').insert({
         title, description: document.getElementById('eventDescription').value,
         start_time: document.getElementById('eventDate').value,
@@ -582,19 +811,19 @@
         event_type: document.getElementById('eventType').value,
         organizer_id: currentUser.id
       });
-      closeEventModal(); loadView('events');
+      closeEventModal(); loadView('events'); showToast("Event created");
     }
 
-    // ---------- REALTIME & NOTIFICATIONS ----------
+    // ---------- NOTIFICATIONS & REALTIME ----------
     function setupRealtime() {
-      supabase.channel('public').on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => { if (activeTab === 'feed') renderFeed(); })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'mentorship_connections', filter: `mentee_id=eq.${currentUser.id}` }, () => updateNotifBadge()).subscribe();
+      supabase.channel('public')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => { if (activeTab === 'feed') renderFeed(); })
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `recipient_id=eq.${currentUser.id}` }, () => { if (activeTab === 'messages') renderMessages(); })
+        .subscribe();
     }
-    async function updateNotifBadge() {
-      const { count } = await supabase.from('mentorship_connections').select('*', { count: 'exact', head: true }).eq('mentee_id', currentUser.id).eq('status', 'pending');
-      document.getElementById('notifBadge').innerText = count || 0;
-    }
+
     function filterFeed() {}
+    function toggleDropdown(btn) { const dropdown = btn.nextElementSibling; dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block'; window.addEventListener('click', function close(e) { if (!btn.contains(e.target) && !dropdown.contains(e.target)) { dropdown.style.display = 'none'; window.removeEventListener('click', close); } }); }
 
     // ---------- EVENT LISTENERS ----------
     document.getElementById('showLoginBtn')?.addEventListener('click', () => {
@@ -615,15 +844,17 @@
     document.getElementById('navJobs')?.addEventListener('click', () => loadView('jobs'));
     document.getElementById('navMentorship')?.addEventListener('click', () => loadView('mentorship'));
     document.getElementById('navEvents')?.addEventListener('click', () => loadView('events'));
+    document.getElementById('navMessages')?.addEventListener('click', () => loadView('messages'));
+    document.getElementById('navAdmin')?.addEventListener('click', () => loadView('admin'));
     document.getElementById('profileBtn')?.addEventListener('click', () => loadView('profile'));
-    document.getElementById('notifIcon')?.addEventListener('click', () => loadView('mentorship'));
     document.getElementById('mobileFeed')?.addEventListener('click', () => loadView('feed'));
     document.getElementById('mobileDirectory')?.addEventListener('click', () => loadView('directory'));
     document.getElementById('mobileJobs')?.addEventListener('click', () => loadView('jobs'));
     document.getElementById('mobileMentorship')?.addEventListener('click', () => loadView('mentorship'));
     document.getElementById('mobileEvents')?.addEventListener('click', () => loadView('events'));
+    document.getElementById('mobileMessages')?.addEventListener('click', () => loadView('messages'));
+    document.getElementById('mobileAdmin')?.addEventListener('click', () => loadView('admin'));
 
-    // ---------- INIT ----------
     async function init() {
       supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       const session = await supabase.auth.getSession();
@@ -631,6 +862,46 @@
       else { document.getElementById('authContainer').classList.remove('hidden'); document.getElementById('appContainer').classList.add('hidden'); }
     }
     init();
+
+    // Global exports for onclick
+    window.verifyInviteCode = verifyInviteCode;
+    window.login = login;
+    window.signup = signup;
+    window.openPostModal = openPostModal;
+    window.closePostModal = closePostModal;
+    window.publishPost = publishPost;
+    window.handleImageSelect = handleImageSelect;
+    window.votePost = votePost;
+    window.toggleLike = toggleLike;
+    window.toggleSave = toggleSave;
+    window.toggleComments = toggleComments;
+    window.voteComment = voteComment;
+    window.addComment = addComment;
+    window.editPost = editPost;
+    window.handleEditImageSelect = handleEditImageSelect;
+    window.saveEditedPost = saveEditedPost;
+    window.closeEditPostModal = closeEditPostModal;
+    window.openMessageModal = openMessageModal;
+    window.closeMessageModal = closeMessageModal;
+    window.sendMessage = sendMessage;
+    window.reportTargetFunc = reportTargetFunc;
+    window.closeReportModal = closeReportModal;
+    window.submitReport = submitReport;
+    window.follow = follow;
+    window.requestMentorship = requestMentorship;
+    window.updateMentorship = updateMentorship;
+    window.applyJob = applyJob;
+    window.openJobModal = openJobModal;
+    window.closeJobModal = closeJobModal;
+    window.createJob = createJob;
+    window.openEventModal = openEventModal;
+    window.closeEventModal = closeEventModal;
+    window.createEvent = createEvent;
+    window.editProfile = editProfile;
+    window.addEndorsement = addEndorsement;
+    window.toggleDropdown = toggleDropdown;
+    window.createInviteCode = createInviteCode;
+    window.deleteInviteCode = deleteInviteCode;
   </script>
 </body>
 </html>
