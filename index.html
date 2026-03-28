@@ -1,473 +1,636 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Hustler Nation • The People's Platform</title>
-    <!-- Tailwind + Font Awesome + Supabase -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at 10% 20%, #0c0f1c, #030507);
-            background-attachment: fixed;
-        }
-        .logo-font { font-family: 'Space Grotesk', monospace; letter-spacing: -0.02em; }
-        .header-gradient {
-            background: linear-gradient(95deg, #00843D 0%, #00A651 40%, #B81B1B 100%);
-            border-bottom: 1px solid rgba(255,215,0,0.3);
-        }
-        .glass-card {
-            background: rgba(10, 20, 10, 0.55);
-            backdrop-filter: blur(18px);
-            border: 1px solid rgba(0, 166, 81, 0.35);
-            border-radius: 2rem;
-            transition: all 0.3s ease;
-        }
-        .post-card {
-            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-        }
-        .post-card:hover {
-            transform: translateY(-6px);
-            border-color: #00a651;
-            box-shadow: 0 25px 40px -15px rgba(0,166,81,0.4);
-        }
-        .vote-btn {
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        .vote-btn:active { transform: scale(0.96); }
-        .modal-pop {
-            animation: modalRise 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-        }
-        @keyframes modalRise {
-            from { opacity: 0; transform: scale(0.92) translateY(30px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .toast-slide {
-            animation: slideInRight 0.25s ease forwards;
-        }
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(60px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #1a2a1f; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #00a651; border-radius: 10px; }
-        .search-glow:focus-within { border-color: #f5b81b; box-shadow: 0 0 0 2px rgba(245,184,27,0.3); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>St. Camillus Families • Alumni Network</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #f4f2ee; scroll-behavior: smooth; }
+    .vote-column { min-width: 48px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .vote-arrow { cursor: pointer; transition: all 0.2s; color: #878a8c; font-size: 1.5rem; line-height: 1; }
+    .vote-arrow:hover { color: #ff4500; transform: scale(1.1); }
+    .vote-count { font-weight: 600; font-size: 0.9rem; color: #1c1c1c; }
+    .post-card { transition: all 0.25s ease; }
+    .post-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+    .btn-primary { background-color: #0a66c2; color: white; border-radius: 9999px; padding: 8px 20px; font-weight: 600; transition: background 0.2s; }
+    .btn-primary:hover { background-color: #004182; }
+    .btn-outline { border: 1px solid #0a66c2; color: #0a66c2; background: white; border-radius: 9999px; padding: 6px 16px; font-weight: 600; transition: all 0.2s; }
+    .btn-outline:hover { background: #e8f0fe; }
+    .tab-active { border-bottom: 2px solid #0a66c2; color: #0a66c2; font-weight: 600; }
+    .profile-cover { background: linear-gradient(135deg, #0a66c2, #004182); height: 120px; border-radius: 1rem 1rem 0 0; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-up { animation: fadeInUp 0.4s ease-out; }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #e9e9e9; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #b3b3b3; border-radius: 10px; }
+    .like-btn { transition: all 0.2s; }
+    .like-btn:hover { transform: scale(1.05); }
+    .comment-vote { font-size: 0.8rem; cursor: pointer; transition: all 0.1s; }
+    .comment-vote:hover { transform: scale(1.1); }
+  </style>
 </head>
-<body class="text-gray-100">
+<body>
 
-    <!-- HEADER with Hustler Energy -->
-    <header class="header-gradient sticky top-0 z-50 shadow-xl">
-        <div class="max-w-screen-2xl mx-auto px-5 md:px-10">
-            <div class="h-20 flex flex-wrap items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-2xl flex items-center justify-center text-3xl shadow-lg">🇰🇪</div>
-                    <h1 class="logo-font text-3xl md:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-amber-200">Hustler<span class="text-amber-300">Nation</span></h1>
-                </div>
-
-                <div class="flex-1 max-w-md lg:max-w-lg mx-4">
-                    <div class="glass-card rounded-full px-5 py-2.5 flex items-center gap-3 border border-white/20 search-glow transition-all">
-                        <i class="fa-solid fa-magnifying-glass text-amber-400"></i>
-                        <input id="search-input" type="text" placeholder="Search #BottomUp, hustles, agenda..." 
-                               class="flex-1 bg-transparent outline-none text-sm md:text-base placeholder:text-white/40">
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-4">
-                    <button onclick="showCreatePostModal()" 
-                            class="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-black font-bold px-6 py-2.5 rounded-full flex items-center gap-2 transition-all shadow-md text-sm md:text-base">
-                        <i class="fa-solid fa-feather-pointed"></i>
-                        <span class="hidden sm:inline">Post</span>
-                    </button>
-
-                    <div class="relative cursor-pointer" onclick="showToast('🔔 Notifications: live reactions & mentions coming soon')">
-                        <i class="fa-solid fa-bell text-2xl text-white/80 hover:text-amber-400"></i>
-                        <span id="notif-badge" class="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] font-bold px-1.5 rounded-full">3</span>
-                    </div>
-
-                    <div class="flex items-center gap-2 bg-black/30 backdrop-blur-sm rounded-full pl-2 pr-4 py-1.5 border border-white/10">
-                        <div class="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-xl">🦁</div>
-                        <div class="text-xs leading-tight hidden md:block">
-                            <div class="font-bold">Nyabando</div>
-                            <div class="text-emerald-400 text-[10px]">Hustler Level 47</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <!-- Auth Container -->
+  <div id="authContainer" class="min-h-screen flex items-center justify-center px-4">
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-6 animate-fade-up">
+      <div class="text-center mb-6">
+        <i class="fa-solid fa-hand-holding-heart text-4xl text-[#0a66c2]"></i>
+        <h2 class="text-2xl font-bold mt-2">St. Camillus Families</h2>
+        <p class="text-gray-500">Enter your invite code to continue</p>
+      </div>
+      <div id="inviteStep">
+        <input type="text" id="inviteCode" placeholder="Invite Code" class="w-full p-3 border border-gray-300 rounded-lg mb-4">
+        <button onclick="verifyInviteCode()" class="btn-primary w-full">Verify</button>
+      </div>
+      <div id="authStep" class="hidden">
+        <div class="flex gap-2 mb-4">
+          <button id="showLoginBtn" class="flex-1 py-2 border-b-2 border-[#0a66c2] font-semibold">Login</button>
+          <button id="showSignupBtn" class="flex-1 py-2 text-gray-500">Sign Up</button>
         </div>
+        <div id="loginForm">
+          <input type="email" id="loginEmail" placeholder="Email" class="w-full p-3 border border-gray-300 rounded-lg mb-3">
+          <input type="password" id="loginPassword" placeholder="Password" class="w-full p-3 border border-gray-300 rounded-lg mb-4">
+          <button onclick="login()" class="btn-primary w-full">Login</button>
+        </div>
+        <div id="signupForm" class="hidden">
+          <input type="email" id="signupEmail" placeholder="Email" class="w-full p-3 border border-gray-300 rounded-lg mb-3">
+          <input type="password" id="signupPassword" placeholder="Password" class="w-full p-3 border border-gray-300 rounded-lg mb-4">
+          <button onclick="signup()" class="btn-primary w-full">Sign Up</button>
+        </div>
+      </div>
+      <div id="errorMsg" class="text-red-600 text-sm mt-4 text-center"></div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="appContainer" class="hidden">
+    <header class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-hand-holding-heart text-3xl text-[#0a66c2]"></i>
+            <span class="text-xl font-bold text-gray-900 hidden sm:inline">St. Camillus Families</span>
+            <span class="text-xl font-bold text-gray-900 sm:hidden">SCF</span>
+          </div>
+          <div class="flex-1 max-w-md mx-4 hidden md:block">
+            <div class="relative">
+              <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+              <input id="globalSearch" type="text" placeholder="Search alumni, jobs, events..." class="w-full pl-10 pr-4 py-2 rounded-full bg-gray-100 border border-transparent focus:border-[#0a66c2] focus:bg-white focus:outline-none">
+            </div>
+          </div>
+          <div class="flex items-center gap-2 sm:gap-4">
+            <nav class="hidden md:flex gap-1">
+              <button id="navFeed" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100">Feed</button>
+              <button id="navDirectory" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100">Directory</button>
+              <button id="navJobs" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100">Jobs</button>
+              <button id="navMentorship" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100">Mentorship</button>
+              <button id="navEvents" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100">Events</button>
+            </nav>
+            <div class="relative cursor-pointer" id="notifIcon">
+              <i class="fa-regular fa-bell text-2xl text-gray-600"></i>
+              <span id="notifBadge" class="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] font-bold px-1.5 rounded-full">0</span>
+            </div>
+            <div id="profileBtn" class="flex items-center gap-2 cursor-pointer bg-gray-100 rounded-full pl-1 pr-3 py-1 hover:bg-gray-200 transition">
+              <div class="w-8 h-8 bg-[#0a66c2] rounded-full flex items-center justify-center text-white font-bold text-sm">👤</div>
+              <span class="text-sm font-medium text-gray-700 hidden sm:inline" id="userNameDisplay">Alumni</span>
+            </div>
+            <button id="logoutBtn" class="text-sm text-gray-500 hover:text-red-600 ml-2">Logout</button>
+          </div>
+        </div>
+      </div>
+      <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-2 z-50">
+        <button id="mobileFeed" class="flex flex-col items-center text-xs text-gray-600"><i class="fa-solid fa-house text-xl"></i><span>Feed</span></button>
+        <button id="mobileDirectory" class="flex flex-col items-center text-xs text-gray-600"><i class="fa-solid fa-users text-xl"></i><span>Directory</span></button>
+        <button id="mobileJobs" class="flex flex-col items-center text-xs text-gray-600"><i class="fa-solid fa-briefcase text-xl"></i><span>Jobs</span></button>
+        <button id="mobileMentorship" class="flex flex-col items-center text-xs text-gray-600"><i class="fa-solid fa-handshake text-xl"></i><span>Mentor</span></button>
+        <button id="mobileEvents" class="flex flex-col items-center text-xs text-gray-600"><i class="fa-solid fa-calendar text-xl"></i><span>Events</span></button>
+      </div>
     </header>
 
-    <!-- MAIN LAYOUT: FEED + SIDEBAR -->
-    <div class="max-w-screen-2xl mx-auto px-5 md:px-10 py-10 flex flex-col lg:flex-row gap-10">
-        <!-- Feed Section -->
-        <div class="flex-1 min-w-0">
-            <div id="feed" class="space-y-8"></div>
-        </div>
-
-        <!-- Sidebar: Ruto Quote & Stats -->
-        <div class="lg:w-80 xl:w-96">
-            <div class="glass-card p-6 rounded-2xl sticky top-28 border-l-4 border-amber-500">
-                <div class="flex items-center gap-3 mb-4">
-                    <i class="fa-solid fa-flag-checkered text-3xl text-amber-500"></i>
-                    <h3 class="text-2xl font-black">🇰🇪 Bottom-Up</h3>
-                </div>
-                <p class="text-lg font-medium leading-relaxed italic border-l-2 border-emerald-500 pl-4 py-1">"Hustlers, the economic revolution is digital. Every voice counts, every hustler matters."</p>
-                <div class="mt-6 pt-4 border-t border-white/20 text-sm text-white/60 flex justify-between">
-                    <span><i class="fa-regular fa-message"></i> Real-time</span>
-                    <span><i class="fa-solid fa-bolt"></i> Live votes</span>
-                </div>
-                <div class="mt-4 w-full h-1 bg-white/10 rounded-full overflow-hidden">
-                    <div class="w-3/4 h-full bg-amber-500 rounded-full"></div>
-                </div>
-                <div class="text-center text-xs mt-3 text-amber-300">#HustlerNation momentum</div>
-            </div>
-        </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6">
+      <div id="appContent"></div>
     </div>
 
-    <!-- CREATE POST MODAL -->
-    <div id="create-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-xl z-[9999] flex items-center justify-center p-4 transition-all">
-        <div onclick="event.stopPropagation()" class="modal-pop glass-card w-full max-w-2xl bg-[#0e1217] border border-amber-500/40 shadow-2xl rounded-3xl overflow-hidden">
-            <div class="px-7 py-5 border-b border-white/15 flex justify-between items-center text-xl font-bold">
-                <span><i class="fa-regular fa-newspaper text-amber-400 mr-2"></i> Ignite the movement</span>
-                <i onclick="hideCreateModal()" class="fa-solid fa-xmark text-2xl cursor-pointer hover:text-amber-400 transition"></i>
-            </div>
-            <div class="p-7">
-                <textarea id="post-textarea" rows="5" class="w-full bg-black/40 border border-white/20 rounded-2xl p-4 outline-none text-white text-lg placeholder:text-white/40 resize-none focus:border-amber-500" placeholder="Share your hustler story, agenda, or shout-out... #Ruto #Kenya"></textarea>
-                
-                <div onclick="document.getElementById('image-upload').click()" 
-                     class="mt-6 border-2 border-dashed border-white/30 rounded-2xl p-8 text-center cursor-pointer hover:border-emerald-500 transition-all group">
-                    <input type="file" id="image-upload" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
-                    <i class="fa-solid fa-cloud-upload-alt text-5xl text-emerald-400 group-hover:scale-110 transition"></i>
-                    <div id="image-name" class="mt-3 text-sm text-amber-300 font-medium"></div>
-                    <p class="text-xs text-white/50 mt-1">Upload an image (JPEG/PNG, max 5MB)</p>
-                </div>
-            </div>
-            <div class="px-7 py-5 border-t border-white/15 flex justify-end">
-                <button onclick="publishPost()" 
-                        class="bg-emerald-700 hover:bg-amber-500 hover:text-black px-10 py-3 rounded-full font-bold text-lg transition-all flex items-center gap-2 shadow-xl">
-                    <i class="fa-solid fa-bullhorn"></i> POST TO NATION
-                </button>
-            </div>
+    <!-- Modals -->
+    <div id="postModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl max-w-2xl w-full shadow-xl animate-fade-up">
+        <div class="px-6 py-4 border-b flex justify-between items-center">
+          <h2 class="text-xl font-bold">Create a post</h2>
+          <i onclick="closePostModal()" class="fa-solid fa-xmark cursor-pointer text-gray-500 hover:text-gray-700"></i>
         </div>
+        <div class="p-6">
+          <textarea id="postContent" rows="5" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-[#0a66c2]" placeholder="Share something with the community..."></textarea>
+          <div class="mt-3 flex flex-wrap gap-4">
+            <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="anonymousPost"> Post anonymously</label>
+            <select id="postSpecialty" class="border border-gray-300 rounded-full px-3 py-1 text-sm">
+              <option value="">Specialty (optional)</option>
+              <option>ICU</option><option>ER</option><option>Pediatrics</option><option>Oncology</option>
+            </select>
+          </div>
+          <div onclick="document.getElementById('postImage').click()" class="mt-6 border-2 border-dashed border-gray-300 rounded-2xl p-6 text-center cursor-pointer hover:border-[#0a66c2] transition">
+            <input type="file" id="postImage" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
+            <i class="fa-solid fa-cloud-upload-alt text-4xl text-gray-400"></i>
+            <div id="imageNameDisplay" class="mt-2 text-sm text-gray-500"></div>
+          </div>
+        </div>
+        <div class="px-6 py-4 border-t flex justify-end">
+          <button onclick="publishPost()" class="btn-primary">Post</button>
+        </div>
+      </div>
     </div>
 
-    <script>
-        // ======================= SUPABASE CONFIG ========================
-        const SUPABASE_URL = "https://vauthqekkxgfrpapsenh.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_2vvx5JHl0gdIMFzRVd2l6w_4D8wOHr9";
-        
-        let supabaseClient;
-        let currentUser = null;
-        let selectedImageFile = null;
-        let allPosts = [];        // store posts for client-side filtering
-        
-        // Helper: toast notifications
-        function showToast(message, isError = false) {
-            const toastDiv = document.createElement('div');
-            toastDiv.className = `fixed bottom-6 right-6 z-[10000] flex items-center gap-3 px-6 py-4 rounded-full font-semibold shadow-2xl text-white toast-slide ${isError ? 'bg-red-700' : 'bg-emerald-600'}`;
-            toastDiv.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-exclamation' : 'fa-circle-check'} text-xl"></i> ${message}`;
-            document.body.appendChild(toastDiv);
-            setTimeout(() => toastDiv.remove(), 3800);
-        }
-        
-        // Initialize Supabase & anonymous session
-        async function initSupabase() {
-            try {
-                supabaseClient = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                // Anonymous sign-in (no email required)
-                const { data, error } = await supabaseClient.auth.signInAnonymously();
-                if (error) throw error;
-                currentUser = data.user;
-                console.log("✅ Authenticated Hustler ID:", currentUser?.id);
-                await loadFeed();
-                setupRealtimeSubscription();
-                // Update notification badge dynamically later (optional)
-            } catch (err) {
-                console.error(err);
-                showToast("⚠️ Network: Check Supabase connection & tables", true);
-            }
-        }
-        
-        // Load posts with vote counts from 'posts' table (we maintain upvotes/downvotes columns)
-        async function loadFeed() {
-            const { data, error } = await supabaseClient
-                .from('posts')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
-            if (error) {
-                console.error("Fetch error:", error);
-                showToast("Could not load feed. Ensure 'posts' table exists.", true);
-                return;
-            }
-            allPosts = data || [];
-            applySearchFilter();
-        }
-        
-        // client-side search based on content
-        function applySearchFilter() {
-            const searchTerm = document.getElementById('search-input')?.value.toLowerCase().trim() || '';
-            let filtered = [...allPosts];
-            if (searchTerm) {
-                filtered = allPosts.filter(post => post.content?.toLowerCase().includes(searchTerm));
-            }
-            renderFeed(filtered);
-        }
-        
-        // Render posts with dynamic image + vote UI
-        function renderFeed(postsArray) {
-            const container = document.getElementById('feed');
-            if (!postsArray.length) {
-                container.innerHTML = `<div class="glass-card p-16 text-center text-2xl font-light flex flex-col items-center gap-4"><i class="fa-solid fa-hands-clapping text-6xl text-amber-500"></i><span>No posts yet. Be the first hustler to speak! 🇰🇪</span></div>`;
-                return;
-            }
-            
-            let html = '';
-            for (let post of postsArray) {
-                const formattedDate = new Date(post.created_at).toLocaleString('en-KE', { hour: '2-digit', minute:'2-digit', day:'numeric', month:'short' });
-                const imageHtml = post.image_url ? 
-                    `<div class="mt-5 rounded-2xl overflow-hidden border border-white/10"><img src="${post.image_url}" class="w-full max-h-[420px] object-cover rounded-2xl transition hover:scale-[1.01]" alt="post visual"></div>` : '';
-                
-                html += `
-                <div class="post-card glass-card rounded-2xl p-6 transition-all duration-300">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-amber-700/50 rounded-full flex items-center justify-center text-2xl backdrop-blur-sm">👨🏿‍🌾</div>
-                        <div>
-                            <div class="font-extrabold text-xl tracking-tight">${escapeHtml(post.username)}</div>
-                            <div class="text-xs text-emerald-400 flex gap-2"><i class="fa-regular fa-clock"></i> ${formattedDate}</div>
-                        </div>
-                    </div>
-                    <div class="mt-5 text-gray-100 text-lg leading-relaxed whitespace-pre-wrap">${escapeHtml(post.content)}</div>
-                    ${imageHtml}
-                    <div class="mt-6 flex items-center gap-6 border-t border-white/10 pt-5">
-                        <button onclick="handleVote(${post.id}, 'up')" class="vote-btn flex items-center gap-2 text-2xl font-medium px-5 py-2 rounded-full hover:bg-white/5 transition">
-                            <i class="fa-regular fa-thumbs-up text-amber-400"></i> <span id="up-${post.id}">${post.upvotes || 0}</span>
-                        </button>
-                        <button onclick="handleVote(${post.id}, 'down')" class="vote-btn flex items-center gap-2 text-2xl font-medium px-5 py-2 rounded-full hover:bg-white/5 transition">
-                            <i class="fa-regular fa-thumbs-down text-red-400"></i> <span id="down-${post.id}">${post.downvotes || 0}</span>
-                        </button>
-                        <div class="ml-auto text-xs text-white/40"><i class="fa-regular fa-comment-dots"></i> React</div>
-                    </div>
-                </div>`;
-            }
-            container.innerHTML = html;
-        }
-        
-        // Helper XSS protection
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-                return c;
-            });
-        }
-        
-        // VOTE LOGIC: update votes table + recalc totals & update posts table
-        async function handleVote(postId, voteType) {
-            if (!currentUser) {
-                showToast("Please wait, initializing...", true);
-                return;
-            }
-            
-            try {
-                // 1) Upsert into votes table (unique constraint on post_id + user_id)
-                const { error: voteError } = await supabaseClient
-                    .from('votes')
-                    .upsert({ 
-                        post_id: postId, 
-                        user_id: currentUser.id, 
-                        vote_type: voteType 
-                    }, { onConflict: 'post_id, user_id' });
-                
-                if (voteError) throw voteError;
-                
-                // 2) Recalculate total upvotes & downvotes for this post
-                const { data: voteStats, error: statsError } = await supabaseClient
-                    .from('votes')
-                    .select('vote_type')
-                    .eq('post_id', postId);
-                
-                if (statsError) throw statsError;
-                
-                let upCount = 0, downCount = 0;
-                voteStats.forEach(v => {
-                    if (v.vote_type === 'up') upCount++;
-                    else if (v.vote_type === 'down') downCount++;
-                });
-                
-                // 3) Update posts table with fresh counts
-                const { error: updateError } = await supabaseClient
-                    .from('posts')
-                    .update({ upvotes: upCount, downvotes: downCount })
-                    .eq('id', postId);
-                
-                if (updateError) throw updateError;
-                
-                // 4) Refresh feed to show updated numbers
-                await loadFeed();
-                showToast(`${voteType === 'up' ? '👍 Upvoted!' : '👎 Downvoted'} Hustler spirit!`);
-            } catch (err) {
-                console.error("Vote error:", err);
-                showToast("Vote failed. Already voted? try again", true);
-            }
-        }
-        
-        // Image selection handler
-        function handleImageSelect(event) {
-            const file = event.target.files[0];
-            if (file && (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp')) {
-                if (file.size > 5 * 1024 * 1024) {
-                    showToast("Image too large! Max 5MB", true);
-                    return;
-                }
-                selectedImageFile = file;
-                document.getElementById('image-name').innerHTML = `<i class="fa-regular fa-image"></i> ${file.name.substring(0, 30)}`;
-            } else {
-                showToast("Only JPEG, PNG, WEBP allowed", true);
-                selectedImageFile = null;
-            }
-        }
-        
-        // Publish new post with optional image upload to Supabase Storage
-        async function publishPost() {
-            const content = document.getElementById('post-textarea').value.trim();
-            if (!content) {
-                showToast("Write something powerful before posting!", true);
-                return;
-            }
-            
-            if (!currentUser) {
-                showToast("Still connecting... wait a moment", true);
-                return;
-            }
-            
-            let uploadedImageUrl = null;
-            
-            // Upload image if selected
-            if (selectedImageFile) {
-                const fileExt = selectedImageFile.name.split('.').pop();
-                const fileName = `${currentUser.id}_${Date.now()}.${fileExt}`;
-                const { data: uploadData, error: uploadErr } = await supabaseClient.storage
-                    .from('post-images')
-                    .upload(fileName, selectedImageFile);
-                
-                if (uploadErr) {
-                    console.error("Storage upload error", uploadErr);
-                    showToast("Image upload failed, but text will be posted", true);
-                } else {
-                    const { data: publicUrlData } = supabaseClient.storage
-                        .from('post-images')
-                        .getPublicUrl(fileName);
-                    uploadedImageUrl = publicUrlData.publicUrl;
-                }
-            }
-            
-            // Insert post into 'posts' table
-            const usernameDisplay = `@${currentUser.id.slice(0, 6)}_hustler`;
-            const { error: insertError } = await supabaseClient
-                .from('posts')
-                .insert({
-                    user_id: currentUser.id,
-                    username: usernameDisplay,
-                    content: content,
-                    image_url: uploadedImageUrl,
-                    upvotes: 0,
-                    downvotes: 0
-                });
-            
-            if (insertError) {
-                console.error(insertError);
-                showToast("Failed to publish. Check table schema: posts needs columns (user_id, username, content, image_url, upvotes, downvotes)", true);
-                return;
-            }
-            
-            // Reset modal & UI
-            hideCreateModal();
-            document.getElementById('post-textarea').value = '';
-            selectedImageFile = null;
-            document.getElementById('image-name').innerHTML = '';
-            document.getElementById('image-upload').value = '';
-            await loadFeed();
-            showToast("🔥 Post live! Hustler Nation approves 🇰🇪");
-        }
-        
-        // Real-time: listen to changes on posts & votes for dynamic refresh
-        function setupRealtimeSubscription() {
-            const channel = supabaseClient.channel('public-feed')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => loadFeed())
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'votes' }, () => loadFeed())
-                .subscribe((status) => {
-                    if (status === 'SUBSCRIBED') console.log("🔁 Realtime active");
-                });
-        }
-        
-        // Modal controls
-        function showCreatePostModal() {
-            const modal = document.getElementById('create-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-        function hideCreateModal() {
-            const modal = document.getElementById('create-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            selectedImageFile = null;
-            document.getElementById('image-name').innerHTML = '';
-        }
-        
-        // Search input listener
-        function bindSearchEvents() {
-            const searchBox = document.getElementById('search-input');
-            if (searchBox) {
-                searchBox.addEventListener('input', () => applySearchFilter());
-            }
-        }
-        
-        // Helper to automatically create required tables? Not possible from frontend but we can guide
-        // Show manual instructions if any error occurs.
-        
-        // Global error-friendly start
-        window.onload = async () => {
-            await initSupabase();
-            bindSearchEvents();
-            // Notification badge count - minor effect
-            setInterval(() => {
-                const badge = document.getElementById('notif-badge');
-                if (badge) {
-                    let curr = parseInt(badge.innerText) || 0;
-                    if (curr < 9) badge.innerText = Math.min(9, curr + 1);
-                    else badge.innerText = '9+';
-                }
-            }, 30000);
-        };
-        
-        // Make functions globally accessible for onclick
-        window.showCreatePostModal = showCreatePostModal;
-        window.hideCreateModal = hideCreateModal;
-        window.publishPost = publishPost;
-        window.handleImageSelect = handleImageSelect;
-        window.handleVote = handleVote;
-        window.showToast = showToast;
-        window.toggleNotifications = () => showToast("🔔 Notification hub: real-time mentions & trending posts soon");
-    </script>
-
-    <!-- Critical Setup Instruction (visible if tables missing, but user can see) -->
-    <div class="hidden md:block text-[10px] text-center text-white/20 py-2 border-t border-white/5 mt-12 max-w-screen-2xl mx-auto px-5">
-        <i class="fa-regular fa-database"></i> Required Supabase schema: Table "posts" (id uuid pk, user_id text, username text, content text, image_url text, upvotes int, downvotes int, created_at timestamptz default now()) 
-        & Table "votes" (id uuid pk, post_id uuid references posts(id) on delete cascade, user_id text, vote_type text, created_at timestamptz, UNIQUE(post_id, user_id)).
-        Storage bucket: "post-images" (public). Ensure RLS policies allow anonymous insert/select.
+    <div id="jobModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl max-w-2xl w-full p-6">
+        <h2 class="text-xl font-bold mb-4">Post a Job</h2>
+        <input id="jobTitle" placeholder="Title" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
+        <input id="jobEmployer" placeholder="Employer/Hospital" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
+        <input id="jobLocation" placeholder="Location" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
+        <textarea id="jobDescription" rows="4" placeholder="Description" class="w-full mb-3 p-2 border border-gray-300 rounded-lg"></textarea>
+        <div class="flex justify-end gap-3">
+          <button onclick="closeJobModal()" class="px-4 py-2 border border-gray-300 rounded-full">Cancel</button>
+          <button onclick="createJob()" class="btn-primary">Publish</button>
+        </div>
+      </div>
     </div>
+
+    <div id="eventModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl max-w-2xl w-full p-6">
+        <h2 class="text-xl font-bold mb-4">Create Event</h2>
+        <input id="eventTitle" placeholder="Title" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
+        <input id="eventDate" type="datetime-local" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
+        <input id="eventLocation" placeholder="Location or Virtual Link" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
+        <textarea id="eventDescription" rows="3" placeholder="Description" class="w-full mb-3 p-2 border border-gray-300 rounded-lg"></textarea>
+        <select id="eventType" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
+          <option value="reunion">Reunion</option><option value="webinar">Webinar</option><option value="gala">Gala</option>
+        </select>
+        <div class="flex justify-end gap-3">
+          <button onclick="closeEventModal()" class="px-4 py-2 border border-gray-300 rounded-full">Cancel</button>
+          <button onclick="createEvent()" class="btn-primary">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- CONFIG ----------
+    const SUPABASE_URL = "https://shsvitucpxmutxyyuqfg.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_j2Xqe9mTX9RMO76wy1m3lg_pPlceFnA";
+    let supabase;
+    let currentUser = null;
+    let currentProfile = null;
+    let selectedImage = null;
+    let activeTab = 'feed';
+    let validInviteCode = null;
+
+    // ---------- HELPERS ----------
+    function showToast(msg, isError = false) {
+      const toast = document.createElement('div');
+      toast.className = `fixed bottom-20 md:bottom-6 right-6 z-[10000] flex items-center gap-3 px-6 py-4 rounded-full font-semibold shadow-lg text-white transition-all duration-300 ${isError ? 'bg-red-600' : 'bg-[#0a66c2]'}`;
+      toast.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i> ${msg}`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+
+    // ---------- AUTH ----------
+    async function verifyInviteCode() {
+      const code = document.getElementById('inviteCode').value.trim();
+      if (!code) { document.getElementById('errorMsg').innerText = "Enter an invite code"; return; }
+      const { data, error } = await supabase.from('invite_codes').select('code, used').eq('code', code).maybeSingle();
+      if (error || !data) { document.getElementById('errorMsg').innerText = "Invalid invite code"; return; }
+      if (data.used) { document.getElementById('errorMsg').innerText = "This code has already been used"; return; }
+      validInviteCode = code;
+      document.getElementById('inviteStep').classList.add('hidden');
+      document.getElementById('authStep').classList.remove('hidden');
+      document.getElementById('errorMsg').innerText = "";
+    }
+
+    async function login() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) { document.getElementById('errorMsg').innerText = error.message; return; }
+      document.getElementById('errorMsg').innerText = "";
+      initApp(data.user);
+    }
+
+    async function signup() {
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error) { document.getElementById('errorMsg').innerText = error.message; return; }
+      await supabase.from('invite_codes').update({ used: true, used_by: data.user.id }).eq('code', validInviteCode);
+      document.getElementById('errorMsg').innerText = "";
+      initApp(data.user);
+    }
+
+    async function logout() {
+      await supabase.auth.signOut();
+      location.reload();
+    }
+
+    async function initApp(user) {
+      currentUser = user;
+      const { data: profile, error } = await supabase.from('profiles').select('*').eq('user_id', user.id).maybeSingle();
+      if (error) console.error(error);
+      if (!profile) showOnboarding();
+      else {
+        currentProfile = profile;
+        document.getElementById('userNameDisplay').innerText = profile.full_name.split(' ')[0];
+        document.querySelector('#profileBtn div').innerText = profile.full_name.charAt(0);
+        document.getElementById('authContainer').classList.add('hidden');
+        document.getElementById('appContainer').classList.remove('hidden');
+        loadView(activeTab);
+        setupRealtime();
+      }
+    }
+
+    function showOnboarding() {
+      const modal = document.createElement('div');
+      modal.className = "fixed inset-0 bg-black/50 flex items-center justify-center z-50";
+      modal.innerHTML = `
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 animate-fade-up">
+          <h2 class="text-2xl font-bold mb-4">Complete Your Profile</h2>
+          <form id="onboardForm">
+            <input id="fullName" placeholder="Full Name" class="w-full mb-3 p-2 border border-gray-300 rounded-lg" required>
+            <input id="email" placeholder="Email" class="w-full mb-3 p-2 border border-gray-300 rounded-lg" required>
+            <input id="gradYear" placeholder="Graduation Year" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
+            <input id="specialty" placeholder="Specialty" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
+            <input id="workplace" placeholder="Workplace" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
+            <textarea id="bio" rows="2" placeholder="Bio" class="w-full mb-3 p-2 border border-gray-300 rounded-lg"></textarea>
+            <label class="flex items-center gap-2 mb-4"><input type="checkbox" id="oath"> I affirm the Camillian Oath</label>
+            <button type="submit" class="btn-primary w-full">Save Profile</button>
+          </form>
+        </div>`;
+      document.body.appendChild(modal);
+      document.getElementById('onboardForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!document.getElementById('oath').checked) { showToast("You must affirm the oath", true); return; }
+        const { error } = await supabase.from('profiles').insert({
+          user_id: currentUser.id,
+          full_name: document.getElementById('fullName').value,
+          email: document.getElementById('email').value,
+          graduation_year: parseInt(document.getElementById('gradYear').value) || null,
+          specialty: document.getElementById('specialty').value,
+          workplace: document.getElementById('workplace').value,
+          bio: document.getElementById('bio').value,
+          oath_affirmed: true,
+          is_verified: document.getElementById('email').value.endsWith('@camillus.edu')
+        });
+        if (error) showToast(error.message, true);
+        else { modal.remove(); initApp(currentUser); }
+      });
+    }
+
+    // ---------- VIEW HANDLER ----------
+    async function loadView(view) {
+      activeTab = view;
+      const container = document.getElementById('appContent');
+      container.innerHTML = `<div class="flex justify-center py-20"><i class="fa-solid fa-spinner fa-spin text-3xl text-[#0a66c2]"></i></div>`;
+      if (view === 'feed') await renderFeed();
+      else if (view === 'directory') await renderDirectory();
+      else if (view === 'jobs') await renderJobs();
+      else if (view === 'mentorship') await renderMentorship();
+      else if (view === 'events') await renderEvents();
+      else if (view === 'profile') await renderProfile();
+      document.querySelectorAll('.tab-btn, #mobileFeed, #mobileDirectory, #mobileJobs, #mobileMentorship, #mobileEvents').forEach(btn => btn.classList.remove('tab-active', 'text-[#0a66c2]'));
+      if (view === 'feed') document.querySelectorAll('#navFeed, #mobileFeed').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
+      else if (view === 'directory') document.querySelectorAll('#navDirectory, #mobileDirectory').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
+      else if (view === 'jobs') document.querySelectorAll('#navJobs, #mobileJobs').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
+      else if (view === 'mentorship') document.querySelectorAll('#navMentorship, #mobileMentorship').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
+      else if (view === 'events') document.querySelectorAll('#navEvents, #mobileEvents').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
+    }
+
+    // ---------- FEED (with post likes and comment votes) ----------
+    async function renderFeed() {
+      const { data: posts, error } = await supabase.from('posts').select('*, profiles!user_id(full_name, avatar_url, specialty)').order('created_at', { ascending: false });
+      if (error) throw error;
+
+      // Enrich with like counts and user liked status
+      const enriched = await Promise.all(posts.map(async (post) => {
+        const { count: likeCount } = await supabase.from('post_likes').select('*', { count: 'exact', head: true }).eq('post_id', post.id);
+        const { data: userLike } = await supabase.from('post_likes').select('id').eq('post_id', post.id).eq('user_id', currentUser.id).maybeSingle();
+        return { ...post, likeCount: likeCount || 0, userLiked: !!userLike };
+      }));
+
+      const html = `
+        <div class="mb-6 flex justify-between items-center">
+          <button onclick="openPostModal()" class="btn-primary"><i class="fa-regular fa-pen-to-square mr-2"></i> Create Post</button>
+          <select id="feedFilter" class="border border-gray-300 rounded-full px-4 py-2 text-sm">
+            <option value="">All Specialties</option>
+            <option>ICU</option><option>ER</option><option>Pediatrics</option><option>Oncology</option>
+          </select>
+        </div>
+        <div id="feedList" class="space-y-4"></div>
+      `;
+      document.getElementById('appContent').innerHTML = html;
+      const feedDiv = document.getElementById('feedList');
+      feedDiv.innerHTML = enriched.map(post => `
+        <div class="bg-white rounded-xl border border-gray-200 p-3 flex post-card transition-all">
+          <div class="vote-column mr-3">
+            <div class="vote-arrow" onclick="votePost('${post.id}', 'up')">▲</div>
+            <div class="vote-count">${post.upvotes || 0}</div>
+            <div class="vote-arrow" onclick="votePost('${post.id}', 'down')">▼</div>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-1">
+              <span>Posted by ${post.is_anonymous ? 'Anonymous' : (post.profiles?.full_name || 'Alumni')}</span>
+              <span>•</span>
+              <span>${post.profiles?.specialty || 'General'}</span>
+              <span>•</span>
+              <span>${new Date(post.created_at).toLocaleString()}</span>
+            </div>
+            <div class="text-gray-800 mb-2">${escapeHtml(post.content)}</div>
+            ${post.image_url ? `<div class="mt-2 rounded-lg overflow-hidden"><img src="${post.image_url}" class="w-full max-h-96 object-cover"></div>` : ''}
+            <div class="flex gap-4 mt-3 text-sm">
+              <button onclick="toggleLike('${post.id}')" class="like-btn ${post.userLiked ? 'text-red-500' : 'text-gray-500'} hover:text-red-500">
+                <i class="fa-regular fa-heart"></i> ${post.likeCount}
+              </button>
+              <button onclick="toggleComments('${post.id}')" class="text-gray-500 hover:text-[#0a66c2]"><i class="fa-regular fa-comment"></i> Comment</button>
+            </div>
+            <div id="comments-${post.id}" class="hidden mt-3 pl-4 border-l-2 border-gray-200 space-y-2"></div>
+          </div>
+        </div>
+      `).join('');
+      document.getElementById('feedFilter').addEventListener('change', () => filterFeed());
+    }
+
+    async function votePost(postId, type) {
+      const { error } = await supabase.from('votes').upsert({ post_id: postId, user_id: currentUser.id, vote_type: type }, { onConflict: 'post_id, user_id' });
+      if (error) showToast(error.message, true);
+      else renderFeed();
+    }
+
+    async function toggleLike(postId) {
+      const { data: existing } = await supabase.from('post_likes').select('id').eq('post_id', postId).eq('user_id', currentUser.id).maybeSingle();
+      if (existing) {
+        await supabase.from('post_likes').delete().eq('id', existing.id);
+        // Optional: decrement likes count in posts table (we rely on post_likes count, but if you want a column, add it)
+      } else {
+        await supabase.from('post_likes').insert({ post_id: postId, user_id: currentUser.id });
+      }
+      renderFeed();
+    }
+
+    async function toggleComments(postId) {
+      const container = document.getElementById(`comments-${postId}`);
+      if (container.style.display !== 'none') { container.style.display = 'none'; return; }
+      const { data: comments, error } = await supabase.from('comments').select('*, profiles!user_id(full_name)').eq('post_id', postId).order('created_at', { ascending: true });
+      if (error) return;
+
+      // Enrich comments with scores and user votes
+      const enriched = await Promise.all(comments.map(async (c) => {
+        const { data: vote } = await supabase.from('comment_votes').select('vote_type').eq('comment_id', c.id).eq('user_id', currentUser.id).maybeSingle();
+        const { data: scoreData } = await supabase.from('comments').select('score').eq('id', c.id).single();
+        return { ...c, userVote: vote?.vote_type, score: scoreData?.score || 0 };
+      }));
+
+      container.innerHTML = enriched.map(c => `
+        <div id="comment-${c.id}" class="text-sm bg-gray-50 rounded p-2" data-post-id="${postId}">
+          <div class="flex items-center gap-2">
+            <strong>${c.profiles?.full_name}</strong>
+            <span class="text-xs text-gray-400">${new Date(c.created_at).toLocaleString()}</span>
+          </div>
+          <div class="mt-1">${c.content}</div>
+          <div class="flex items-center gap-2 mt-1 text-xs">
+            <button class="comment-vote ${c.userVote === 'up' ? 'text-green-600' : ''}" onclick="voteComment('${c.id}', 'up')">▲ ${c.score}</button>
+            <button class="comment-vote ${c.userVote === 'down' ? 'text-red-600' : ''}" onclick="voteComment('${c.id}', 'down')">▼</button>
+          </div>
+        </div>
+      `).join('') + `
+        <textarea id="newComment-${postId}" class="w-full mt-2 p-2 border border-gray-300 rounded-lg text-sm" rows="2" placeholder="Add a comment..."></textarea>
+        <button onclick="addComment('${postId}')" class="mt-1 bg-gray-200 px-3 py-1 rounded-full text-xs">Post</button>
+      `;
+      container.style.display = 'block';
+    }
+
+    async function voteComment(commentId, voteType) {
+      const { error } = await supabase.from('comment_votes').upsert({ comment_id: commentId, user_id: currentUser.id, vote_type: voteType }, { onConflict: 'comment_id, user_id' });
+      if (error) showToast(error.message, true);
+      else {
+        // Find which post this comment belongs to (by traversing DOM)
+        const commentDiv = document.getElementById(`comment-${commentId}`);
+        const postId = commentDiv?.dataset.postId;
+        if (postId) toggleComments(postId);
+      }
+    }
+
+    async function addComment(postId) {
+      const content = document.getElementById(`newComment-${postId}`).value;
+      if (!content) return;
+      await supabase.from('comments').insert({ post_id: postId, user_id: currentUser.id, username: currentProfile.full_name, content });
+      toggleComments(postId);
+    }
+
+    // ---------- DIRECTORY, JOBS, MENTORSHIP, EVENTS, PROFILE ----------
+    // (All other functions remain exactly as in the previous working version)
+    async function renderDirectory() {
+      const { data: profiles, error } = await supabase.from('profiles').select('*').order('full_name');
+      if (error) throw error;
+      document.getElementById('appContent').innerHTML = `
+        <h2 class="text-2xl font-bold mb-6">Alumni Directory</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          ${profiles.map(p => `
+            <div class="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 text-xl">${p.full_name.charAt(0)}</div>
+                <div><div class="font-semibold">${p.full_name}</div><div class="text-sm text-gray-500">${p.specialty || 'General'}</div></div>
+              </div>
+              <div class="mt-2 text-sm text-gray-600">Class of ${p.graduation_year || '?'}</div>
+              <div class="text-sm text-gray-600">${p.workplace || ''}</div>
+              <div class="mt-3 flex gap-2">
+                <button onclick="follow('${p.user_id}')" class="btn-outline text-xs py-1 px-3">Follow</button>
+                <button onclick="requestMentorship('${p.user_id}')" class="btn-primary text-xs py-1 px-3">Mentor Me</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    async function renderJobs() {
+      const { data: jobs, error } = await supabase.from('jobs').select('*, profiles!posted_by(full_name)').order('created_at', { ascending: false });
+      if (error) throw error;
+      document.getElementById('appContent').innerHTML = `
+        <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold">Job Board</h2>${currentProfile?.is_verified ? `<button onclick="openJobModal()" class="btn-primary">+ Post a Job</button>` : ''}</div>
+        <div class="space-y-4">${jobs.map(job => `
+          <div class="bg-white rounded-xl border border-gray-200 p-4">
+            <h3 class="text-xl font-bold">${job.title}</h3>
+            <div class="text-[#0a66c2]">${job.employer}</div>
+            <div class="text-sm text-gray-500">${job.location || 'Remote'}</div>
+            <p class="mt-2 text-gray-700">${job.description}</p>
+            <div class="mt-2 text-xs text-gray-400">Posted by ${job.profiles?.full_name}</div>
+            <button onclick="applyJob('${job.id}')" class="mt-3 btn-outline text-sm">Apply</button>
+          </div>
+        `).join('')}</div>
+      `;
+    }
+
+    async function renderMentorship() {
+      const { data: connections, error } = await supabase.from('mentorship_connections').select('*, mentor:profiles!mentor_id(full_name), mentee:profiles!mentee_id(full_name)').or(`mentor_id.eq.${currentUser.id},mentee_id.eq.${currentUser.id}`);
+      const incoming = connections?.filter(c => c.mentor_id === currentUser.id && c.status === 'pending') || [];
+      const active = connections?.filter(c => c.status === 'active') || [];
+      document.getElementById('appContent').innerHTML = `
+        <h2 class="text-2xl font-bold mb-4">Mentorship Hub</h2>
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-white rounded-xl border border-gray-200 p-4"><h3 class="font-semibold text-lg">Incoming Requests</h3>${incoming.length ? incoming.map(c => `<div class="flex justify-between py-2"><span>${c.mentee.full_name}</span><div><button onclick="updateMentorship('${c.id}','accept')" class="btn-primary text-xs py-1 px-3">Accept</button><button onclick="updateMentorship('${c.id}','reject')" class="btn-outline text-xs py-1 px-3 ml-2">Reject</button></div></div>`).join('') : '<p class="text-gray-500">None</p>'}</div>
+          <div class="bg-white rounded-xl border border-gray-200 p-4"><h3 class="font-semibold text-lg">Active Mentorships</h3>${active.length ? active.map(c => `<div class="py-1">${c.mentor_id === currentUser.id ? `Mentee: ${c.mentee.full_name}` : `Mentor: ${c.mentor.full_name}`}</div>`).join('') : '<p class="text-gray-500">None</p>'}</div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4"><h3 class="font-semibold text-lg mb-2">Find a Mentor</h3><input id="mentorSearch" placeholder="Search name or specialty" class="w-full p-2 border border-gray-300 rounded-lg"><div id="mentorResults" class="mt-2"></div></div>
+      `;
+      document.getElementById('mentorSearch').addEventListener('input', async (e) => {
+        const term = e.target.value.toLowerCase();
+        const { data: mentors } = await supabase.from('profiles').select('*').neq('user_id', currentUser.id).or(`full_name.ilike.%${term}%,specialty.ilike.%${term}%`);
+        document.getElementById('mentorResults').innerHTML = mentors.map(m => `<div class="flex justify-between py-1"><span>${m.full_name} (${m.specialty})</span><button onclick="requestMentorship('${m.user_id}')" class="btn-primary text-xs py-1 px-3">Request</button></div>`).join('');
+      });
+    }
+
+    async function renderEvents() {
+      const { data: events, error } = await supabase.from('events').select('*').order('start_time');
+      if (error) throw error;
+      document.getElementById('appContent').innerHTML = `
+        <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold">Upcoming Events</h2>${currentProfile?.is_verified ? `<button onclick="openEventModal()" class="btn-primary">+ Create Event</button>` : ''}</div>
+        <div class="grid md:grid-cols-2 gap-4">${events.map(ev => `<div class="bg-white rounded-xl border border-gray-200 p-4"><h3 class="text-xl font-bold">${ev.title}</h3><div class="text-[#0a66c2] text-sm">${new Date(ev.start_time).toLocaleString()}</div><p class="mt-2">${ev.description}</p>${ev.virtual_link ? `<a href="${ev.virtual_link}" target="_blank" class="text-[#0a66c2]">Join online</a>` : `<div>📍 ${ev.location}</div>`}</div>`).join('')}</div>
+      `;
+    }
+
+    async function renderProfile() {
+      const { data: endorsements } = await supabase.from('endorsements').select('*, endorsed_by:profiles!endorsed_by(full_name)').eq('user_id', currentUser.id);
+      const { count: followers } = await supabase.from('follows').select('*', { count: 'exact', head: true }).eq('followee_id', currentUser.id);
+      const { count: following } = await supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', currentUser.id);
+      document.getElementById('appContent').innerHTML = `
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div class="profile-cover"></div>
+          <div class="px-6 pb-6 -mt-12">
+            <div class="w-24 h-24 bg-white rounded-full border-4 border-white shadow flex items-center justify-center text-4xl font-bold">${currentProfile.full_name.charAt(0)}</div>
+            <h1 class="text-2xl font-bold mt-2">${currentProfile.full_name}</h1>
+            <div class="text-[#0a66c2]">${currentProfile.specialty || 'General'}</div>
+            <div class="text-gray-500">Class of ${currentProfile.graduation_year || '?'} • ${currentProfile.workplace || ''}</div>
+            <div class="mt-2 flex gap-4 text-sm"><span>👥 Followers: ${followers}</span><span>👤 Following: ${following}</span></div>
+            <div class="mt-4">${currentProfile.bio || 'No bio yet.'}</div>
+            <div class="mt-4"><button onclick="editProfile()" class="btn-outline">Edit Profile</button></div>
+          </div>
+        </div>
+        <div class="mt-6 bg-white rounded-xl border border-gray-200 p-4"><h3 class="font-semibold text-lg mb-2">Skills & Endorsements</h3><div class="flex flex-wrap gap-2">${endorsements?.map(e => `<span class="bg-gray-100 px-3 py-1 rounded-full text-sm">${e.skill} (by ${e.endorsed_by?.full_name})</span>`).join('') || 'None yet'}</div><div class="mt-4"><input id="newSkill" placeholder="Add a skill" class="p-2 border border-gray-300 rounded-lg"><button onclick="addEndorsement()" class="ml-2 btn-primary">Endorse</button></div></div>
+      `;
+    }
+
+    // ---------- HELPER ACTIONS ----------
+    async function follow(userId) { await supabase.from('follows').upsert({ follower_id: currentUser.id, followee_id: userId }); showToast("Followed"); }
+    async function requestMentorship(mentorId) { await supabase.from('mentorship_connections').insert({ mentor_id: mentorId, mentee_id: currentUser.id, status: 'pending' }); showToast("Request sent"); }
+    async function updateMentorship(connId, action) { await supabase.from('mentorship_connections').update({ status: action === 'accept' ? 'active' : 'rejected' }).eq('id', connId); renderMentorship(); }
+    function applyJob(jobId) { showToast("Apply feature coming soon – contact poster directly"); }
+    function addEndorsement() { showToast("Endorsement feature coming soon"); }
+    function editProfile() { showToast("Profile editing coming soon"); }
+
+    // ---------- POST, JOB, EVENT MODALS ----------
+    function openPostModal() { document.getElementById('postModal').classList.remove('hidden'); }
+    function closePostModal() { document.getElementById('postModal').classList.add('hidden'); selectedImage = null; document.getElementById('imageNameDisplay').innerHTML = ''; document.getElementById('postImage').value = ''; }
+    function handleImageSelect(e) { selectedImage = e.target.files[0]; document.getElementById('imageNameDisplay').innerHTML = selectedImage ? selectedImage.name : ''; }
+    async function publishPost() {
+      const content = document.getElementById('postContent').value.trim();
+      if (!content) return showToast("Write something", true);
+      let imageUrl = null;
+      if (selectedImage) {
+        const fileName = `${currentUser.id}_${Date.now()}.${selectedImage.name.split('.').pop()}`;
+        const { error: upErr } = await supabase.storage.from('post-images').upload(fileName, selectedImage);
+        if (!upErr) imageUrl = supabase.storage.from('post-images').getPublicUrl(fileName).data.publicUrl;
+      }
+      const isAnonymous = document.getElementById('anonymousPost').checked;
+      const specialtyTag = document.getElementById('postSpecialty').value;
+      await supabase.from('posts').insert({
+        user_id: currentUser.id,
+        username: isAnonymous ? 'Anonymous' : currentProfile.full_name,
+        content,
+        image_url: imageUrl,
+        is_anonymous: isAnonymous,
+        specialty_tag: specialtyTag || null
+      });
+      closePostModal();
+      loadView('feed');
+    }
+
+    function openJobModal() { document.getElementById('jobModal').classList.remove('hidden'); }
+    function closeJobModal() { document.getElementById('jobModal').classList.add('hidden'); }
+    async function createJob() {
+      const title = document.getElementById('jobTitle').value;
+      if (!title) return;
+      await supabase.from('jobs').insert({
+        title, employer: document.getElementById('jobEmployer').value,
+        location: document.getElementById('jobLocation').value,
+        description: document.getElementById('jobDescription').value,
+        posted_by: currentUser.id
+      });
+      closeJobModal(); loadView('jobs');
+    }
+    function openEventModal() { document.getElementById('eventModal').classList.remove('hidden'); }
+    function closeEventModal() { document.getElementById('eventModal').classList.add('hidden'); }
+    async function createEvent() {
+      const title = document.getElementById('eventTitle').value;
+      if (!title) return;
+      await supabase.from('events').insert({
+        title, description: document.getElementById('eventDescription').value,
+        start_time: document.getElementById('eventDate').value,
+        location: document.getElementById('eventLocation').value,
+        event_type: document.getElementById('eventType').value,
+        organizer_id: currentUser.id
+      });
+      closeEventModal(); loadView('events');
+    }
+
+    // ---------- REALTIME & NOTIFICATIONS ----------
+    function setupRealtime() {
+      supabase.channel('public').on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => { if (activeTab === 'feed') renderFeed(); })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'mentorship_connections', filter: `mentee_id=eq.${currentUser.id}` }, () => updateNotifBadge()).subscribe();
+    }
+    async function updateNotifBadge() {
+      const { count } = await supabase.from('mentorship_connections').select('*', { count: 'exact', head: true }).eq('mentee_id', currentUser.id).eq('status', 'pending');
+      document.getElementById('notifBadge').innerText = count || 0;
+    }
+    function filterFeed() {}
+
+    // ---------- EVENT LISTENERS ----------
+    document.getElementById('showLoginBtn')?.addEventListener('click', () => {
+      document.getElementById('loginForm').classList.remove('hidden');
+      document.getElementById('signupForm').classList.add('hidden');
+      document.getElementById('showLoginBtn').classList.add('border-b-2', 'border-[#0a66c2]', 'font-semibold');
+      document.getElementById('showSignupBtn').classList.remove('border-b-2', 'border-[#0a66c2]', 'font-semibold');
+    });
+    document.getElementById('showSignupBtn')?.addEventListener('click', () => {
+      document.getElementById('signupForm').classList.remove('hidden');
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('showSignupBtn').classList.add('border-b-2', 'border-[#0a66c2]', 'font-semibold');
+      document.getElementById('showLoginBtn').classList.remove('border-b-2', 'border-[#0a66c2]', 'font-semibold');
+    });
+    document.getElementById('logoutBtn')?.addEventListener('click', logout);
+    document.getElementById('navFeed')?.addEventListener('click', () => loadView('feed'));
+    document.getElementById('navDirectory')?.addEventListener('click', () => loadView('directory'));
+    document.getElementById('navJobs')?.addEventListener('click', () => loadView('jobs'));
+    document.getElementById('navMentorship')?.addEventListener('click', () => loadView('mentorship'));
+    document.getElementById('navEvents')?.addEventListener('click', () => loadView('events'));
+    document.getElementById('profileBtn')?.addEventListener('click', () => loadView('profile'));
+    document.getElementById('notifIcon')?.addEventListener('click', () => loadView('mentorship'));
+    document.getElementById('mobileFeed')?.addEventListener('click', () => loadView('feed'));
+    document.getElementById('mobileDirectory')?.addEventListener('click', () => loadView('directory'));
+    document.getElementById('mobileJobs')?.addEventListener('click', () => loadView('jobs'));
+    document.getElementById('mobileMentorship')?.addEventListener('click', () => loadView('mentorship'));
+    document.getElementById('mobileEvents')?.addEventListener('click', () => loadView('events'));
+
+    // ---------- INIT ----------
+    async function init() {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const session = await supabase.auth.getSession();
+      if (session.data.session) initApp(session.data.session.user);
+      else { document.getElementById('authContainer').classList.remove('hidden'); document.getElementById('appContainer').classList.add('hidden'); }
+    }
+    init();
+  </script>
 </body>
 </html>
