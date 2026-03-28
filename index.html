@@ -1,907 +1,729 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>St. Camillus Families • Alumni Network</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-  <style>
-    * { font-family: 'Inter', sans-serif; }
-    body { background: #f4f2ee; scroll-behavior: smooth; }
-    .vote-column { min-width: 48px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .vote-arrow { cursor: pointer; transition: all 0.2s; color: #878a8c; font-size: 1.5rem; line-height: 1; }
-    .vote-arrow:hover { color: #ff4500; transform: scale(1.1); }
-    .vote-count { font-weight: 600; font-size: 0.9rem; color: #1c1c1c; }
-    .post-card { transition: all 0.25s ease; }
-    .post-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-    .btn-primary { background-color: #0a66c2; color: white; border-radius: 9999px; padding: 8px 20px; font-weight: 600; transition: background 0.2s; }
-    .btn-primary:hover { background-color: #004182; }
-    .btn-outline { border: 1px solid #0a66c2; color: #0a66c2; background: white; border-radius: 9999px; padding: 6px 16px; font-weight: 600; transition: all 0.2s; }
-    .btn-outline:hover { background: #e8f0fe; }
-    .tab-active { border-bottom: 2px solid #0a66c2; color: #0a66c2; font-weight: 600; }
-    .profile-cover { background: linear-gradient(135deg, #0a66c2, #004182); height: 120px; border-radius: 1rem 1rem 0 0; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-fade-up { animation: fadeInUp 0.4s ease-out; }
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #e9e9e9; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb { background: #b3b3b3; border-radius: 10px; }
-    .like-btn, .save-btn { transition: all 0.2s; cursor: pointer; }
-    .like-btn:hover, .save-btn:hover { transform: scale(1.05); }
-    .comment-vote { font-size: 0.8rem; cursor: pointer; transition: all 0.1s; }
-    .comment-vote:hover { transform: scale(1.1); }
-    .dropdown { position: relative; display: inline-block; }
-    .dropdown-content { display: none; position: absolute; right: 0; background-color: white; min-width: 120px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); border-radius: 8px; z-index: 1; }
-    .dropdown-content a { color: black; padding: 8px 12px; text-decoration: none; display: block; font-size: 0.8rem; }
-    .dropdown-content a:hover { background-color: #f1f1f1; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>NursePrep Pro | Structured Past Papers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fb;
+            color: #0f172a;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        body.dark { background: #0a0c10; color: #e2e8f0; }
+        .minimal-header {
+            background: white;
+            padding: 10px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        body.dark .minimal-header { background: #1e293b; border-bottom-color: #334155; }
+        .header-row { display: flex; align-items: center; justify-content: space-between; max-width: 800px; margin: 0 auto; }
+        .logo-mini { display: flex; align-items: center; gap: 10px; }
+        .logo-icon-mini {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, #0891b2, #06b6d4);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .logo-icon-mini i { font-size: 18px; color: white; }
+        .logo-text-mini h1 { font-size: 16px; font-weight: 700; color: #0891b2; }
+        body.dark .logo-text-mini h1 { color: #22d3ee; }
+        .logo-text-mini p { font-size: 10px; color: #64748b; }
+        .header-actions-mini { display: flex; gap: 8px; }
+        .icon-btn-mini {
+            width: 36px; height: 36px; border-radius: 18px;
+            background: #f1f5f9; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: #1e293b;
+        }
+        body.dark .icon-btn-mini { background: #334155; color: #e2e8f0; }
+        .main-container { max-width: 800px; margin: 0 auto; padding: 16px; }
+        .tab-bar {
+            display: flex; gap: 6px; background: white; padding: 6px;
+            border-radius: 60px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        body.dark .tab-bar { background: #1e293b; }
+        .tab-btn {
+            flex: 1; padding: 10px 0; border: none; background: transparent;
+            border-radius: 40px; font-weight: 600; font-size: 12px;
+            cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .tab-btn.active { background: #0891b2; color: white; }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+        .filter-bar {
+            background: white; border-radius: 20px; padding: 12px; margin-bottom: 16px;
+        }
+        body.dark .filter-bar { background: #1e293b; }
+        .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+        .filter-select {
+            flex: 1; padding: 10px 12px; border: 1px solid #e2e8f0;
+            border-radius: 40px; background: white; font-size: 12px;
+        }
+        body.dark .filter-select { background: #0f172a; border-color: #334155; color: white; }
+        .search-mini {
+            width: 100%; padding: 10px 12px 10px 36px; border: 1px solid #e2e8f0;
+            border-radius: 40px; font-size: 13px;
+            background: white url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="%2394a3b8"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>') no-repeat 12px center;
+            background-size: 16px;
+        }
+        body.dark .search-mini { background-color: #0f172a; border-color: #334155; color: white; }
+        .stats-bar { display: flex; gap: 12px; margin-bottom: 16px; }
+        .stat-mini {
+            flex: 1; background: white; border-radius: 16px; padding: 12px; text-align: center;
+        }
+        body.dark .stat-mini { background: #1e293b; }
+        .stat-num { font-size: 22px; font-weight: 800; color: #0891b2; }
+        .stat-label { font-size: 10px; color: #64748b; }
+        .block-section {
+            background: white; border-radius: 20px; overflow: hidden; margin-bottom: 12px;
+        }
+        body.dark .block-section { background: #1e293b; }
+        .block-header {
+            background: #f1f5f9; padding: 14px 16px;
+            display: flex; justify-content: space-between; cursor: pointer;
+        }
+        body.dark .block-header { background: #334155; }
+        .block-title { font-weight: 700; font-size: 14px; display: flex; gap: 8px; }
+        .paper-count { background: #0891b2; color: white; padding: 2px 8px; border-radius: 20px; font-size: 10px; }
+        .block-content { display: none; padding: 12px; }
+        .block-content.show { display: block; }
+        .paper-item {
+            background: #f8fafc; border-radius: 14px; padding: 12px; margin-bottom: 10px;
+            position: relative;
+        }
+        body.dark .paper-item { background: #0f172a; }
+        .paper-header-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .paper-name { font-weight: 700; font-size: 14px; color: #0891b2; }
+        .paper-intake { font-size: 10px; background: #e2e8f0; padding: 2px 8px; border-radius: 12px; }
+        .view-btn, .delete-paper-btn {
+            background: transparent; border: 1px solid #0891b2; padding: 8px 12px;
+            border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        .delete-paper-btn {
+            border-color: #ef4444;
+            color: #ef4444;
+            margin-left: 8px;
+        }
+        .add-form, .import-export-card {
+            background: white; border-radius: 24px; padding: 20px; margin-bottom: 20px;
+        }
+        body.dark .add-form, body.dark .import-export-card { background: #1e293b; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px; border: 1px solid #e2e8f0;
+            border-radius: 16px; font-family: inherit; font-size: 14px;
+        }
+        body.dark .form-group input, body.dark .form-group select, body.dark .form-group textarea {
+            background: #0f172a; border-color: #334155; color: white;
+        }
+        .form-row { display: flex; gap: 12px; }
+        .form-row .form-group { flex: 1; }
+        .submit-btn, .action-btn {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #0891b2, #06b6d4);
+            border: none; border-radius: 40px; color: white; font-weight: 700;
+            font-size: 14px; cursor: pointer; margin-top: 8px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .action-btn-outline {
+            background: transparent; border: 1px solid #0891b2; color: #0891b2;
+            margin-top: 0;
+        }
+        body.dark .action-btn-outline { border-color: #22d3ee; color: #22d3ee; }
+        .section-card {
+            background: #f8fafc; border-radius: 20px; padding: 16px; margin-bottom: 20px;
+        }
+        body.dark .section-card { background: #0f172a; }
+        .section-title {
+            font-size: 16px; font-weight: 700; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px; border-left: 4px solid #0891b2; padding-left: 12px;
+        }
+        .add-question-btn {
+            background: #e2e8f0; border: none; padding: 10px;
+            border-radius: 40px; font-weight: 600; cursor: pointer; width: 100%; margin: 12px 0 8px;
+        }
+        .question-entry {
+            background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px;
+        }
+        body.dark .question-entry { background: #1e293b; }
+        .remove-q {
+            background: #ef4444; color: white; border: none; padding: 6px 12px;
+            border-radius: 20px; font-size: 11px; cursor: pointer; margin-top: 10px;
+        }
+        .success-msg { background: #dcfce7; color: #16a34a; padding: 12px; border-radius: 16px; margin-bottom: 16px; display: none; font-size: 13px; }
+        .import-msg.error { background: #fee2e2; color: #dc2626; }
+        .modal {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9); backdrop-filter: blur(12px);
+            z-index: 1000; display: none; align-items: center; justify-content: center; padding: 16px;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: white; border-radius: 28px; max-width: 550px;
+            width: 100%; max-height: 85vh; overflow-y: auto; padding: 24px;
+        }
+        body.dark .modal-content { background: #1e293b; }
+        .part-group { margin-bottom: 28px; }
+        .part-head {
+            font-size: 18px; font-weight: 700; margin-bottom: 12px;
+            background: #f1f5f9; padding: 8px 12px; border-radius: 20px;
+        }
+        .single-question {
+            margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0;
+        }
+        .question-text-full { font-weight: 600; font-size: 16px; line-height: 1.5; margin-bottom: 12px; }
+        .reveal-q {
+            background: #f1f5f9; border: none; padding: 10px 20px; border-radius: 40px;
+            font-size: 13px; font-weight: 600; color: #0891b2; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        body.dark .reveal-q { background: #334155; color: #22d3ee; }
+        .answer-full {
+            background: #f8fafc; padding: 16px; border-radius: 16px; margin-top: 12px;
+            display: none; border-left: 4px solid #0891b2; line-height: 1.6; font-size: 14px;
+        }
+        body.dark .answer-full { background: #0f172a; }
+        .answer-full.show { display: block; }
+        .progress-btns { display: flex; gap: 10px; margin-top: 16px; }
+        .progress-btn-sm {
+            flex: 1; padding: 8px; border: none; border-radius: 30px;
+            font-size: 11px; font-weight: 600; cursor: pointer;
+        }
+        .progress-attempted { background: #fef3c7; color: #d97706; }
+        .progress-reviewed { background: #dcfce7; color: #16a34a; }
+        .progress-mastered { background: #dbeafe; color: #2563eb; }
+        .close-modal, .delete-modal-btn {
+            background: #e2e8f0; border: none; padding: 12px; border-radius: 40px; font-weight: 600; width: 100%; margin-top: 16px; cursor: pointer;
+        }
+        .delete-modal-btn {
+            background: #ef4444;
+            color: white;
+        }
+        .loading-spinner { text-align: center; padding: 40px; }
+        .spinner { width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top-color: #0891b2; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .warning-msg { background: #fef3c7; padding: 12px; border-radius: 12px; margin-bottom: 12px; font-size: 12px; color: #92400e; }
+        .flex-row-btns { display: flex; gap: 12px; margin-top: 12px; }
+        .flex-row-btns .action-btn { flex: 1; margin-top: 0; }
+        hr { margin: 16px 0; border-color: #e2e8f0; }
+        body.dark hr { border-color: #334155; }
+    </style>
 </head>
 <body>
-
-  <!-- Auth Container -->
-  <div id="authContainer" class="min-h-screen flex items-center justify-center px-4">
-    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-6 animate-fade-up">
-      <div class="text-center mb-6">
-        <i class="fa-solid fa-hand-holding-heart text-4xl text-[#0a66c2]"></i>
-        <h2 class="text-2xl font-bold mt-2">St. Camillus Families</h2>
-        <p class="text-gray-500">Enter your invite code to continue</p>
-      </div>
-      <div id="inviteStep">
-        <input type="text" id="inviteCode" placeholder="Invite Code" class="w-full p-3 border border-gray-300 rounded-lg mb-4">
-        <button onclick="verifyInviteCode()" class="btn-primary w-full">Verify</button>
-      </div>
-      <div id="authStep" class="hidden">
-        <div class="flex gap-2 mb-4">
-          <button id="showLoginBtn" class="flex-1 py-2 border-b-2 border-[#0a66c2] font-semibold">Login</button>
-          <button id="showSignupBtn" class="flex-1 py-2 text-gray-500">Sign Up</button>
-        </div>
-        <div id="loginForm">
-          <input type="email" id="loginEmail" placeholder="Email" class="w-full p-3 border border-gray-300 rounded-lg mb-3">
-          <input type="password" id="loginPassword" placeholder="Password" class="w-full p-3 border border-gray-300 rounded-lg mb-4">
-          <button onclick="login()" class="btn-primary w-full">Login</button>
-        </div>
-        <div id="signupForm" class="hidden">
-          <input type="email" id="signupEmail" placeholder="Email" class="w-full p-3 border border-gray-300 rounded-lg mb-3">
-          <input type="password" id="signupPassword" placeholder="Password" class="w-full p-3 border border-gray-300 rounded-lg mb-4">
-          <button onclick="signup()" class="btn-primary w-full">Sign Up</button>
-        </div>
-      </div>
-      <div id="errorMsg" class="text-red-600 text-sm mt-4 text-center"></div>
-    </div>
-  </div>
-
-  <!-- Main App -->
-  <div id="appContainer" class="hidden">
-    <header class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-hand-holding-heart text-3xl text-[#0a66c2]"></i>
-            <span class="text-xl font-bold text-gray-900 hidden sm:inline">St. Camillus Families</span>
-            <span class="text-xl font-bold text-gray-900 sm:hidden">SCF</span>
-          </div>
-          <div class="flex-1 max-w-md mx-4 hidden md:block">
-            <div class="relative">
-              <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-              <input id="globalSearch" type="text" placeholder="Search alumni, jobs, events..." class="w-full pl-10 pr-4 py-2 rounded-full bg-gray-100 border border-transparent focus:border-[#0a66c2] focus:bg-white focus:outline-none">
-            </div>
-          </div>
-          <div class="flex items-center gap-2 sm:gap-4">
-            <nav class="hidden md:flex gap-1">
-              <button id="navFeed" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100">Feed</button>
-              <button id="navDirectory" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100">Directory</button>
-              <button id="navJobs" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100">Jobs</button>
-              <button id="navMentorship" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100">Mentorship</button>
-              <button id="navEvents" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100">Events</button>
-              <button id="navMessages" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100">Messages</button>
-              <button id="navAdmin" class="tab-btn px-3 py-1 rounded-full text-gray-600 hover:bg-gray-100 hidden">Admin</button>
-            </nav>
-            <div class="relative cursor-pointer" id="notifIcon">
-              <i class="fa-regular fa-bell text-2xl text-gray-600"></i>
-              <span id="notifBadge" class="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] font-bold px-1.5 rounded-full">0</span>
-            </div>
-            <div id="profileBtn" class="flex items-center gap-2 cursor-pointer bg-gray-100 rounded-full pl-1 pr-3 py-1 hover:bg-gray-200 transition">
-              <div class="w-8 h-8 bg-[#0a66c2] rounded-full flex items-center justify-center text-white font-bold text-sm">👤</div>
-              <span class="text-sm font-medium text-gray-700 hidden sm:inline" id="userNameDisplay">Alumni</span>
-            </div>
-            <button id="logoutBtn" class="text-sm text-gray-500 hover:text-red-600 ml-2">Logout</button>
-          </div>
-        </div>
-      </div>
-      <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-2 z-50">
-        <button id="mobileFeed" class="flex flex-col items-center text-xs text-gray-600"><i class="fa-solid fa-house text-xl"></i><span>Feed</span></button>
-        <button id="mobileDirectory" class="flex flex-col items-center text-xs text-gray-600"><i class="fa-solid fa-users text-xl"></i><span>Directory</span></button>
-        <button id="mobileJobs" class="flex flex-col items-center text-xs text-gray-600"><i class="fa-solid fa-briefcase text-xl"></i><span>Jobs</span></button>
-        <button id="mobileMentorship" class="flex flex-col items-center text-xs text-gray-600"><i class="fa-solid fa-handshake text-xl"></i><span>Mentor</span></button>
-        <button id="mobileEvents" class="flex flex-col items-center text-xs text-gray-600"><i class="fa-solid fa-calendar text-xl"></i><span>Events</span></button>
-        <button id="mobileMessages" class="flex flex-col items-center text-xs text-gray-600"><i class="fa-solid fa-envelope text-xl"></i><span>Messages</span></button>
-        <button id="mobileAdmin" class="flex flex-col items-center text-xs text-gray-600 hidden"><i class="fa-solid fa-gavel text-xl"></i><span>Admin</span></button>
-      </div>
-    </header>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6">
-      <div id="appContent"></div>
-    </div>
-
-    <!-- Modals (same as before) -->
-    <div id="postModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-      <div class="bg-white rounded-2xl max-w-2xl w-full shadow-xl animate-fade-up">
-        <div class="px-6 py-4 border-b flex justify-between items-center">
-          <h2 class="text-xl font-bold">Create a post</h2>
-          <i onclick="closePostModal()" class="fa-solid fa-xmark cursor-pointer text-gray-500 hover:text-gray-700"></i>
-        </div>
-        <div class="p-6">
-          <textarea id="postContent" rows="5" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-[#0a66c2]" placeholder="Share something with the community..."></textarea>
-          <div class="mt-3 flex flex-wrap gap-4">
-            <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="anonymousPost"> Post anonymously</label>
-            <select id="postSpecialty" class="border border-gray-300 rounded-full px-3 py-1 text-sm">
-              <option value="">Specialty (optional)</option>
-              <option>ICU</option><option>ER</option><option>Pediatrics</option><option>Oncology</option>
-            </select>
-          </div>
-          <div onclick="document.getElementById('postImage').click()" class="mt-6 border-2 border-dashed border-gray-300 rounded-2xl p-6 text-center cursor-pointer hover:border-[#0a66c2] transition">
-            <input type="file" id="postImage" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
-            <i class="fa-solid fa-cloud-upload-alt text-4xl text-gray-400"></i>
-            <div id="imageNameDisplay" class="mt-2 text-sm text-gray-500"></div>
-          </div>
-        </div>
-        <div class="px-6 py-4 border-t flex justify-end">
-          <button onclick="publishPost()" class="btn-primary">Post</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Edit Post Modal, Message Modal, Report Modal, Job Modal, Event Modal (same as before) -->
-    <!-- (I'll keep them minimal for brevity; the full version is in previous messages) -->
-    <div id="editPostModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-      <div class="bg-white rounded-2xl max-w-2xl w-full shadow-xl animate-fade-up">
-        <div class="px-6 py-4 border-b flex justify-between items-center">
-          <h2 class="text-xl font-bold">Edit Post</h2>
-          <i onclick="closeEditPostModal()" class="fa-solid fa-xmark cursor-pointer text-gray-500 hover:text-gray-700"></i>
-        </div>
-        <div class="p-6">
-          <textarea id="editPostContent" rows="5" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-[#0a66c2]"></textarea>
-          <div class="mt-3 flex flex-wrap gap-4">
-            <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="editAnonymousPost"> Post anonymously</label>
-            <select id="editPostSpecialty" class="border border-gray-300 rounded-full px-3 py-1 text-sm">
-              <option value="">Specialty (optional)</option>
-              <option>ICU</option><option>ER</option><option>Pediatrics</option><option>Oncology</option>
-            </select>
-          </div>
-          <div onclick="document.getElementById('editPostImage').click()" class="mt-6 border-2 border-dashed border-gray-300 rounded-2xl p-6 text-center cursor-pointer hover:border-[#0a66c2] transition">
-            <input type="file" id="editPostImage" accept="image/*" class="hidden" onchange="handleEditImageSelect(event)">
-            <div id="editImageNameDisplay" class="mt-2 text-sm text-gray-500"></div>
-          </div>
-        </div>
-        <div class="px-6 py-4 border-t flex justify-end">
-          <button onclick="saveEditedPost()" class="btn-primary">Save Changes</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="messageModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-      <div class="bg-white rounded-2xl max-w-md w-full p-6">
-        <h2 class="text-xl font-bold mb-4">Send Message</h2>
-        <textarea id="messageContent" rows="4" placeholder="Type your message..." class="w-full border border-gray-300 rounded-lg p-2"></textarea>
-        <div class="flex justify-end gap-3 mt-4">
-          <button onclick="closeMessageModal()" class="px-4 py-2 border border-gray-300 rounded-full">Cancel</button>
-          <button onclick="sendMessage()" class="btn-primary">Send</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="reportModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-      <div class="bg-white rounded-2xl max-w-md w-full p-6">
-        <h2 class="text-xl font-bold mb-4">Report</h2>
-        <textarea id="reportReason" rows="3" placeholder="Why are you reporting this?" class="w-full border border-gray-300 rounded-lg p-2"></textarea>
-        <div class="flex justify-end gap-3 mt-4">
-          <button onclick="closeReportModal()" class="px-4 py-2 border border-gray-300 rounded-full">Cancel</button>
-          <button onclick="submitReport()" class="btn-primary">Submit Report</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="jobModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-      <div class="bg-white rounded-2xl max-w-2xl w-full p-6">
-        <h2 class="text-xl font-bold mb-4">Post a Job</h2>
-        <input id="jobTitle" placeholder="Title" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
-        <input id="jobEmployer" placeholder="Employer/Hospital" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
-        <input id="jobLocation" placeholder="Location" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
-        <textarea id="jobDescription" rows="4" placeholder="Description" class="w-full mb-3 p-2 border border-gray-300 rounded-lg"></textarea>
-        <div class="flex justify-end gap-3">
-          <button onclick="closeJobModal()" class="px-4 py-2 border border-gray-300 rounded-full">Cancel</button>
-          <button onclick="createJob()" class="btn-primary">Publish</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="eventModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-      <div class="bg-white rounded-2xl max-w-2xl w-full p-6">
-        <h2 class="text-xl font-bold mb-4">Create Event</h2>
-        <input id="eventTitle" placeholder="Title" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
-        <input id="eventDate" type="datetime-local" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
-        <input id="eventLocation" placeholder="Location or Virtual Link" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
-        <textarea id="eventDescription" rows="3" placeholder="Description" class="w-full mb-3 p-2 border border-gray-300 rounded-lg"></textarea>
-        <select id="eventType" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
-          <option value="reunion">Reunion</option><option value="webinar">Webinar</option><option value="gala">Gala</option>
-        </select>
-        <div class="flex justify-end gap-3">
-          <button onclick="closeEventModal()" class="px-4 py-2 border border-gray-300 rounded-full">Cancel</button>
-          <button onclick="createEvent()" class="btn-primary">Create</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const SUPABASE_URL = "https://shsvitucpxmutxyyuqfg.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_j2Xqe9mTX9RMO76wy1m3lg_pPlceFnA";
-    let supabase;
-    let currentUser = null;
-    let currentProfile = null;
-    let selectedImage = null;
-    let editSelectedImage = null;
-    let editPostId = null;
-    let activeTab = 'feed';
-    let validInviteCode = null;
-    let reportTarget = null;
-
-    function showToast(msg, isError = false) {
-      const toast = document.createElement('div');
-      toast.className = `fixed bottom-20 md:bottom-6 right-6 z-[10000] flex items-center gap-3 px-6 py-4 rounded-full font-semibold shadow-lg text-white transition-all duration-300 ${isError ? 'bg-red-600' : 'bg-[#0a66c2]'}`;
-      toast.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i> ${msg}`;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 3000);
-    }
-
-    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
-
-    // ---------- AUTH ----------
-    async function verifyInviteCode() {
-      const code = document.getElementById('inviteCode').value.trim();
-      if (!code) { document.getElementById('errorMsg').innerText = "Enter an invite code"; return; }
-      const { data, error } = await supabase.from('invite_codes').select('code, used').eq('code', code).maybeSingle();
-      if (error || !data) { document.getElementById('errorMsg').innerText = "Invalid invite code"; return; }
-      if (data.used) { document.getElementById('errorMsg').innerText = "This code has already been used"; return; }
-      validInviteCode = code;
-      document.getElementById('inviteStep').classList.add('hidden');
-      document.getElementById('authStep').classList.remove('hidden');
-      document.getElementById('errorMsg').innerText = "";
-    }
-
-    async function login() {
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) { document.getElementById('errorMsg').innerText = error.message; return; }
-      document.getElementById('errorMsg').innerText = "";
-      initApp(data.user);
-    }
-
-    async function signup() {
-      const email = document.getElementById('signupEmail').value;
-      const password = document.getElementById('signupPassword').value;
-      const { data, error } = await supabase.auth.signUp({ email, password });
-      if (error) { document.getElementById('errorMsg').innerText = error.message; return; }
-      await supabase.from('invite_codes').update({ used: true, used_by: data.user.id }).eq('code', validInviteCode);
-      document.getElementById('errorMsg').innerText = "";
-      initApp(data.user);
-    }
-
-    async function logout() {
-      await supabase.auth.signOut();
-      location.reload();
-    }
-
-    async function initApp(user) {
-      currentUser = user;
-      const { data: profile, error } = await supabase.from('profiles').select('*').eq('user_id', user.id).maybeSingle();
-      if (error) console.error(error);
-      if (!profile) showOnboarding();
-      else {
-        currentProfile = profile;
-        document.getElementById('userNameDisplay').innerText = profile.full_name.split(' ')[0];
-        document.querySelector('#profileBtn div').innerText = profile.full_name.charAt(0);
-        document.getElementById('authContainer').classList.add('hidden');
-        document.getElementById('appContainer').classList.remove('hidden');
-        if (profile.is_admin) {
-          document.getElementById('navAdmin').classList.remove('hidden');
-          document.getElementById('mobileAdmin').classList.remove('hidden');
-        }
-        loadView(activeTab);
-        setupRealtime();
-      }
-    }
-
-    function showOnboarding() {
-      const modal = document.createElement('div');
-      modal.className = "fixed inset-0 bg-black/50 flex items-center justify-center z-50";
-      modal.innerHTML = `
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 animate-fade-up">
-          <h2 class="text-2xl font-bold mb-4">Complete Your Profile</h2>
-          <form id="onboardForm">
-            <input id="fullName" placeholder="Full Name" class="w-full mb-3 p-2 border border-gray-300 rounded-lg" required>
-            <input id="email" placeholder="Email" class="w-full mb-3 p-2 border border-gray-300 rounded-lg" required>
-            <input id="gradYear" placeholder="Graduation Year" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
-            <input id="specialty" placeholder="Specialty" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
-            <input id="workplace" placeholder="Workplace" class="w-full mb-3 p-2 border border-gray-300 rounded-lg">
-            <textarea id="bio" rows="2" placeholder="Bio" class="w-full mb-3 p-2 border border-gray-300 rounded-lg"></textarea>
-            <label class="flex items-center gap-2 mb-4"><input type="checkbox" id="oath"> I affirm the Camillian Oath</label>
-            <button type="submit" class="btn-primary w-full">Save Profile</button>
-          </form>
-        </div>`;
-      document.body.appendChild(modal);
-      document.getElementById('onboardForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!document.getElementById('oath').checked) { showToast("You must affirm the oath", true); return; }
-        const { error } = await supabase.from('profiles').insert({
-          user_id: currentUser.id,
-          full_name: document.getElementById('fullName').value,
-          email: document.getElementById('email').value,
-          graduation_year: parseInt(document.getElementById('gradYear').value) || null,
-          specialty: document.getElementById('specialty').value,
-          workplace: document.getElementById('workplace').value,
-          bio: document.getElementById('bio').value,
-          oath_affirmed: true,
-          is_verified: document.getElementById('email').value.endsWith('@camillus.edu')
-        });
-        if (error) showToast(error.message, true);
-        else { modal.remove(); initApp(currentUser); }
-      });
-    }
-
-    // ---------- VIEW HANDLER ----------
-    async function loadView(view) {
-      activeTab = view;
-      const container = document.getElementById('appContent');
-      container.innerHTML = `<div class="flex justify-center py-20"><i class="fa-solid fa-spinner fa-spin text-3xl text-[#0a66c2]"></i></div>`;
-      if (view === 'feed') await renderFeed();
-      else if (view === 'directory') await renderDirectory();
-      else if (view === 'jobs') await renderJobs();
-      else if (view === 'mentorship') await renderMentorship();
-      else if (view === 'events') await renderEvents();
-      else if (view === 'profile') await renderProfile();
-      else if (view === 'messages') await renderMessages();
-      else if (view === 'admin') await renderAdminDashboard();
-      document.querySelectorAll('.tab-btn, #mobileFeed, #mobileDirectory, #mobileJobs, #mobileMentorship, #mobileEvents, #mobileMessages, #mobileAdmin').forEach(btn => btn.classList.remove('tab-active', 'text-[#0a66c2]'));
-      if (view === 'feed') document.querySelectorAll('#navFeed, #mobileFeed').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
-      else if (view === 'directory') document.querySelectorAll('#navDirectory, #mobileDirectory').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
-      else if (view === 'jobs') document.querySelectorAll('#navJobs, #mobileJobs').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
-      else if (view === 'mentorship') document.querySelectorAll('#navMentorship, #mobileMentorship').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
-      else if (view === 'events') document.querySelectorAll('#navEvents, #mobileEvents').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
-      else if (view === 'messages') document.querySelectorAll('#navMessages, #mobileMessages').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
-      else if (view === 'admin') document.querySelectorAll('#navAdmin, #mobileAdmin').forEach(btn => btn.classList.add('tab-active', 'text-[#0a66c2]'));
-    }
-
-    // ---------- FEED (with likes, saves, edit, report) ----------
-    async function renderFeed() {
-      const { data: posts, error } = await supabase.from('posts').select('*, profiles!user_id(full_name, avatar_url, specialty)').order('created_at', { ascending: false });
-      if (error) throw error;
-
-      const enriched = await Promise.all(posts.map(async (post) => {
-        const { count: likeCount } = await supabase.from('post_likes').select('*', { count: 'exact', head: true }).eq('post_id', post.id);
-        const { data: userLike } = await supabase.from('post_likes').select('id').eq('post_id', post.id).eq('user_id', currentUser.id).maybeSingle();
-        const { data: saved } = await supabase.from('saved_posts').select('id').eq('user_id', currentUser.id).eq('post_id', post.id).maybeSingle();
-        return { ...post, likeCount: likeCount || 0, userLiked: !!userLike, saved: !!saved };
-      }));
-
-      const html = `
-        <div class="mb-6 flex justify-between items-center">
-          <div class="flex gap-2">
-            <button onclick="openPostModal()" class="btn-primary"><i class="fa-regular fa-pen-to-square mr-2"></i> Create Post</button>
-            <button onclick="loadView('feedSaved')" class="btn-outline"><i class="fa-regular fa-bookmark mr-2"></i> Saved</button>
-          </div>
-          <select id="feedFilter" class="border border-gray-300 rounded-full px-4 py-2 text-sm">
-            <option value="">All Specialties</option>
-            <option>ICU</option><option>ER</option><option>Pediatrics</option><option>Oncology</option>
-          </select>
-        </div>
-        <div id="feedList" class="space-y-4"></div>
-      `;
-      document.getElementById('appContent').innerHTML = html;
-      const feedDiv = document.getElementById('feedList');
-      feedDiv.innerHTML = enriched.map(post => `
-        <div class="bg-white rounded-xl border border-gray-200 p-3 flex post-card transition-all">
-          <div class="vote-column mr-3">
-            <div class="vote-arrow" onclick="votePost('${post.id}', 'up')">▲</div>
-            <div class="vote-count">${post.upvotes || 0}</div>
-            <div class="vote-arrow" onclick="votePost('${post.id}', 'down')">▼</div>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2 text-xs text-gray-500 mb-1">
-                <span>Posted by ${post.is_anonymous ? 'Anonymous' : (post.profiles?.full_name || 'Alumni')}</span>
-                <span>•</span>
-                <span>${post.profiles?.specialty || 'General'}</span>
-                <span>•</span>
-                <span>${new Date(post.created_at).toLocaleString()}</span>
-                ${post.edited_at ? `<span>• edited</span>` : ''}
-              </div>
-              <div class="dropdown">
-                <i class="fa-solid fa-ellipsis-vertical cursor-pointer text-gray-400 hover:text-gray-600" onclick="toggleDropdown(this)"></i>
-                <div class="dropdown-content">
-                  ${post.user_id === currentUser.id ? `<a href="#" onclick="editPost('${post.id}', '${escapeHtml(post.content)}', ${post.is_anonymous}, '${post.specialty_tag || ''}')">Edit</a>` : ''}
-                  <a href="#" onclick="reportTargetFunc('post', '${post.id}')">Report</a>
+    <div class="minimal-header">
+        <div class="header-row">
+            <div class="logo-mini">
+                <div class="logo-icon-mini"><i class="fas fa-stethoscope"></i></div>
+                <div class="logo-text-mini">
+                    <h1>NursePrep Pro</h1>
+                    <p>Block 1-6 | Structured Exams</p>
                 </div>
-              </div>
             </div>
-            <div class="text-gray-800 mb-2">${escapeHtml(post.content)}</div>
-            ${post.image_url ? `<div class="mt-2 rounded-lg overflow-hidden"><img src="${post.image_url}" class="w-full max-h-96 object-cover"></div>` : ''}
-            <div class="flex gap-4 mt-3 text-sm">
-              <button onclick="toggleLike('${post.id}')" class="like-btn ${post.userLiked ? 'text-red-500' : 'text-gray-500'} hover:text-red-500">
-                <i class="fa-regular fa-heart"></i> ${post.likeCount}
-              </button>
-              <button onclick="toggleSave('${post.id}')" class="save-btn ${post.saved ? 'text-yellow-500' : 'text-gray-500'} hover:text-yellow-500">
-                <i class="fa-regular fa-bookmark"></i>
-              </button>
-              <button onclick="toggleComments('${post.id}')" class="text-gray-500 hover:text-[#0a66c2]"><i class="fa-regular fa-comment"></i> Comment</button>
+            <div class="header-actions-mini">
+                <button class="icon-btn-mini" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
+                <button class="icon-btn-mini" onclick="shareApp()"><i class="fas fa-share-alt"></i></button>
             </div>
-            <div id="comments-${post.id}" class="hidden mt-3 pl-4 border-l-2 border-gray-200 space-y-2"></div>
-          </div>
         </div>
-      `).join('');
-      document.getElementById('feedFilter').addEventListener('change', () => filterFeed());
-    }
+    </div>
 
-    async function votePost(postId, type) {
-      const { error } = await supabase.from('votes').upsert({ post_id: postId, user_id: currentUser.id, vote_type: type }, { onConflict: 'post_id, user_id' });
-      if (error) showToast(error.message, true);
-      else renderFeed();
-    }
-
-    async function toggleLike(postId) {
-      const { data: existing } = await supabase.from('post_likes').select('id').eq('post_id', postId).eq('user_id', currentUser.id).maybeSingle();
-      if (existing) {
-        await supabase.from('post_likes').delete().eq('id', existing.id);
-      } else {
-        await supabase.from('post_likes').insert({ post_id: postId, user_id: currentUser.id });
-      }
-      renderFeed();
-    }
-
-    async function toggleSave(postId) {
-      const { data: existing } = await supabase.from('saved_posts').select('id').eq('user_id', currentUser.id).eq('post_id', postId).maybeSingle();
-      if (existing) {
-        await supabase.from('saved_posts').delete().eq('id', existing.id);
-        showToast("Removed from saved");
-      } else {
-        await supabase.from('saved_posts').insert({ user_id: currentUser.id, post_id: postId });
-        showToast("Saved post");
-      }
-      renderFeed();
-    }
-
-    async function toggleComments(postId) {
-      const container = document.getElementById(`comments-${postId}`);
-      if (container.style.display !== 'none') { container.style.display = 'none'; return; }
-      const { data: comments, error } = await supabase.from('comments').select('*, profiles!user_id(full_name)').eq('post_id', postId).order('created_at', { ascending: true });
-      if (error) return;
-
-      const enriched = await Promise.all(comments.map(async (c) => {
-        const { data: vote } = await supabase.from('comment_votes').select('vote_type').eq('comment_id', c.id).eq('user_id', currentUser.id).maybeSingle();
-        const { data: scoreData } = await supabase.from('comments').select('score').eq('id', c.id).single();
-        return { ...c, userVote: vote?.vote_type, score: scoreData?.score || 0 };
-      }));
-
-      container.innerHTML = enriched.map(c => `
-        <div id="comment-${c.id}" class="text-sm bg-gray-50 rounded p-2" data-post-id="${postId}">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <strong>${c.profiles?.full_name}</strong>
-              <span class="text-xs text-gray-400">${new Date(c.created_at).toLocaleString()}</span>
-            </div>
-            <div class="dropdown">
-              <i class="fa-solid fa-ellipsis-vertical cursor-pointer text-gray-400 text-xs" onclick="toggleDropdown(this)"></i>
-              <div class="dropdown-content">
-                <a href="#" onclick="reportTargetFunc('comment', '${c.id}')">Report</a>
-              </div>
-            </div>
-          </div>
-          <div class="mt-1">${c.content}</div>
-          <div class="flex items-center gap-2 mt-1 text-xs">
-            <button class="comment-vote ${c.userVote === 'up' ? 'text-green-600' : ''}" onclick="voteComment('${c.id}', 'up')">▲ ${c.score}</button>
-            <button class="comment-vote ${c.userVote === 'down' ? 'text-red-600' : ''}" onclick="voteComment('${c.id}', 'down')">▼</button>
-          </div>
+    <div class="main-container">
+        <div class="tab-bar">
+            <button class="tab-btn active" data-tab="papers"><i class="fas fa-book"></i> Papers</button>
+            <button class="tab-btn" data-tab="add"><i class="fas fa-plus-circle"></i> Add</button>
+            <button class="tab-btn" data-tab="progress"><i class="fas fa-chart-line"></i> Progress</button>
         </div>
-      `).join('') + `
-        <textarea id="newComment-${postId}" class="w-full mt-2 p-2 border border-gray-300 rounded-lg text-sm" rows="2" placeholder="Add a comment..."></textarea>
-        <button onclick="addComment('${postId}')" class="mt-1 bg-gray-200 px-3 py-1 rounded-full text-xs">Post</button>
-      `;
-      container.style.display = 'block';
-    }
 
-    async function voteComment(commentId, voteType) {
-      const { error } = await supabase.from('comment_votes').upsert({ comment_id: commentId, user_id: currentUser.id, vote_type: voteType }, { onConflict: 'comment_id, user_id' });
-      if (error) showToast(error.message, true);
-      else {
-        const commentDiv = document.getElementById(`comment-${commentId}`);
-        const postId = commentDiv?.dataset.postId;
-        if (postId) toggleComments(postId);
-      }
-    }
-
-    async function addComment(postId) {
-      const content = document.getElementById(`newComment-${postId}`).value;
-      if (!content) return;
-      await supabase.from('comments').insert({ post_id: postId, user_id: currentUser.id, username: currentProfile.full_name, content });
-      toggleComments(postId);
-    }
-
-    function editPost(postId, content, isAnonymous, specialty) {
-      editPostId = postId;
-      document.getElementById('editPostContent').value = content;
-      document.getElementById('editAnonymousPost').checked = isAnonymous;
-      document.getElementById('editPostSpecialty').value = specialty;
-      document.getElementById('editPostModal').classList.remove('hidden');
-    }
-
-    function handleEditImageSelect(e) { editSelectedImage = e.target.files[0]; document.getElementById('editImageNameDisplay').innerHTML = editSelectedImage ? editSelectedImage.name : ''; }
-    async function saveEditedPost() {
-      const newContent = document.getElementById('editPostContent').value.trim();
-      if (!newContent) return showToast("Content cannot be empty", true);
-      let imageUrl = null;
-      if (editSelectedImage) {
-        const fileName = `${currentUser.id}_${Date.now()}.${editSelectedImage.name.split('.').pop()}`;
-        const { error: upErr } = await supabase.storage.from('post-images').upload(fileName, editSelectedImage);
-        if (!upErr) imageUrl = supabase.storage.from('post-images').getPublicUrl(fileName).data.publicUrl;
-        else console.error(upErr);
-      }
-      const isAnonymous = document.getElementById('editAnonymousPost').checked;
-      const specialtyTag = document.getElementById('editPostSpecialty').value;
-      const { error } = await supabase.from('posts').update({
-        content: newContent,
-        image_url: imageUrl,
-        is_anonymous: isAnonymous,
-        specialty_tag: specialtyTag,
-        edited_at: new Date()
-      }).eq('id', editPostId);
-      if (error) showToast(error.message, true);
-      else { closeEditPostModal(); renderFeed(); showToast("Post updated"); }
-    }
-    function closeEditPostModal() { document.getElementById('editPostModal').classList.add('hidden'); editSelectedImage = null; document.getElementById('editImageNameDisplay').innerHTML = ''; }
-
-    // ---------- MESSAGES ----------
-    let currentRecipientId = null;
-    function openMessageModal(recipientId) { currentRecipientId = recipientId; document.getElementById('messageModal').classList.remove('hidden'); }
-    function closeMessageModal() { document.getElementById('messageModal').classList.add('hidden'); document.getElementById('messageContent').value = ''; }
-    async function sendMessage() {
-      const content = document.getElementById('messageContent').value.trim();
-      if (!content) return showToast("Message cannot be empty", true);
-      const { error } = await supabase.from('messages').insert({ sender_id: currentUser.id, recipient_id: currentRecipientId, content });
-      if (error) showToast(error.message, true);
-      else { closeMessageModal(); showToast("Message sent"); }
-    }
-
-    async function renderMessages() {
-      const { data: messages, error } = await supabase
-        .from('messages')
-        .select('*, sender:profiles!sender_id(full_name), recipient:profiles!recipient_id(full_name)')
-        .or(`sender_id.eq.${currentUser.id},recipient_id.eq.${currentUser.id}`)
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-
-      const conversations = {};
-      messages.forEach(m => {
-        const otherId = m.sender_id === currentUser.id ? m.recipient_id : m.sender_id;
-        const otherName = m.sender_id === currentUser.id ? m.recipient.full_name : m.sender.full_name;
-        if (!conversations[otherId] || new Date(m.created_at) > new Date(conversations[otherId].created_at)) {
-          conversations[otherId] = { ...m, otherName, otherId };
-        }
-      });
-
-      const html = `
-        <h2 class="text-2xl font-bold mb-6">Messages</h2>
-        <div class="space-y-4">
-          ${Object.values(conversations).map(conv => `
-            <div class="bg-white rounded-xl border border-gray-200 p-4 flex justify-between items-center">
-              <div><strong>${conv.otherName}</strong><div class="text-sm text-gray-500">${conv.content.substring(0, 50)}</div></div>
-              <button onclick="openMessageModal('${conv.otherId}')" class="btn-primary text-sm">Reply</button>
-            </div>
-          `).join('')}
-          ${Object.keys(conversations).length === 0 ? '<p class="text-gray-500">No messages yet. Start a conversation from the directory.</p>' : ''}
-        </div>
-      `;
-      document.getElementById('appContent').innerHTML = html;
-    }
-
-    // ---------- DIRECTORY (with message button) ----------
-    async function renderDirectory() {
-      const { data: profiles, error } = await supabase.from('profiles').select('*').order('full_name');
-      if (error) throw error;
-      document.getElementById('appContent').innerHTML = `
-        <h2 class="text-2xl font-bold mb-6">Alumni Directory</h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          ${profiles.map(p => `
-            <div class="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 text-xl">${p.full_name.charAt(0)}</div>
-                <div><div class="font-semibold">${p.full_name}</div><div class="text-sm text-gray-500">${p.specialty || 'General'}</div></div>
-              </div>
-              <div class="mt-2 text-sm text-gray-600">Class of ${p.graduation_year || '?'}</div>
-              <div class="text-sm text-gray-600">${p.workplace || ''}</div>
-              <div class="mt-3 flex gap-2">
-                <button onclick="follow('${p.user_id}')" class="btn-outline text-xs py-1 px-3">Follow</button>
-                <button onclick="requestMentorship('${p.user_id}')" class="btn-primary text-xs py-1 px-3">Mentor Me</button>
-                <button onclick="openMessageModal('${p.user_id}')" class="bg-gray-200 text-xs py-1 px-3 rounded-full">Message</button>
-                <div class="dropdown relative">
-                  <i class="fa-solid fa-ellipsis-vertical cursor-pointer text-gray-400" onclick="toggleDropdown(this)"></i>
-                  <div class="dropdown-content"><a href="#" onclick="reportTargetFunc('profile', '${p.user_id}')">Report</a></div>
+        <!-- Papers Tab -->
+        <div id="papersTab" class="tab-pane active">
+            <div class="filter-bar">
+                <div class="filter-row">
+                    <select id="blockFilter" class="filter-select" onchange="filterPapers()">
+                        <option value="all">All Blocks</option>
+                        <option value="block1">Block 1</option><option value="block2">Block 2</option><option value="block3">Block 3</option>
+                        <option value="block4">Block 4</option><option value="block5">Block 5</option><option value="block6">Block 6</option>
+                        <option value="supplementary">Supplementary</option>
+                    </select>
+                    <select id="intakeFilter" class="filter-select" onchange="filterPapers()">
+                        <option value="all">All Intakes</option><option value="march">March</option><option value="september">September</option>
+                    </select>
+                    <select id="yearFilter" class="filter-select" onchange="filterPapers()">
+                        <option value="all">All Years</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option>
+                    </select>
                 </div>
-              </div>
+                <input type="text" id="searchInput" class="search-mini" placeholder="Search questions...">
             </div>
-          `).join('')}
+            <div id="papersGrid"><div class="loading-spinner"><div class="spinner"></div><p>Loading papers...</p></div></div>
         </div>
-      `;
-    }
 
-    // ---------- REPORTING ----------
-    function reportTargetFunc(type, id) { reportTarget = { type, id }; document.getElementById('reportModal').classList.remove('hidden'); }
-    function closeReportModal() { document.getElementById('reportModal').classList.add('hidden'); document.getElementById('reportReason').value = ''; }
-    async function submitReport() {
-      const reason = document.getElementById('reportReason').value.trim();
-      if (!reason) return showToast("Please provide a reason", true);
-      const { error } = await supabase.from('reports').insert({
-        reporter_id: currentUser.id,
-        target_type: reportTarget.type,
-        target_id: reportTarget.id,
-        reason
-      });
-      if (error) showToast(error.message, true);
-      else { closeReportModal(); showToast("Report submitted. Thank you."); }
-    }
+        <!-- Add Tab (Enhanced) -->
+        <div id="addTab" class="tab-pane">
+            <div class="add-form">
+                <div id="addSuccessMsg" class="success-msg"><i class="fas fa-check-circle"></i> Paper added!</div>
+                <div class="form-row">
+                    <div class="form-group"><label>Block</label><select id="newBlock"><option value="block1">Block 1</option><option value="block2">Block 2</option><option value="block3">Block 3</option><option value="block4">Block 4</option><option value="block5">Block 5</option><option value="block6">Block 6</option><option value="supplementary">Supplementary</option></select></div>
+                    <div class="form-group"><label>Paper No.</label><input type="text" id="newPaperNo" placeholder="Paper 1"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Intake</label><select id="newIntake"><option value="march">March</option><option value="september">September</option></select></div>
+                    <div class="form-group"><label>Year</label><input type="text" id="newYear" placeholder="2024"></div>
+                </div>
+                <div class="form-group"><label>School Name (optional)</label><input type="text" id="newSchool" placeholder="e.g., ST. CAMILLUS SCHOOL OF NURSING"></div>
+                <div class="form-group"><label>Exam Title</label><input type="text" id="newExamTitle" placeholder="e.g., END OF BLOCK 3 EXAMINATION MARCH 2024 CLASS"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Exam Date</label><input type="text" id="newExamDate" placeholder="Wednesday 25/03/2026"></div>
+                    <div class="form-group"><label>Exam Time</label><input type="text" id="newExamTime" placeholder="8:00 AM - 11:00 AM"></div>
+                </div>
+                <div class="form-group"><label>Instructions</label><textarea id="newInstructions" rows="2" placeholder="Read the questions carefully..."></textarea></div>
 
-    // ---------- JOBS, MENTORSHIP, EVENTS, PROFILE ----------
-    async function renderJobs() {
-      const { data: jobs, error } = await supabase.from('jobs').select('*, profiles!posted_by(full_name)').order('created_at', { ascending: false });
-      if (error) throw error;
-      document.getElementById('appContent').innerHTML = `
-        <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold">Job Board</h2>${currentProfile?.is_verified ? `<button onclick="openJobModal()" class="btn-primary">+ Post a Job</button>` : ''}</div>
-        <div class="space-y-4">${jobs.map(job => `
-          <div class="bg-white rounded-xl border border-gray-200 p-4">
-            <h3 class="text-xl font-bold">${job.title}</h3>
-            <div class="text-[#0a66c2]">${job.employer}</div>
-            <div class="text-sm text-gray-500">${job.location || 'Remote'}</div>
-            <p class="mt-2 text-gray-700">${job.description}</p>
-            <div class="mt-2 text-xs text-gray-400">Posted by ${job.profiles?.full_name}</div>
-            <button onclick="applyJob('${job.id}')" class="mt-3 btn-outline text-sm">Apply</button>
-          </div>
-        `).join('')}</div>
-      `;
-    }
+                <!-- Part I: MCQs -->
+                <div class="section-card">
+                    <div class="section-title"><i class="fas fa-check-circle"></i> Part I: Multiple Choice Questions (MCQs)</div>
+                    <div id="mcqQuestionsContainer"></div>
+                    <button class="add-question-btn" onclick="addQuestionField('mcq')"><i class="fas fa-plus"></i> Add MCQ</button>
+                </div>
 
-    async function renderMentorship() {
-      const { data: connections, error } = await supabase.from('mentorship_connections').select('*, mentor:profiles!mentor_id(full_name), mentee:profiles!mentee_id(full_name)').or(`mentor_id.eq.${currentUser.id},mentee_id.eq.${currentUser.id}`);
-      const incoming = connections?.filter(c => c.mentor_id === currentUser.id && c.status === 'pending') || [];
-      const active = connections?.filter(c => c.status === 'active') || [];
-      document.getElementById('appContent').innerHTML = `
-        <h2 class="text-2xl font-bold mb-4">Mentorship Hub</h2>
-        <div class="grid md:grid-cols-2 gap-6 mb-6">
-          <div class="bg-white rounded-xl border border-gray-200 p-4"><h3 class="font-semibold text-lg">Incoming Requests</h3>${incoming.length ? incoming.map(c => `<div class="flex justify-between py-2"><span>${c.mentee.full_name}</span><div><button onclick="updateMentorship('${c.id}','accept')" class="btn-primary text-xs py-1 px-3">Accept</button><button onclick="updateMentorship('${c.id}','reject')" class="btn-outline text-xs py-1 px-3 ml-2">Reject</button></div></div>`).join('') : '<p class="text-gray-500">None</p>'}</div>
-          <div class="bg-white rounded-xl border border-gray-200 p-4"><h3 class="font-semibold text-lg">Active Mentorships</h3>${active.length ? active.map(c => `<div class="py-1">${c.mentor_id === currentUser.id ? `Mentee: ${c.mentee.full_name}` : `Mentor: ${c.mentor.full_name}`}</div>`).join('') : '<p class="text-gray-500">None</p>'}</div>
+                <!-- Part II: SAQs -->
+                <div class="section-card">
+                    <div class="section-title"><i class="fas fa-question-circle"></i> Part II: Short Answer Questions (SAQs)</div>
+                    <div id="saqQuestionsContainer"></div>
+                    <button class="add-question-btn" onclick="addQuestionField('saq')"><i class="fas fa-plus"></i> Add SAQ</button>
+                </div>
+
+                <!-- Part III: LAQs -->
+                <div class="section-card">
+                    <div class="section-title"><i class="fas fa-pen-fancy"></i> Part III: Long/Essay Answer Questions (LAQs)</div>
+                    <div id="laqQuestionsContainer"></div>
+                    <button class="add-question-btn" onclick="addQuestionField('laq')"><i class="fas fa-plus"></i> Add LAQ</button>
+                </div>
+
+                <button class="submit-btn" onclick="savePaper()"><i class="fas fa-save"></i> Save Paper</button>
+            </div>
+
+            <!-- IMPORT / EXPORT CARD (enhanced) -->
+            <div class="import-export-card">
+                <h4 style="margin-bottom: 12px;"><i class="fas fa-exchange-alt"></i> Bulk Import / Export</h4>
+                <p style="font-size: 12px; color: #64748b; margin-bottom: 16px;">Export all papers & questions (including parts) as JSON, or import a JSON file.</p>
+                <div class="flex-row-btns">
+                    <button class="action-btn action-btn-outline" onclick="exportAllData()"><i class="fas fa-download"></i> Export JSON</button>
+                    <button class="action-btn action-btn-outline" onclick="document.getElementById('importFileInput').click()"><i class="fas fa-upload"></i> Import JSON</button>
+                </div>
+                <input type="file" id="importFileInput" accept=".json,.txt" style="display: none;" onchange="handleImportFile(this.files[0])">
+                <div id="importStatusMsg" class="success-msg" style="margin-top: 12px;"></div>
+                <div class="warning-msg" style="margin-top: 12px; font-size: 11px;">
+                    <i class="fas fa-info-circle"></i> JSON format: array of papers with exam metadata and questions (each with "part": 1,2,3). See sample.
+                </div>
+            </div>
         </div>
-        <div class="bg-white rounded-xl border border-gray-200 p-4"><h3 class="font-semibold text-lg mb-2">Find a Mentor</h3><input id="mentorSearch" placeholder="Search name or specialty" class="w-full p-2 border border-gray-300 rounded-lg"><div id="mentorResults" class="mt-2"></div></div>
-      `;
-      document.getElementById('mentorSearch').addEventListener('input', async (e) => {
-        const term = e.target.value.toLowerCase();
-        const { data: mentors } = await supabase.from('profiles').select('*').neq('user_id', currentUser.id).or(`full_name.ilike.%${term}%,specialty.ilike.%${term}%`);
-        document.getElementById('mentorResults').innerHTML = mentors.map(m => `<div class="flex justify-between py-1"><span>${m.full_name} (${m.specialty})</span><button onclick="requestMentorship('${m.user_id}')" class="btn-primary text-xs py-1 px-3">Request</button></div>`).join('');
-      });
-    }
 
-    async function renderEvents() {
-      const { data: events, error } = await supabase.from('events').select('*').order('start_time');
-      if (error) throw error;
-      document.getElementById('appContent').innerHTML = `
-        <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold">Upcoming Events</h2>${currentProfile?.is_verified ? `<button onclick="openEventModal()" class="btn-primary">+ Create Event</button>` : ''}</div>
-        <div class="grid md:grid-cols-2 gap-4">${events.map(ev => `<div class="bg-white rounded-xl border border-gray-200 p-4"><h3 class="text-xl font-bold">${ev.title}</h3><div class="text-[#0a66c2] text-sm">${new Date(ev.start_time).toLocaleString()}</div><p class="mt-2">${ev.description}</p>${ev.virtual_link ? `<a href="${ev.virtual_link}" target="_blank" class="text-[#0a66c2]">Join online</a>` : `<div>📍 ${ev.location}</div>`}</div>`).join('')}</div>
-      `;
-    }
-
-    async function renderProfile() {
-      const { data: endorsements } = await supabase.from('endorsements').select('*, endorsed_by:profiles!endorsed_by(full_name)').eq('user_id', currentUser.id);
-      const { count: followers } = await supabase.from('follows').select('*', { count: 'exact', head: true }).eq('followee_id', currentUser.id);
-      const { count: following } = await supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', currentUser.id);
-      document.getElementById('appContent').innerHTML = `
-        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <div class="profile-cover"></div>
-          <div class="px-6 pb-6 -mt-12">
-            <div class="w-24 h-24 bg-white rounded-full border-4 border-white shadow flex items-center justify-center text-4xl font-bold">${currentProfile.full_name.charAt(0)}</div>
-            <h1 class="text-2xl font-bold mt-2">${currentProfile.full_name}</h1>
-            <div class="text-[#0a66c2]">${currentProfile.specialty || 'General'}</div>
-            <div class="text-gray-500">Class of ${currentProfile.graduation_year || '?'} • ${currentProfile.workplace || ''}</div>
-            <div class="mt-2 flex gap-4 text-sm"><span>👥 Followers: ${followers}</span><span>👤 Following: ${following}</span></div>
-            <div class="mt-4">${currentProfile.bio || 'No bio yet.'}</div>
-            <div class="mt-4"><button onclick="editProfile()" class="btn-outline">Edit Profile</button></div>
-          </div>
+        <!-- Progress Tab -->
+        <div id="progressTab" class="tab-pane">
+            <div class="stats-bar">
+                <div class="stat-mini"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Total Qs</div></div>
+                <div class="stat-mini"><div class="stat-num" id="statAttempted">0</div><div class="stat-label">Attempted</div></div>
+                <div class="stat-mini"><div class="stat-num" id="statMastered">0</div><div class="stat-label">Mastered</div></div>
+            </div>
+            <div id="progressList"></div>
         </div>
-        <div class="mt-6 bg-white rounded-xl border border-gray-200 p-4"><h3 class="font-semibold text-lg mb-2">Skills & Endorsements</h3><div class="flex flex-wrap gap-2">${endorsements?.map(e => `<span class="bg-gray-100 px-3 py-1 rounded-full text-sm">${e.skill} (by ${e.endorsed_by?.full_name})</span>`).join('') || 'None yet'}</div><div class="mt-4"><input id="newSkill" placeholder="Add a skill" class="p-2 border border-gray-300 rounded-lg"><button onclick="addEndorsement()" class="ml-2 btn-primary">Endorse</button></div></div>
-      `;
-    }
+    </div>
 
-    // ---------- ADMIN DASHBOARD (simplified) ----------
-    async function renderAdminDashboard() {
-      const [{ count: userCount }] = await supabase.from('profiles').select('*', { count: 'exact', head: true });
-      const [{ count: postCount }] = await supabase.from('posts').select('*', { count: 'exact', head: true });
-      const [{ count: commentCount }] = await supabase.from('comments').select('*', { count: 'exact', head: true });
-      const { data: inviteCodes } = await supabase.from('invite_codes').select('*').order('created_at', { ascending: false });
-
-      const html = `
-        <div class="space-y-8">
-          <h2 class="text-2xl font-bold">Admin Dashboard</h2>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div class="bg-white p-4 rounded-xl shadow-sm text-center"><div class="text-3xl font-bold">${userCount}</div><div class="text-gray-500">Users</div></div>
-            <div class="bg-white p-4 rounded-xl shadow-sm text-center"><div class="text-3xl font-bold">${postCount}</div><div class="text-gray-500">Posts</div></div>
-            <div class="bg-white p-4 rounded-xl shadow-sm text-center"><div class="text-3xl font-bold">${commentCount}</div><div class="text-gray-500">Comments</div></div>
-          </div>
-
-          <div class="bg-white rounded-xl shadow-sm p-4">
-            <h3 class="text-xl font-bold mb-4">Invite Codes</h3>
-            <div class="flex gap-2 mb-4"><input id="newInviteCode" placeholder="New invite code" class="flex-1 p-2 border rounded"><button onclick="createInviteCode()" class="btn-primary">Create</button></div>
-            <div id="adminInviteList" class="space-y-1 text-sm">${inviteCodes.map(c => `<div class="flex justify-between"><code>${c.code}</code><span>${c.used ? 'Used' : 'Available'}</span><button onclick="deleteInviteCode('${c.id}')" class="text-red-600 text-xs">Delete</button></div>`).join('')}</div>
-          </div>
+    <!-- Question Modal (displays grouped by part) -->
+    <div id="questionModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle"></h3>
+            <div id="modalMeta" style="font-size: 12px; color: #64748b; margin-bottom: 16px;"></div>
+            <div id="modalQuestions"></div>
+            <div style="display: flex; gap: 12px; margin-top: 16px;">
+                <button class="delete-modal-btn" id="modalDeleteBtn" onclick="deleteCurrentPaper()"><i class="fas fa-trash-alt"></i> Delete Paper</button>
+                <button class="close-modal" onclick="closeQuestionModal()">Close</button>
+            </div>
         </div>
-      `;
-      document.getElementById('appContent').innerHTML = html;
-    }
+    </div>
 
-    async function createInviteCode() { const code = document.getElementById('newInviteCode').value.trim(); if (code) await supabase.from('invite_codes').insert({ code }); renderAdminDashboard(); }
-    async function deleteInviteCode(id) { await supabase.from('invite_codes').delete().eq('id', id); renderAdminDashboard(); }
+    <script>
+        const SUPABASE_URL = "https://shsvitucpxmutxyyuqfg.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_j2Xqe9mTX9RMO76wy1m3lg_pPlceFnA";
+        let supabase, currentUser = null;
+        let papersDatabase = [];
+        let userProgress = {};
+        let currentPaperId = null; // store paper id when modal is open
 
-    // ---------- HELPER ACTIONS ----------
-    async function follow(userId) { await supabase.from('follows').upsert({ follower_id: currentUser.id, followee_id: userId }); showToast("Followed"); }
-    async function requestMentorship(mentorId) { await supabase.from('mentorship_connections').insert({ mentor_id: mentorId, mentee_id: currentUser.id, status: 'pending' }); showToast("Request sent"); }
-    async function updateMentorship(connId, action) { await supabase.from('mentorship_connections').update({ status: action === 'accept' ? 'active' : 'rejected' }).eq('id', connId); renderMentorship(); }
-    function applyJob(jobId) { showToast("Apply feature coming soon – contact poster directly"); }
-    function addEndorsement() { showToast("Endorsement feature coming soon"); }
-    function editProfile() { showToast("Profile editing coming soon"); }
+        // Question storage by part
+        let mcqQuestions = [];
+        let saqQuestions = [];
+        let laqQuestions = [];
 
-    // ---------- POST, JOB, EVENT MODALS ----------
-    function openPostModal() { document.getElementById('postModal').classList.remove('hidden'); }
-    function closePostModal() { document.getElementById('postModal').classList.add('hidden'); selectedImage = null; document.getElementById('imageNameDisplay').innerHTML = ''; document.getElementById('postImage').value = ''; }
-    function handleImageSelect(e) { selectedImage = e.target.files[0]; document.getElementById('imageNameDisplay').innerHTML = selectedImage ? selectedImage.name : ''; }
-    async function publishPost() {
-      const content = document.getElementById('postContent').value.trim();
-      if (!content) { showToast("Write something", true); return; }
-      if (!currentProfile) { showToast("Profile not loaded", true); return; }
-      let imageUrl = null;
-      if (selectedImage) {
-        const fileName = `${currentUser.id}_${Date.now()}.${selectedImage.name.split('.').pop()}`;
-        const { error: upErr } = await supabase.storage.from('post-images').upload(fileName, selectedImage);
-        if (!upErr) imageUrl = supabase.storage.from('post-images').getPublicUrl(fileName).data.publicUrl;
-        else console.error(upErr);
-      }
-      const isAnonymous = document.getElementById('anonymousPost').checked;
-      const specialtyTag = document.getElementById('postSpecialty').value;
-      const { error } = await supabase.from('posts').insert({
-        user_id: currentUser.id,
-        username: isAnonymous ? 'Anonymous' : currentProfile.full_name,
-        content,
-        image_url: imageUrl,
-        is_anonymous: isAnonymous,
-        specialty_tag: specialtyTag || null
-      });
-      if (error) showToast("Failed to post: " + error.message, true);
-      else { closePostModal(); loadView('feed'); showToast("Post published!"); }
-    }
+        // Helper: map part name to number
+        function partNameToNumber(partName) {
+            if (partName === 'mcq') return 1;
+            if (partName === 'saq') return 2;
+            if (partName === 'laq') return 3;
+            return 1;
+        }
 
-    function openJobModal() { document.getElementById('jobModal').classList.remove('hidden'); }
-    function closeJobModal() { document.getElementById('jobModal').classList.add('hidden'); }
-    async function createJob() {
-      const title = document.getElementById('jobTitle').value;
-      if (!title) { showToast("Title required", true); return; }
-      await supabase.from('jobs').insert({
-        title, employer: document.getElementById('jobEmployer').value,
-        location: document.getElementById('jobLocation').value,
-        description: document.getElementById('jobDescription').value,
-        posted_by: currentUser.id
-      });
-      closeJobModal(); loadView('jobs'); showToast("Job posted");
-    }
-    function openEventModal() { document.getElementById('eventModal').classList.remove('hidden'); }
-    function closeEventModal() { document.getElementById('eventModal').classList.add('hidden'); }
-    async function createEvent() {
-      const title = document.getElementById('eventTitle').value;
-      if (!title) { showToast("Title required", true); return; }
-      await supabase.from('events').insert({
-        title, description: document.getElementById('eventDescription').value,
-        start_time: document.getElementById('eventDate').value,
-        location: document.getElementById('eventLocation').value,
-        event_type: document.getElementById('eventType').value,
-        organizer_id: currentUser.id
-      });
-      closeEventModal(); loadView('events'); showToast("Event created");
-    }
+        function addQuestionField(part) {
+            const containerId = `${part}QuestionsContainer`;
+            const container = document.getElementById(containerId);
+            const index = (part === 'mcq' ? mcqQuestions : part === 'saq' ? saqQuestions : laqQuestions).length;
+            const newQuestion = { text: '', answer: '' };
+            if (part === 'mcq') mcqQuestions.push(newQuestion);
+            else if (part === 'saq') saqQuestions.push(newQuestion);
+            else laqQuestions.push(newQuestion);
 
-    // ---------- NOTIFICATIONS & REALTIME ----------
-    function setupRealtime() {
-      supabase.channel('public')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => { if (activeTab === 'feed') renderFeed(); })
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `recipient_id=eq.${currentUser.id}` }, () => { if (activeTab === 'messages') renderMessages(); })
-        .subscribe();
-    }
+            const div = document.createElement('div');
+            div.className = 'question-entry';
+            div.innerHTML = `
+                <textarea placeholder="Question" rows="2" style="width:100%; margin-bottom:8px; padding:10px; border-radius:12px;">${escapeHtml('')}</textarea>
+                <textarea placeholder="Answer" rows="3" style="width:100%; padding:10px; border-radius:12px;">${escapeHtml('')}</textarea>
+                <button class="remove-q" onclick="removeQuestion('${part}', ${index})">Remove Question</button>
+            `;
+            const qArea = div.querySelector('textarea:first-of-type');
+            const aArea = div.querySelector('textarea:last-of-type');
+            qArea.addEventListener('input', (e) => { 
+                if (part === 'mcq') mcqQuestions[index].text = e.target.value;
+                else if (part === 'saq') saqQuestions[index].text = e.target.value;
+                else laqQuestions[index].text = e.target.value;
+            });
+            aArea.addEventListener('input', (e) => {
+                if (part === 'mcq') mcqQuestions[index].answer = e.target.value;
+                else if (part === 'saq') saqQuestions[index].answer = e.target.value;
+                else laqQuestions[index].answer = e.target.value;
+            });
+            container.appendChild(div);
+        }
 
-    function filterFeed() {}
-    function toggleDropdown(btn) { const dropdown = btn.nextElementSibling; dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block'; window.addEventListener('click', function close(e) { if (!btn.contains(e.target) && !dropdown.contains(e.target)) { dropdown.style.display = 'none'; window.removeEventListener('click', close); } }); }
+        function removeQuestion(part, idx) {
+            if (part === 'mcq') mcqQuestions.splice(idx, 1);
+            else if (part === 'saq') saqQuestions.splice(idx, 1);
+            else laqQuestions.splice(idx, 1);
+            renderQuestionSection(part);
+        }
 
-    // ---------- EVENT LISTENERS ----------
-    document.getElementById('showLoginBtn')?.addEventListener('click', () => {
-      document.getElementById('loginForm').classList.remove('hidden');
-      document.getElementById('signupForm').classList.add('hidden');
-      document.getElementById('showLoginBtn').classList.add('border-b-2', 'border-[#0a66c2]', 'font-semibold');
-      document.getElementById('showSignupBtn').classList.remove('border-b-2', 'border-[#0a66c2]', 'font-semibold');
-    });
-    document.getElementById('showSignupBtn')?.addEventListener('click', () => {
-      document.getElementById('signupForm').classList.remove('hidden');
-      document.getElementById('loginForm').classList.add('hidden');
-      document.getElementById('showSignupBtn').classList.add('border-b-2', 'border-[#0a66c2]', 'font-semibold');
-      document.getElementById('showLoginBtn').classList.remove('border-b-2', 'border-[#0a66c2]', 'font-semibold');
-    });
-    document.getElementById('logoutBtn')?.addEventListener('click', logout);
-    document.getElementById('navFeed')?.addEventListener('click', () => loadView('feed'));
-    document.getElementById('navDirectory')?.addEventListener('click', () => loadView('directory'));
-    document.getElementById('navJobs')?.addEventListener('click', () => loadView('jobs'));
-    document.getElementById('navMentorship')?.addEventListener('click', () => loadView('mentorship'));
-    document.getElementById('navEvents')?.addEventListener('click', () => loadView('events'));
-    document.getElementById('navMessages')?.addEventListener('click', () => loadView('messages'));
-    document.getElementById('navAdmin')?.addEventListener('click', () => loadView('admin'));
-    document.getElementById('profileBtn')?.addEventListener('click', () => loadView('profile'));
-    document.getElementById('mobileFeed')?.addEventListener('click', () => loadView('feed'));
-    document.getElementById('mobileDirectory')?.addEventListener('click', () => loadView('directory'));
-    document.getElementById('mobileJobs')?.addEventListener('click', () => loadView('jobs'));
-    document.getElementById('mobileMentorship')?.addEventListener('click', () => loadView('mentorship'));
-    document.getElementById('mobileEvents')?.addEventListener('click', () => loadView('events'));
-    document.getElementById('mobileMessages')?.addEventListener('click', () => loadView('messages'));
-    document.getElementById('mobileAdmin')?.addEventListener('click', () => loadView('admin'));
+        function renderQuestionSection(part) {
+            const containerId = `${part}QuestionsContainer`;
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const questions = part === 'mcq' ? mcqQuestions : part === 'saq' ? saqQuestions : laqQuestions;
+            container.innerHTML = '';
+            questions.forEach((q, i) => {
+                const div = document.createElement('div');
+                div.className = 'question-entry';
+                div.innerHTML = `
+                    <textarea placeholder="Question" rows="2" style="width:100%; margin-bottom:8px; padding:10px; border-radius:12px;">${escapeHtml(q.text)}</textarea>
+                    <textarea placeholder="Answer" rows="3" style="width:100%; padding:10px; border-radius:12px;">${escapeHtml(q.answer)}</textarea>
+                    <button class="remove-q" onclick="removeQuestion('${part}', ${i})">Remove Question</button>
+                `;
+                const qArea = div.querySelector('textarea:first-of-type');
+                const aArea = div.querySelector('textarea:last-of-type');
+                qArea.addEventListener('input', (e) => { questions[i].text = e.target.value; });
+                aArea.addEventListener('input', (e) => { questions[i].answer = e.target.value; });
+                container.appendChild(div);
+            });
+        }
 
-    async function init() {
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      const session = await supabase.auth.getSession();
-      if (session.data.session) initApp(session.data.session.user);
-      else { document.getElementById('authContainer').classList.remove('hidden'); document.getElementById('appContainer').classList.add('hidden'); }
-    }
-    init();
+        // Authentication and data loading
+        async function authenticate() {
+            const { data, error } = await supabase.auth.signInAnonymously();
+            if (error) { console.error(error); showWarning("Auth failed"); return null; }
+            return data.user;
+        }
 
-    // Global exports for onclick
-    window.verifyInviteCode = verifyInviteCode;
-    window.login = login;
-    window.signup = signup;
-    window.openPostModal = openPostModal;
-    window.closePostModal = closePostModal;
-    window.publishPost = publishPost;
-    window.handleImageSelect = handleImageSelect;
-    window.votePost = votePost;
-    window.toggleLike = toggleLike;
-    window.toggleSave = toggleSave;
-    window.toggleComments = toggleComments;
-    window.voteComment = voteComment;
-    window.addComment = addComment;
-    window.editPost = editPost;
-    window.handleEditImageSelect = handleEditImageSelect;
-    window.saveEditedPost = saveEditedPost;
-    window.closeEditPostModal = closeEditPostModal;
-    window.openMessageModal = openMessageModal;
-    window.closeMessageModal = closeMessageModal;
-    window.sendMessage = sendMessage;
-    window.reportTargetFunc = reportTargetFunc;
-    window.closeReportModal = closeReportModal;
-    window.submitReport = submitReport;
-    window.follow = follow;
-    window.requestMentorship = requestMentorship;
-    window.updateMentorship = updateMentorship;
-    window.applyJob = applyJob;
-    window.openJobModal = openJobModal;
-    window.closeJobModal = closeJobModal;
-    window.createJob = createJob;
-    window.openEventModal = openEventModal;
-    window.closeEventModal = closeEventModal;
-    window.createEvent = createEvent;
-    window.editProfile = editProfile;
-    window.addEndorsement = addEndorsement;
-    window.toggleDropdown = toggleDropdown;
-    window.createInviteCode = createInviteCode;
-    window.deleteInviteCode = deleteInviteCode;
-  </script>
+        async function loadData() {
+            const { data: papers, error: papersError } = await supabase.from('nursing_papers').select('*').order('id');
+            if (papersError) { console.error(papersError); showWarning("Cannot load papers."); return; }
+            const { data: questions, error: questionsError } = await supabase.from('nursing_questions').select('*').order('id');
+            if (questionsError) { console.error(questionsError); showWarning("Cannot load questions."); return; }
+            const { data: progress, error: progressError } = await supabase.from('nursing_progress').select('question_id, status').eq('user_id', currentUser.id);
+            userProgress = {};
+            if (!progressError) progress.forEach(p => { userProgress[p.question_id] = p.status; });
+
+            const papersMap = {};
+            papers.forEach(p => {
+                papersMap[p.id] = {
+                    id: p.id,
+                    block: p.block,
+                    blockName: getBlockName(p.block),
+                    paperNo: p.paper_no,
+                    intake: p.intake,
+                    year: p.year,
+                    title: p.title || `${p.paper_no} - ${getBlockName(p.block)}`,
+                    exam_title: p.exam_title || '',
+                    exam_date: p.exam_date || '',
+                    exam_time: p.exam_time || '',
+                    instructions: p.instructions || '',
+                    school_name: p.school_name || '',
+                    questions: []
+                };
+            });
+            questions.forEach(q => {
+                if (papersMap[q.paper_id]) {
+                    papersMap[q.paper_id].questions.push({
+                        id: q.id,
+                        text: q.question_text,
+                        answer: q.answer || "Answer not provided",
+                        part: q.part || 1
+                    });
+                }
+            });
+            papersDatabase = Object.values(papersMap);
+            localStorage.setItem('nursePapersCache', JSON.stringify(papersDatabase));
+            renderPapers(); updateProgressStats(); renderProgressList();
+        }
+
+        function getBlockName(block) { const n = { block1:'Block 1', block2:'Block 2', block3:'Block 3', block4:'Block 4', block5:'Block 5', block6:'Block 6', supplementary:'Supplementary' }; return n[block] || block; }
+        function showWarning(msg) { /* same as before */ const container = document.getElementById('papersGrid'); const cached = localStorage.getItem('nursePapersCache'); if(cached) { papersDatabase = JSON.parse(cached); renderPapers(); updateProgressStats(); renderProgressList(); const w = document.createElement('div'); w.className='warning-msg'; w.innerHTML=`<i class="fas fa-info-circle"></i> ${msg} (using cached)`; if(container.firstChild) container.insertBefore(w, container.firstChild); else container.appendChild(w); setTimeout(()=>w.remove(),4000); } else container.innerHTML=`<div class="block-section"><div style="padding:40px;text-align:center;">⚠️ ${msg}</div></div>`; }
+
+        function renderPapers() {
+            const bf=document.getElementById('blockFilter').value, iF=document.getElementById('intakeFilter').value, yF=document.getElementById('yearFilter').value, search=document.getElementById('searchInput').value.toLowerCase();
+            let filtered=papersDatabase.filter(p=>(bf==='all'||p.block===bf)&&(iF==='all'||p.intake===iF)&&(yF==='all'||p.year===yF)&&(!search||p.paperNo.toLowerCase().includes(search)||p.questions.some(q=>q.text.toLowerCase().includes(search))));
+            const grouped={};
+            filtered.forEach(p=>{if(!grouped[p.block]) grouped[p.block]=[]; grouped[p.block].push(p);});
+            const icons={block1:'📘',block2:'📗',block3:'📕',block4:'📙',block5:'📒',block6:'📓',supplementary:'📚'};
+            const names={block1:'Block 1',block2:'Block 2',block3:'Block 3',block4:'Block 4',block5:'Block 5',block6:'Block 6',supplementary:'Supplementary'};
+            const container=document.getElementById('papersGrid');
+            if(Object.keys(grouped).length===0){ container.innerHTML='<div class="block-section"><div style="padding:40px;text-align:center;">No papers found</div></div>'; return; }
+            container.innerHTML=Object.keys(grouped).map(block=>`<div class="block-section"><div class="block-header" onclick="toggleBlock('${block}')"><div class="block-title"><span>${icons[block]||'📚'}</span> ${names[block]||block}</div><span class="paper-count">${grouped[block].length} papers</span></div><div id="block-${block}" class="block-content">${grouped[block].map(paper=>`<div class="paper-item"><div class="paper-header-row"><span class="paper-name">${escapeHtml(paper.paperNo)}</span><span class="paper-intake">${paper.intake==='march'?'March':'September'} ${paper.year}</span></div><div style="font-size:11px;color:#64748b;">📝 ${paper.questions.length} questions</div>${paper.exam_title ? `<div style="font-size:10px; margin-top:4px; color:#0891b2;">${escapeHtml(paper.exam_title)}</div>` : ''}<div style="display:flex; gap:8px; margin-top:10px;"><button class="view-btn" onclick="openPaperQuestions(${paper.id})">View Questions →</button><button class="delete-paper-btn" onclick="deletePaper(${paper.id})"><i class="fas fa-trash-alt"></i> Delete</button></div></div>`).join('')}</div></div>`).join('');
+        }
+        function toggleBlock(id){ document.getElementById(`block-${id}`)?.classList.toggle('show'); }
+        function filterPapers(){ renderPapers(); }
+
+        function openPaperQuestions(paperId){
+            currentPaperId = paperId;
+            const paper = papersDatabase.find(p => p.id === paperId);
+            if (!paper) return;
+            let metaHtml = `${paper.blockName} | ${paper.intake==='march'?'March':'September'} ${paper.year}<br>`;
+            if(paper.exam_title) metaHtml += `<strong>${escapeHtml(paper.exam_title)}</strong><br>`;
+            if(paper.exam_date) metaHtml += `📅 ${escapeHtml(paper.exam_date)} `;
+            if(paper.exam_time) metaHtml += `⏰ ${escapeHtml(paper.exam_time)}<br>`;
+            if(paper.instructions) metaHtml += `<em>${escapeHtml(paper.instructions)}</em><br>`;
+            document.getElementById('modalTitle').innerHTML = `<i class="fas fa-book"></i> ${escapeHtml(paper.paperNo)}`;
+            document.getElementById('modalMeta').innerHTML = metaHtml;
+
+            const questionsByPart = { 1: [], 2: [], 3: [] };
+            paper.questions.forEach(q => { questionsByPart[q.part || 1].push(q); });
+            let html = '';
+            const partNames = {1:'PART I: Multiple Choice Questions (MCQs)', 2:'PART II: Short Answer Questions (SAQs)', 3:'PART III: Long/Essay Answer Questions (LAQs)'};
+            for(let p=1; p<=3; p++) {
+                if(questionsByPart[p].length === 0) continue;
+                html += `<div class="part-group"><div class="part-head">${partNames[p]}</div>`;
+                questionsByPart[p].forEach((q, idx) => {
+                    html += `<div class="single-question">
+                                <div class="question-text-full">${idx+1}. ${escapeHtml(q.text)}</div>
+                                <button class="reveal-q" onclick="toggleAnswer(${p}_${idx})"><i class="fas fa-lightbulb"></i> Reveal Answer</button>
+                                <div id="answer-${p}_${idx}" class="answer-full"><i class="fas fa-graduation-cap" style="color:#0891b2;margin-right:8px;"></i>${escapeHtml(q.answer).replace(/\n/g,'<br>')}</div>
+                                <div class="progress-btns">
+                                    <button class="progress-btn-sm progress-attempted" onclick="updateProgress(${q.id}, 'attempted')">⚠️ Attempted</button>
+                                    <button class="progress-btn-sm progress-reviewed" onclick="updateProgress(${q.id}, 'reviewed')">🔄 Reviewed</button>
+                                    <button class="progress-btn-sm progress-mastered" onclick="updateProgress(${q.id}, 'mastered')">🏆 Mastered</button>
+                                </div>
+                            </div>`;
+                });
+                html += `</div>`;
+            }
+            document.getElementById('modalQuestions').innerHTML = html;
+            document.getElementById('questionModal').classList.add('show');
+        }
+        window.toggleAnswer = function(id) { document.getElementById(`answer-${id}`)?.classList.toggle('show'); };
+        function closeQuestionModal(){ document.getElementById('questionModal').classList.remove('show'); currentPaperId = null; }
+
+        async function deletePaper(paperId) {
+            if (!confirm('Are you sure you want to delete this paper and all its questions? This cannot be undone.')) return;
+            try {
+                // Delete all questions for this paper
+                const { error: qError } = await supabase.from('nursing_questions').delete().eq('paper_id', paperId);
+                if (qError) throw qError;
+                // Delete the paper
+                const { error: pError } = await supabase.from('nursing_papers').delete().eq('id', paperId);
+                if (pError) throw pError;
+                // Refresh data
+                await loadData();
+                // If modal is open for this paper, close it
+                if (currentPaperId === paperId) closeQuestionModal();
+                // Show success message
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'success-msg';
+                msgDiv.style.display = 'block';
+                msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> Paper deleted successfully.';
+                const container = document.getElementById('papersGrid');
+                container.insertBefore(msgDiv, container.firstChild);
+                setTimeout(() => msgDiv.remove(), 3000);
+            } catch (err) {
+                console.error(err);
+                alert('Error deleting paper: ' + err.message);
+            }
+        }
+
+        async function deleteCurrentPaper() {
+            if (currentPaperId) await deletePaper(currentPaperId);
+        }
+
+        async function updateProgress(questionId,status){ const {error}=await supabase.from('nursing_progress').upsert({user_id:currentUser.id,question_id:questionId,status},{onConflict:'user_id, question_id'}); if(!error) userProgress[questionId]=status; else userProgress[questionId]=status; updateProgressStats(); renderProgressList(); }
+        function updateProgressStats(){ let total=0,attempted=0,mastered=0; papersDatabase.forEach(p=>{p.questions.forEach(q=>{total++; const s=userProgress[q.id]; if(s==='attempted'||s==='reviewed'||s==='mastered') attempted++; if(s==='mastered') mastered++;});}); document.getElementById('statTotal').textContent=total; document.getElementById('statAttempted').textContent=attempted; document.getElementById('statMastered').textContent=mastered; }
+        function renderProgressList(){ const container=document.getElementById('progressList'); const items=[]; papersDatabase.forEach(paper=>{paper.questions.forEach(q=>{const s=userProgress[q.id]; if(s) items.push(`<div class="paper-item" style="cursor:pointer;" onclick="openPaperQuestions(${paper.id})"><div class="paper-header-row"><span class="paper-name">${escapeHtml(paper.paperNo)}</span><span class="paper-intake">${paper.intake==='march'?'March':'September'} ${paper.year}</span></div><div style="font-size:12px;margin-top:6px;">${escapeHtml(q.text.substring(0,80))}...</div><div style="margin-top:6px;"><span style="background:${s==='mastered'?'#dcfce7':'#fef3c7'};padding:2px 8px;border-radius:12px;font-size:10px;">${s==='mastered'?'✅ Mastered':s==='reviewed'?'🔄 Reviewed':'⚠️ Attempted'}</span></div></div>`);});}); container.innerHTML=items.length?items.join(''):'<div class="block-section"><div style="padding:40px;text-align:center;">No progress yet. Start practicing!</div></div>'; }
+
+        async function savePaper(){
+            const block = document.getElementById('newBlock').value;
+            const paperNo = document.getElementById('newPaperNo').value.trim();
+            const intake = document.getElementById('newIntake').value;
+            const year = document.getElementById('newYear').value.trim();
+            const school = document.getElementById('newSchool').value.trim();
+            const examTitle = document.getElementById('newExamTitle').value.trim();
+            const examDate = document.getElementById('newExamDate').value.trim();
+            const examTime = document.getElementById('newExamTime').value.trim();
+            const instructions = document.getElementById('newInstructions').value.trim();
+
+            const allQuestions = [
+                ...mcqQuestions.map(q => ({ ...q, part: 1 })),
+                ...saqQuestions.map(q => ({ ...q, part: 2 })),
+                ...laqQuestions.map(q => ({ ...q, part: 3 }))
+            ].filter(q => q.text.trim() !== '');
+
+            if (!paperNo) { alert('Enter Paper Number'); return; }
+            if (allQuestions.length === 0) { alert('Add at least one question'); return; }
+
+            const { data: paperData, error: paperError } = await supabase
+                .from('nursing_papers')
+                .insert({
+                    block, paper_no: paperNo, intake, year: year || '2024',
+                    title: `${paperNo} - ${getBlockName(block)}`,
+                    school_name: school,
+                    exam_title: examTitle,
+                    exam_date: examDate,
+                    exam_time: examTime,
+                    instructions: instructions
+                })
+                .select().single();
+            if (paperError) { alert('Error saving paper: '+paperError.message); return; }
+
+            const qToInsert = allQuestions.map(q => ({
+                paper_id: paperData.id,
+                question_text: q.text,
+                answer: q.answer,
+                part: q.part
+            }));
+            const { error: qe } = await supabase.from('nursing_questions').insert(qToInsert);
+            if (qe) alert('Error saving questions: '+qe.message);
+
+            // Reset form
+            document.getElementById('newPaperNo').value = '';
+            document.getElementById('newYear').value = '';
+            document.getElementById('newSchool').value = '';
+            document.getElementById('newExamTitle').value = '';
+            document.getElementById('newExamDate').value = '';
+            document.getElementById('newExamTime').value = '';
+            document.getElementById('newInstructions').value = '';
+            mcqQuestions = []; saqQuestions = []; laqQuestions = [];
+            renderQuestionSection('mcq'); renderQuestionSection('saq'); renderQuestionSection('laq');
+            const msg = document.getElementById('addSuccessMsg');
+            msg.style.display = 'block';
+            setTimeout(()=>msg.style.display='none',3000);
+            await loadData();
+            document.querySelector('.tab-btn[data-tab="papers"]').click();
+        }
+
+        // Export/Import functions
+        function exportAllData(){
+            const exportObj = papersDatabase.map(paper => ({
+                block: paper.block,
+                paper_no: paper.paperNo,
+                intake: paper.intake,
+                year: paper.year,
+                exam_title: paper.exam_title,
+                exam_date: paper.exam_date,
+                exam_time: paper.exam_time,
+                instructions: paper.instructions,
+                school_name: paper.school_name,
+                questions: paper.questions.map(q => ({ question_text: q.text, answer: q.answer, part: q.part || 1 }))
+            }));
+            const dataStr = JSON.stringify(exportObj, null, 2);
+            const blob = new Blob([dataStr], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `nurseprep_export_${new Date().toISOString().slice(0,19)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showImportStatus("✅ Export complete!", false);
+        }
+
+        async function handleImportFile(file){
+            if(!file) return;
+            const statusDiv = document.getElementById('importStatusMsg');
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'success-msg';
+            statusDiv.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Processing import...';
+            try{
+                const text = await file.text();
+                let imported = JSON.parse(text);
+                if(!Array.isArray(imported)) throw new Error("Root must be an array of papers.");
+                let successCount = 0, failCount = 0;
+                for(const paperData of imported){
+                    if(!paperData.block || !paperData.paper_no || !paperData.intake || !paperData.year || !Array.isArray(paperData.questions)){
+                        failCount++;
+                        continue;
+                    }
+                    const { data: newPaper, error: pErr } = await supabase
+                        .from('nursing_papers')
+                        .insert({
+                            block: paperData.block,
+                            paper_no: paperData.paper_no,
+                            intake: paperData.intake,
+                            year: paperData.year,
+                            title: paperData.title || `${paperData.paper_no} - ${getBlockName(paperData.block)}`,
+                            school_name: paperData.school_name || '',
+                            exam_title: paperData.exam_title || '',
+                            exam_date: paperData.exam_date || '',
+                            exam_time: paperData.exam_time || '',
+                            instructions: paperData.instructions || ''
+                        })
+                        .select().single();
+                    if(pErr){ failCount++; continue; }
+                    const validQs = paperData.questions.filter(q => q.question_text && q.question_text.trim());
+                    if(validQs.length === 0){ failCount++; continue; }
+                    const qInserts = validQs.map(q => ({
+                        paper_id: newPaper.id,
+                        question_text: q.question_text,
+                        answer: q.answer || "",
+                        part: q.part || 1
+                    }));
+                    const { error: qErr } = await supabase.from('nursing_questions').insert(qInserts);
+                    if(qErr){ failCount++; } else { successCount++; }
+                }
+                statusDiv.innerHTML = `<i class="fas fa-check-circle"></i> Import finished: ${successCount} papers added, ${failCount} failed.`;
+                if(failCount>0) statusDiv.classList.add('error');
+                else statusDiv.classList.remove('error');
+                await loadData();
+                setTimeout(()=>{ statusDiv.style.display = 'none'; }, 5000);
+            } catch(e){
+                statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Import error: ${e.message}`;
+                statusDiv.classList.add('error');
+                setTimeout(()=>{ statusDiv.style.display = 'none'; }, 4000);
+            }
+        }
+        function showImportStatus(msg, isError){ const div=document.getElementById('importStatusMsg'); div.innerHTML=msg; div.style.display='block'; div.classList.toggle('error',isError); setTimeout(()=>{div.style.display='none';},3000); }
+
+        function setupTabs(){ document.querySelectorAll('.tab-btn').forEach(btn=>{ btn.addEventListener('click',()=>{ const tab=btn.dataset.tab; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active')); btn.classList.add('active'); document.getElementById(`${tab}Tab`).classList.add('active'); if(tab==='progress') renderProgressList(); }); }); }
+        function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>]/g, m=> m==='&'?'&amp;':m==='<'?'&lt;':'&gt;'); }
+        let darkMode=localStorage.getItem('darkMode')==='true';
+        function toggleDarkMode(){ darkMode=!darkMode; localStorage.setItem('darkMode',darkMode); document.body.classList.toggle('dark',darkMode); document.querySelector('.icon-btn-mini i').className=darkMode?'fas fa-sun':'fas fa-moon'; }
+        function shareApp(){ if(navigator.share) navigator.share({title:'NursePrep Pro',text:'Nursing past papers',url:window.location.href}); else { navigator.clipboard.writeText(window.location.href); alert('Link copied!'); } }
+        async function init(){ supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); const user=await authenticate(); if(!user){ showWarning("Anonymous auth failed. Enable anonymous sign-ins."); return; } currentUser=user; await loadData(); setupTabs(); if(darkMode) document.body.classList.add('dark'); document.getElementById('searchInput').addEventListener('input',filterPapers); }
+        init();
+        window.toggleBlock=toggleBlock; window.filterPapers=filterPapers; window.openPaperQuestions=openPaperQuestions; window.toggleAnswer=window.toggleAnswer; window.closeQuestionModal=closeQuestionModal; window.addQuestionField=addQuestionField; window.removeQuestion=removeQuestion; window.savePaper=savePaper; window.updateProgress=updateProgress; window.toggleDarkMode=toggleDarkMode; window.shareApp=shareApp; window.exportAllData=exportAllData; window.handleImportFile=handleImportFile; window.deletePaper=deletePaper; window.deleteCurrentPaper=deleteCurrentPaper;
+    </script>
 </body>
 </html>
