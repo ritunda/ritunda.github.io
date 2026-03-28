@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>NursePrep Pro | Structured Past Papers</title>
+    <title>NursePrep Pro | Nursing Past Papers</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -116,10 +117,10 @@
             color: #ef4444;
             margin-left: 8px;
         }
-        .add-form, .import-export-card {
+        .add-form, .import-export-card, .ad-settings-card {
             background: white; border-radius: 24px; padding: 20px; margin-bottom: 20px;
         }
-        body.dark .add-form, body.dark .import-export-card { background: #1e293b; }
+        body.dark .add-form, body.dark .import-export-card, body.dark .ad-settings-card { background: #1e293b; }
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 600; }
         .form-group input, .form-group select, .form-group textarea {
@@ -184,6 +185,21 @@
         .single-question {
             margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0;
         }
+        .ad-place {
+            background: #f1f5f9;
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 16px;
+            text-align: center;
+        }
+        .ad-place a {
+            display: block;
+            text-decoration: none;
+        }
+        .ad-place img {
+            max-width: 100%;
+            border-radius: 12px;
+        }
         .question-text-full { font-weight: 600; font-size: 16px; line-height: 1.5; margin-bottom: 12px; }
         .reveal-q {
             background: #f1f5f9; border: none; padding: 10px 20px; border-radius: 40px;
@@ -205,13 +221,12 @@
         .progress-attempted { background: #fef3c7; color: #d97706; }
         .progress-reviewed { background: #dcfce7; color: #16a34a; }
         .progress-mastered { background: #dbeafe; color: #2563eb; }
-        .close-modal, .delete-modal-btn {
+        .close-modal, .delete-modal-btn, .confirm-btn, .cancel-btn {
             background: #e2e8f0; border: none; padding: 12px; border-radius: 40px; font-weight: 600; width: 100%; margin-top: 16px; cursor: pointer;
         }
-        .delete-modal-btn {
-            background: #ef4444;
-            color: white;
-        }
+        .delete-modal-btn { background: #ef4444; color: white; }
+        .confirm-btn { background: #0891b2; color: white; }
+        .cancel-btn { background: #e2e8f0; color: #333; margin-top: 8px; }
         .loading-spinner { text-align: center; padding: 40px; }
         .spinner { width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top-color: #0891b2; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -220,6 +235,53 @@
         .flex-row-btns .action-btn { flex: 1; margin-top: 0; }
         hr { margin: 16px 0; border-color: #e2e8f0; }
         body.dark hr { border-color: #334155; }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 16px 0;
+        }
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        body.dark .pagination button {
+            background: #1e293b;
+            border-color: #334155;
+            color: white;
+        }
+        .pagination button.active {
+            background: #0891b2;
+            color: white;
+            border-color: #0891b2;
+        }
+        .progress-bar-container {
+            width: 100%;
+            background: #e2e8f0;
+            border-radius: 20px;
+            margin: 12px 0;
+            display: none;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 8px;
+            background: #0891b2;
+            border-radius: 20px;
+            transition: width 0.3s;
+        }
+        .trash-icon {
+            color: #ef4444;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        .restore-icon {
+            color: #16a34a;
+            margin-left: 8px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -235,6 +297,7 @@
             <div class="header-actions-mini">
                 <button class="icon-btn-mini" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
                 <button class="icon-btn-mini" onclick="shareApp()"><i class="fas fa-share-alt"></i></button>
+                <button class="icon-btn-mini" onclick="goToAdsTab()"><i class="fas fa-ad"></i></button>
             </div>
         </div>
     </div>
@@ -243,6 +306,8 @@
         <div class="tab-bar">
             <button class="tab-btn active" data-tab="papers"><i class="fas fa-book"></i> Papers</button>
             <button class="tab-btn" data-tab="add"><i class="fas fa-plus-circle"></i> Add</button>
+            <button class="tab-btn" data-tab="ads"><i class="fas fa-ad"></i> Ads</button>
+            <button class="tab-btn" data-tab="trash"><i class="fas fa-trash-alt"></i> Trash</button>
             <button class="tab-btn" data-tab="progress"><i class="fas fa-chart-line"></i> Progress</button>
         </div>
 
@@ -266,66 +331,104 @@
                 <input type="text" id="searchInput" class="search-mini" placeholder="Search questions...">
             </div>
             <div id="papersGrid"><div class="loading-spinner"><div class="spinner"></div><p>Loading papers...</p></div></div>
+            <div id="paginationControls" class="pagination"></div>
         </div>
 
-        <!-- Add Tab (Enhanced) -->
+        <!-- Add Tab (Protected) -->
         <div id="addTab" class="tab-pane">
-            <div class="add-form">
-                <div id="addSuccessMsg" class="success-msg"><i class="fas fa-check-circle"></i> Paper added!</div>
-                <div class="form-row">
-                    <div class="form-group"><label>Block</label><select id="newBlock"><option value="block1">Block 1</option><option value="block2">Block 2</option><option value="block3">Block 3</option><option value="block4">Block 4</option><option value="block5">Block 5</option><option value="block6">Block 6</option><option value="supplementary">Supplementary</option></select></div>
-                    <div class="form-group"><label>Paper No.</label><input type="text" id="newPaperNo" placeholder="Paper 1"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Intake</label><select id="newIntake"><option value="march">March</option><option value="september">September</option></select></div>
-                    <div class="form-group"><label>Year</label><input type="text" id="newYear" placeholder="2024"></div>
-                </div>
-                <div class="form-group"><label>School Name (optional)</label><input type="text" id="newSchool" placeholder="e.g., ST. CAMILLUS SCHOOL OF NURSING"></div>
-                <div class="form-group"><label>Exam Title</label><input type="text" id="newExamTitle" placeholder="e.g., END OF BLOCK 3 EXAMINATION MARCH 2024 CLASS"></div>
-                <div class="form-row">
-                    <div class="form-group"><label>Exam Date</label><input type="text" id="newExamDate" placeholder="Wednesday 25/03/2026"></div>
-                    <div class="form-group"><label>Exam Time</label><input type="text" id="newExamTime" placeholder="8:00 AM - 11:00 AM"></div>
-                </div>
-                <div class="form-group"><label>Instructions</label><textarea id="newInstructions" rows="2" placeholder="Read the questions carefully..."></textarea></div>
+            <div id="addProtectedContent" style="display: none;">
+                <div class="add-form">
+                    <div id="addSuccessMsg" class="success-msg"><i class="fas fa-check-circle"></i> Paper added!</div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Block</label><select id="newBlock"><option value="block1">Block 1</option><option value="block2">Block 2</option><option value="block3">Block 3</option><option value="block4">Block 4</option><option value="block5">Block 5</option><option value="block6">Block 6</option><option value="supplementary">Supplementary</option></select></div>
+                        <div class="form-group"><label>Paper No.</label><input type="text" id="newPaperNo" placeholder="Paper 1"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Intake</label><select id="newIntake"><option value="march">March</option><option value="september">September</option></select></div>
+                        <div class="form-group"><label>Year</label><input type="text" id="newYear" placeholder="2024"></div>
+                    </div>
+                    <div class="form-group"><label>School Name (optional)</label><input type="text" id="newSchool" placeholder="e.g., ST. CAMILLUS SCHOOL OF NURSING"></div>
+                    <div class="form-group"><label>Exam Title</label><input type="text" id="newExamTitle" placeholder="e.g., END OF BLOCK 3 EXAMINATION MARCH 2024 CLASS"></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Exam Date</label><input type="text" id="newExamDate" placeholder="Wednesday 25/03/2026"></div>
+                        <div class="form-group"><label>Exam Time</label><input type="text" id="newExamTime" placeholder="8:00 AM - 11:00 AM"></div>
+                    </div>
+                    <div class="form-group"><label>Instructions</label><textarea id="newInstructions" rows="2" placeholder="Read the questions carefully..."></textarea></div>
 
-                <!-- Part I: MCQs -->
-                <div class="section-card">
-                    <div class="section-title"><i class="fas fa-check-circle"></i> Part I: Multiple Choice Questions (MCQs)</div>
-                    <div id="mcqQuestionsContainer"></div>
-                    <button class="add-question-btn" onclick="addQuestionField('mcq')"><i class="fas fa-plus"></i> Add MCQ</button>
+                    <!-- Part I: MCQs -->
+                    <div class="section-card">
+                        <div class="section-title"><i class="fas fa-check-circle"></i> Part I: Multiple Choice Questions (MCQs)</div>
+                        <div id="mcqQuestionsContainer"></div>
+                        <button class="add-question-btn" onclick="addQuestionField('mcq')"><i class="fas fa-plus"></i> Add MCQ</button>
+                    </div>
+
+                    <!-- Part II: SAQs -->
+                    <div class="section-card">
+                        <div class="section-title"><i class="fas fa-question-circle"></i> Part II: Short Answer Questions (SAQs)</div>
+                        <div id="saqQuestionsContainer"></div>
+                        <button class="add-question-btn" onclick="addQuestionField('saq')"><i class="fas fa-plus"></i> Add SAQ</button>
+                    </div>
+
+                    <!-- Part III: LAQs -->
+                    <div class="section-card">
+                        <div class="section-title"><i class="fas fa-pen-fancy"></i> Part III: Long/Essay Answer Questions (LAQs)</div>
+                        <div id="laqQuestionsContainer"></div>
+                        <button class="add-question-btn" onclick="addQuestionField('laq')"><i class="fas fa-plus"></i> Add LAQ</button>
+                    </div>
+
+                    <button class="submit-btn" onclick="savePaper()"><i class="fas fa-save"></i> Save Paper</button>
                 </div>
 
-                <!-- Part II: SAQs -->
-                <div class="section-card">
-                    <div class="section-title"><i class="fas fa-question-circle"></i> Part II: Short Answer Questions (SAQs)</div>
-                    <div id="saqQuestionsContainer"></div>
-                    <button class="add-question-btn" onclick="addQuestionField('saq')"><i class="fas fa-plus"></i> Add SAQ</button>
+                <!-- IMPORT / EXPORT CARD -->
+                <div class="import-export-card">
+                    <h4 style="margin-bottom: 12px;"><i class="fas fa-exchange-alt"></i> Bulk Import / Export</h4>
+                    <p style="font-size: 12px; color: #64748b; margin-bottom: 16px;">Export all papers & questions (including parts) as JSON, or import a JSON file.</p>
+                    <div class="flex-row-btns">
+                        <button class="action-btn action-btn-outline" onclick="exportAllData()"><i class="fas fa-download"></i> Export JSON</button>
+                        <button class="action-btn action-btn-outline" onclick="document.getElementById('importFileInput').click()"><i class="fas fa-upload"></i> Import JSON</button>
+                    </div>
+                    <input type="file" id="importFileInput" accept=".json,.txt" style="display: none;" onchange="handleImportFile(this.files[0])">
+                    <div id="importStatusMsg" class="success-msg" style="margin-top: 12px;"></div>
+                    <div id="progressBarContainer" class="progress-bar-container">
+                        <div id="progressBar" class="progress-bar"></div>
+                    </div>
                 </div>
-
-                <!-- Part III: LAQs -->
-                <div class="section-card">
-                    <div class="section-title"><i class="fas fa-pen-fancy"></i> Part III: Long/Essay Answer Questions (LAQs)</div>
-                    <div id="laqQuestionsContainer"></div>
-                    <button class="add-question-btn" onclick="addQuestionField('laq')"><i class="fas fa-plus"></i> Add LAQ</button>
-                </div>
-
-                <button class="submit-btn" onclick="savePaper()"><i class="fas fa-save"></i> Save Paper</button>
             </div>
+        </div>
 
-            <!-- IMPORT / EXPORT CARD (enhanced) -->
-            <div class="import-export-card">
-                <h4 style="margin-bottom: 12px;"><i class="fas fa-exchange-alt"></i> Bulk Import / Export</h4>
-                <p style="font-size: 12px; color: #64748b; margin-bottom: 16px;">Export all papers & questions (including parts) as JSON, or import a JSON file.</p>
-                <div class="flex-row-btns">
-                    <button class="action-btn action-btn-outline" onclick="exportAllData()"><i class="fas fa-download"></i> Export JSON</button>
-                    <button class="action-btn action-btn-outline" onclick="document.getElementById('importFileInput').click()"><i class="fas fa-upload"></i> Import JSON</button>
-                </div>
-                <input type="file" id="importFileInput" accept=".json,.txt" style="display: none;" onchange="handleImportFile(this.files[0])">
-                <div id="importStatusMsg" class="success-msg" style="margin-top: 12px;"></div>
-                <div class="warning-msg" style="margin-top: 12px; font-size: 11px;">
-                    <i class="fas fa-info-circle"></i> JSON format: array of papers with exam metadata and questions (each with "part": 1,2,3). See sample.
+        <!-- Ads Tab (Protected) -->
+        <div id="adsTab" class="tab-pane">
+            <div id="adsProtectedContent" style="display: none;">
+                <div class="ad-settings-card">
+                    <h4 style="margin-bottom: 12px;"><i class="fas fa-ad"></i> Ad Management</h4>
+                    <div class="form-group">
+                        <label>Ad Image URL (PNG/JPG)</label>
+                        <input type="text" id="adImageUrl" placeholder="https://example.com/ad.png">
+                    </div>
+                    <div class="form-group">
+                        <label>Ad Link URL (click destination)</label>
+                        <input type="text" id="adLinkUrl" placeholder="https://example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Ad Placement</label>
+                        <select id="adPlacement">
+                            <option value="part">After each part (MCQ, SAQ, LAQ)</option>
+                            <option value="frequency">After every X questions</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="adFrequencyGroup">
+                        <label>Show ad after every X questions</label>
+                        <input type="number" id="adFrequency" min="1" max="20" value="3">
+                    </div>
+                    <button class="action-btn" onclick="saveAdSettings()"><i class="fas fa-save"></i> Save Ad Settings</button>
+                    <div id="adsSaveMsg" class="success-msg" style="margin-top: 12px;"></div>
                 </div>
             </div>
+        </div>
+
+        <!-- Trash Tab -->
+        <div id="trashTab" class="tab-pane">
+            <div id="trashGrid"><div class="loading-spinner"><div class="spinner"></div><p>Loading deleted papers...</p></div></div>
         </div>
 
         <!-- Progress Tab -->
@@ -339,7 +442,7 @@
         </div>
     </div>
 
-    <!-- Question Modal (displays grouped by part) -->
+    <!-- Question Modal -->
     <div id="questionModal" class="modal">
         <div class="modal-content">
             <h3 id="modalTitle"></h3>
@@ -352,18 +455,61 @@
         </div>
     </div>
 
+    <!-- Custom PIN Modal -->
+    <div id="pinModal" class="modal">
+        <div class="modal-content" style="max-width: 300px;">
+            <h3>Enter PIN</h3>
+            <input type="password" id="pinInput" placeholder="PIN" style="width:100%; padding:12px; margin:16px 0; border-radius:40px; border:1px solid #e2e8f0;">
+            <button class="confirm-btn" onclick="submitPin()">Submit</button>
+            <button class="cancel-btn" onclick="closePinModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Custom Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content" style="max-width: 300px;">
+            <h3 id="confirmTitle">Confirm</h3>
+            <p id="confirmMessage" style="margin: 16px 0;"></p>
+            <div style="display: flex; gap: 12px;">
+                <button class="confirm-btn" id="confirmYesBtn">Yes</button>
+                <button class="cancel-btn" id="confirmNoBtn">No</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = "https://shsvitucpxmutxyyuqfg.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_j2Xqe9mTX9RMO76wy1m3lg_pPlceFnA";
+        const ADMIN_PIN = "1234";
         let supabase, currentUser = null;
-        let papersDatabase = [];
+        let papersDatabase = []; // only active papers (deleted_at IS NULL)
+        let deletedPapersDatabase = []; // papers with deleted_at not null
         let userProgress = {};
-        let currentPaperId = null; // store paper id when modal is open
+        let currentPaperId = null;
+
+        // Ad settings (cached)
+        let adImageUrl = '';
+        let adLinkUrl = '';
+        let adPlacement = 'part';
+        let adFrequency = 3;
+
+        // Pagination
+        let currentPage = 1;
+        let papersPerPage = 20;
+        let filteredPapers = [];
+
+        // Debounced search
+        let searchDebounceTimer = null;
 
         // Question storage by part
         let mcqQuestions = [];
         let saqQuestions = [];
         let laqQuestions = [];
+
+        // Tab protection state
+        let addTabUnlocked = false;
+        let adsTabUnlocked = false;
+        let pendingPinCallback = null;
 
         // Helper: map part name to number
         function partNameToNumber(partName) {
@@ -373,6 +519,50 @@
             return 1;
         }
 
+        // Custom modals
+        function showPinModal(callback) {
+            pendingPinCallback = callback;
+            document.getElementById('pinModal').classList.add('show');
+            document.getElementById('pinInput').value = '';
+        }
+
+        function submitPin() {
+            const pin = document.getElementById('pinInput').value;
+            if (pin === ADMIN_PIN) {
+                closePinModal();
+                if (pendingPinCallback) pendingPinCallback(true);
+                pendingPinCallback = null;
+            } else {
+                alert('Incorrect PIN');
+                closePinModal();
+                if (pendingPinCallback) pendingPinCallback(false);
+                pendingPinCallback = null;
+            }
+        }
+
+        function closePinModal() {
+            document.getElementById('pinModal').classList.remove('show');
+        }
+
+        function showConfirm(message, onYes) {
+            const modal = document.getElementById('confirmModal');
+            document.getElementById('confirmMessage').innerText = message;
+            modal.classList.add('show');
+            const yesBtn = document.getElementById('confirmYesBtn');
+            const noBtn = document.getElementById('confirmNoBtn');
+            const handler = (result) => {
+                yesBtn.removeEventListener('click', yesHandler);
+                noBtn.removeEventListener('click', noHandler);
+                modal.classList.remove('show');
+                if (result && onYes) onYes();
+            };
+            const yesHandler = () => handler(true);
+            const noHandler = () => handler(false);
+            yesBtn.addEventListener('click', yesHandler);
+            noBtn.addEventListener('click', noHandler);
+        }
+
+        // Add question field (unchanged)
         function addQuestionField(part) {
             const containerId = `${part}QuestionsContainer`;
             const container = document.getElementById(containerId);
@@ -385,8 +575,8 @@
             const div = document.createElement('div');
             div.className = 'question-entry';
             div.innerHTML = `
-                <textarea placeholder="Question" rows="2" style="width:100%; margin-bottom:8px; padding:10px; border-radius:12px;">${escapeHtml('')}</textarea>
-                <textarea placeholder="Answer" rows="3" style="width:100%; padding:10px; border-radius:12px;">${escapeHtml('')}</textarea>
+                <textarea placeholder="Question" rows="2" style="width:100%; margin-bottom:8px; padding:10px; border-radius:12px;"></textarea>
+                <textarea placeholder="Answer" rows="3" style="width:100%; padding:10px; border-radius:12px;"></textarea>
                 <button class="remove-q" onclick="removeQuestion('${part}', ${index})">Remove Question</button>
             `;
             const qArea = div.querySelector('textarea:first-of-type');
@@ -441,63 +631,333 @@
         }
 
         async function loadData() {
-            const { data: papers, error: papersError } = await supabase.from('nursing_papers').select('*').order('id');
-            if (papersError) { console.error(papersError); showWarning("Cannot load papers."); return; }
-            const { data: questions, error: questionsError } = await supabase.from('nursing_questions').select('*').order('id');
-            if (questionsError) { console.error(questionsError); showWarning("Cannot load questions."); return; }
-            const { data: progress, error: progressError } = await supabase.from('nursing_progress').select('question_id, status').eq('user_id', currentUser.id);
-            userProgress = {};
-            if (!progressError) progress.forEach(p => { userProgress[p.question_id] = p.status; });
+            try {
+                // Load active papers (deleted_at IS NULL)
+                const { data: papers, error: papersError } = await supabase
+                    .from('nursing_papers')
+                    .select('*')
+                    .is('deleted_at', null)
+                    .order('id');
+                if (papersError) throw papersError;
+                
+                // Load deleted papers
+                const { data: deletedPapers, error: deletedError } = await supabase
+                    .from('nursing_papers')
+                    .select('*')
+                    .not('deleted_at', 'is', null)
+                    .order('deleted_at', { ascending: false });
+                if (deletedError) throw deletedError;
+                
+                // Load questions (all, not filtered by deleted)
+                const { data: questions, error: questionsError } = await supabase
+                    .from('nursing_questions')
+                    .select('*')
+                    .order('id');
+                if (questionsError) throw questionsError;
+                
+                const { data: progress, error: progressError } = await supabase
+                    .from('nursing_progress')
+                    .select('question_id, status')
+                    .eq('user_id', currentUser.id);
+                if (progressError) throw progressError;
+                
+                userProgress = {};
+                if (progress) progress.forEach(p => { userProgress[p.question_id] = p.status; });
+                
+                const papersMap = {};
+                papers.forEach(p => {
+                    papersMap[p.id] = {
+                        id: p.id,
+                        block: p.block,
+                        blockName: getBlockName(p.block),
+                        paperNo: p.paper_no,
+                        intake: p.intake,
+                        year: p.year,
+                        title: p.title || `${p.paper_no} - ${getBlockName(p.block)}`,
+                        exam_title: p.exam_title || '',
+                        exam_date: p.exam_date || '',
+                        exam_time: p.exam_time || '',
+                        instructions: p.instructions || '',
+                        school_name: p.school_name || '',
+                        questions: []
+                    };
+                });
+                questions.forEach(q => {
+                    if (papersMap[q.paper_id]) {
+                        papersMap[q.paper_id].questions.push({
+                            id: q.id,
+                            text: q.question_text,
+                            answer: q.answer || "Answer not provided",
+                            part: q.part || 1
+                        });
+                    }
+                });
+                papersDatabase = Object.values(papersMap);
+                
+                // Build deleted papers list
+                const deletedMap = {};
+                deletedPapers.forEach(p => {
+                    deletedMap[p.id] = {
+                        id: p.id,
+                        block: p.block,
+                        blockName: getBlockName(p.block),
+                        paperNo: p.paper_no,
+                        intake: p.intake,
+                        year: p.year,
+                        title: p.title || `${p.paper_no} - ${getBlockName(p.block)}`,
+                        exam_title: p.exam_title || '',
+                        deleted_at: p.deleted_at
+                    };
+                });
+                // Add questions to deleted papers
+                questions.forEach(q => {
+                    if (deletedMap[q.paper_id]) {
+                        if (!deletedMap[q.paper_id].questions) deletedMap[q.paper_id].questions = [];
+                        deletedMap[q.paper_id].questions.push({
+                            id: q.id,
+                            text: q.question_text,
+                            part: q.part || 1
+                        });
+                    }
+                });
+                deletedPapersDatabase = Object.values(deletedMap);
+                
+                localStorage.setItem('nursePapersCache', JSON.stringify(papersDatabase));
+                updateProgressStats();
+                renderTrash();
+                filterPapersAndRender(); // will handle pagination and search
+            } catch (err) {
+                console.error(err);
+                showWarning("Error loading data: " + err.message);
+            }
+        }
 
-            const papersMap = {};
-            papers.forEach(p => {
-                papersMap[p.id] = {
-                    id: p.id,
-                    block: p.block,
-                    blockName: getBlockName(p.block),
-                    paperNo: p.paper_no,
-                    intake: p.intake,
-                    year: p.year,
-                    title: p.title || `${p.paper_no} - ${getBlockName(p.block)}`,
-                    exam_title: p.exam_title || '',
-                    exam_date: p.exam_date || '',
-                    exam_time: p.exam_time || '',
-                    instructions: p.instructions || '',
-                    school_name: p.school_name || '',
-                    questions: []
-                };
-            });
-            questions.forEach(q => {
-                if (papersMap[q.paper_id]) {
-                    papersMap[q.paper_id].questions.push({
-                        id: q.id,
-                        text: q.question_text,
-                        answer: q.answer || "Answer not provided",
-                        part: q.part || 1
-                    });
+        async function loadAdSettings() {
+            try {
+                const { data, error } = await supabase
+                    .from('app_settings')
+                    .select('setting_key, setting_value')
+                    .in('setting_key', ['ad_image_url', 'ad_link_url', 'ad_placement', 'ad_frequency']);
+                if (!error && data) {
+                    adImageUrl = data.find(r => r.setting_key === 'ad_image_url')?.setting_value || '';
+                    adLinkUrl = data.find(r => r.setting_key === 'ad_link_url')?.setting_value || '';
+                    adPlacement = data.find(r => r.setting_key === 'ad_placement')?.setting_value || 'part';
+                    adFrequency = parseInt(data.find(r => r.setting_key === 'ad_frequency')?.setting_value) || 3;
+                    // Update UI if visible
+                    if (document.getElementById('adImageUrl')) {
+                        document.getElementById('adImageUrl').value = adImageUrl;
+                        document.getElementById('adLinkUrl').value = adLinkUrl;
+                        document.getElementById('adPlacement').value = adPlacement;
+                        document.getElementById('adFrequency').value = adFrequency;
+                        document.getElementById('adFrequencyGroup').style.display = adPlacement === 'frequency' ? 'block' : 'none';
+                    }
                 }
-            });
-            papersDatabase = Object.values(papersMap);
-            localStorage.setItem('nursePapersCache', JSON.stringify(papersDatabase));
-            renderPapers(); updateProgressStats(); renderProgressList();
+            } catch (err) {
+                console.warn("Failed to load ad settings", err);
+            }
+        }
+
+        async function saveAdSettings() {
+            const newUrl = document.getElementById('adImageUrl').value.trim();
+            const newLink = document.getElementById('adLinkUrl').value.trim();
+            const newPlacement = document.getElementById('adPlacement').value;
+            const newFreq = parseInt(document.getElementById('adFrequency').value) || 3;
+            
+            try {
+                await supabase.from('app_settings').upsert({ setting_key: 'ad_image_url', setting_value: newUrl }, { onConflict: 'setting_key' });
+                await supabase.from('app_settings').upsert({ setting_key: 'ad_link_url', setting_value: newLink }, { onConflict: 'setting_key' });
+                await supabase.from('app_settings').upsert({ setting_key: 'ad_placement', setting_value: newPlacement }, { onConflict: 'setting_key' });
+                await supabase.from('app_settings').upsert({ setting_key: 'ad_frequency', setting_value: newFreq.toString() }, { onConflict: 'setting_key' });
+                adImageUrl = newUrl;
+                adLinkUrl = newLink;
+                adPlacement = newPlacement;
+                adFrequency = newFreq;
+                const msgDiv = document.getElementById('adsSaveMsg');
+                msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> Ad settings saved!';
+                msgDiv.style.display = 'block';
+                setTimeout(() => msgDiv.style.display = 'none', 3000);
+                // Update frequency group visibility
+                document.getElementById('adFrequencyGroup').style.display = adPlacement === 'frequency' ? 'block' : 'none';
+            } catch (err) {
+                alert('Error saving ad settings: ' + err.message);
+            }
         }
 
         function getBlockName(block) { const n = { block1:'Block 1', block2:'Block 2', block3:'Block 3', block4:'Block 4', block5:'Block 5', block6:'Block 6', supplementary:'Supplementary' }; return n[block] || block; }
-        function showWarning(msg) { /* same as before */ const container = document.getElementById('papersGrid'); const cached = localStorage.getItem('nursePapersCache'); if(cached) { papersDatabase = JSON.parse(cached); renderPapers(); updateProgressStats(); renderProgressList(); const w = document.createElement('div'); w.className='warning-msg'; w.innerHTML=`<i class="fas fa-info-circle"></i> ${msg} (using cached)`; if(container.firstChild) container.insertBefore(w, container.firstChild); else container.appendChild(w); setTimeout(()=>w.remove(),4000); } else container.innerHTML=`<div class="block-section"><div style="padding:40px;text-align:center;">⚠️ ${msg}</div></div>`; }
+        
+        function showWarning(msg) {
+            const container = document.getElementById('papersGrid');
+            const cached = localStorage.getItem('nursePapersCache');
+            if (cached) {
+                papersDatabase = JSON.parse(cached);
+                filterPapersAndRender();
+                updateProgressStats();
+                const w = document.createElement('div');
+                w.className='warning-msg';
+                w.innerHTML=`<i class="fas fa-info-circle"></i> ${msg} (using cached)`;
+                if(container.firstChild) container.insertBefore(w, container.firstChild);
+                else container.appendChild(w);
+                setTimeout(()=>w.remove(),4000);
+            } else {
+                container.innerHTML = `<div class="block-section"><div style="padding:40px;text-align:center;">⚠️ ${msg}</div></div>`;
+            }
+        }
+
+        // Pagination and filtering
+        function filterPapers() {
+            if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(() => {
+                currentPage = 1;
+                filterPapersAndRender();
+            }, 300);
+        }
+
+        function filterPapersAndRender() {
+            const bf = document.getElementById('blockFilter').value;
+            const iF = document.getElementById('intakeFilter').value;
+            const yF = document.getElementById('yearFilter').value;
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            filteredPapers = papersDatabase.filter(p => 
+                (bf === 'all' || p.block === bf) &&
+                (iF === 'all' || p.intake === iF) &&
+                (yF === 'all' || p.year === yF) &&
+                (!search || p.paperNo.toLowerCase().includes(search) || p.questions.some(q => q.text.toLowerCase().includes(search)))
+            );
+            renderPapers();
+        }
 
         function renderPapers() {
-            const bf=document.getElementById('blockFilter').value, iF=document.getElementById('intakeFilter').value, yF=document.getElementById('yearFilter').value, search=document.getElementById('searchInput').value.toLowerCase();
-            let filtered=papersDatabase.filter(p=>(bf==='all'||p.block===bf)&&(iF==='all'||p.intake===iF)&&(yF==='all'||p.year===yF)&&(!search||p.paperNo.toLowerCase().includes(search)||p.questions.some(q=>q.text.toLowerCase().includes(search))));
-            const grouped={};
-            filtered.forEach(p=>{if(!grouped[p.block]) grouped[p.block]=[]; grouped[p.block].push(p);});
-            const icons={block1:'📘',block2:'📗',block3:'📕',block4:'📙',block5:'📒',block6:'📓',supplementary:'📚'};
-            const names={block1:'Block 1',block2:'Block 2',block3:'Block 3',block4:'Block 4',block5:'Block 5',block6:'Block 6',supplementary:'Supplementary'};
-            const container=document.getElementById('papersGrid');
-            if(Object.keys(grouped).length===0){ container.innerHTML='<div class="block-section"><div style="padding:40px;text-align:center;">No papers found</div></div>'; return; }
-            container.innerHTML=Object.keys(grouped).map(block=>`<div class="block-section"><div class="block-header" onclick="toggleBlock('${block}')"><div class="block-title"><span>${icons[block]||'📚'}</span> ${names[block]||block}</div><span class="paper-count">${grouped[block].length} papers</span></div><div id="block-${block}" class="block-content">${grouped[block].map(paper=>`<div class="paper-item"><div class="paper-header-row"><span class="paper-name">${escapeHtml(paper.paperNo)}</span><span class="paper-intake">${paper.intake==='march'?'March':'September'} ${paper.year}</span></div><div style="font-size:11px;color:#64748b;">📝 ${paper.questions.length} questions</div>${paper.exam_title ? `<div style="font-size:10px; margin-top:4px; color:#0891b2;">${escapeHtml(paper.exam_title)}</div>` : ''}<div style="display:flex; gap:8px; margin-top:10px;"><button class="view-btn" onclick="openPaperQuestions(${paper.id})">View Questions →</button><button class="delete-paper-btn" onclick="deletePaper(${paper.id})"><i class="fas fa-trash-alt"></i> Delete</button></div></div>`).join('')}</div></div>`).join('');
+            const start = (currentPage - 1) * papersPerPage;
+            const end = start + papersPerPage;
+            const pagePapers = filteredPapers.slice(start, end);
+            
+            const grouped = {};
+            pagePapers.forEach(p => { if (!grouped[p.block]) grouped[p.block] = []; grouped[p.block].push(p); });
+            const icons = { block1:'📘', block2:'📗', block3:'📕', block4:'📙', block5:'📒', block6:'📓', supplementary:'📚' };
+            const names = { block1:'Block 1', block2:'Block 2', block3:'Block 3', block4:'Block 4', block5:'Block 5', block6:'Block 6', supplementary:'Supplementary' };
+            const container = document.getElementById('papersGrid');
+            if (pagePapers.length === 0) {
+                container.innerHTML = '<div class="block-section"><div style="padding:40px;text-align:center;">No papers found</div></div>';
+            } else {
+                container.innerHTML = Object.keys(grouped).map(block => `
+                    <div class="block-section">
+                        <div class="block-header" onclick="toggleBlock('${block}')">
+                            <div class="block-title"><span>${icons[block] || '📚'}</span> ${names[block] || block}</div>
+                            <span class="paper-count">${grouped[block].length} papers</span>
+                        </div>
+                        <div id="block-${block}" class="block-content">
+                            ${grouped[block].map(paper => `
+                                <div class="paper-item">
+                                    <div class="paper-header-row">
+                                        <span class="paper-name">${escapeHtml(paper.paperNo)}</span>
+                                        <span class="paper-intake">${paper.intake === 'march' ? 'March' : 'September'} ${paper.year}</span>
+                                    </div>
+                                    <div style="font-size:11px;color:#64748b;">📝 ${paper.questions.length} questions</div>
+                                    ${paper.exam_title ? `<div style="font-size:10px; margin-top:4px; color:#0891b2;">${escapeHtml(paper.exam_title)}</div>` : ''}
+                                    <div style="display:flex; gap:8px; margin-top:10px;">
+                                        <button class="view-btn" onclick="openPaperQuestions(${paper.id})">View Questions →</button>
+                                        <button class="delete-paper-btn" onclick="softDeletePaper(${paper.id})"><i class="fas fa-trash-alt"></i> Delete</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Pagination controls
+            const totalPages = Math.ceil(filteredPapers.length / papersPerPage);
+            const paginationDiv = document.getElementById('paginationControls');
+            if (totalPages <= 1) {
+                paginationDiv.innerHTML = '';
+                return;
+            }
+            let paginationHtml = '';
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHtml += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            paginationDiv.innerHTML = paginationHtml;
         }
-        function toggleBlock(id){ document.getElementById(`block-${id}`)?.classList.toggle('show'); }
-        function filterPapers(){ renderPapers(); }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderPapers();
+        }
+
+        function toggleBlock(id) { document.getElementById(`block-${id}`)?.classList.toggle('show'); }
+
+        // Soft delete paper (move to trash)
+        async function softDeletePaper(paperId) {
+            showConfirm('Move this paper to trash? You can restore it later.', async () => {
+                try {
+                    const { error } = await supabase
+                        .from('nursing_papers')
+                        .update({ deleted_at: new Date().toISOString() })
+                        .eq('id', paperId);
+                    if (error) throw error;
+                    await loadData();
+                    if (currentPaperId === paperId) closeQuestionModal();
+                    showTemporaryMessage('Paper moved to trash.', 'success');
+                } catch (err) {
+                    alert('Error deleting paper: ' + err.message);
+                }
+            });
+        }
+
+        // Restore paper
+        async function restorePaper(paperId) {
+            showConfirm('Restore this paper from trash?', async () => {
+                try {
+                    const { error } = await supabase
+                        .from('nursing_papers')
+                        .update({ deleted_at: null })
+                        .eq('id', paperId);
+                    if (error) throw error;
+                    await loadData();
+                    showTemporaryMessage('Paper restored.', 'success');
+                } catch (err) {
+                    alert('Error restoring paper: ' + err.message);
+                }
+            });
+        }
+
+        // Permanently delete
+        async function permanentDeletePaper(paperId) {
+            showConfirm('Permanently delete this paper and all its questions? This cannot be undone.', async () => {
+                try {
+                    // Delete questions first (if not cascading)
+                    await supabase.from('nursing_questions').delete().eq('paper_id', paperId);
+                    const { error } = await supabase.from('nursing_papers').delete().eq('id', paperId);
+                    if (error) throw error;
+                    await loadData();
+                    showTemporaryMessage('Paper permanently deleted.', 'success');
+                } catch (err) {
+                    alert('Error permanently deleting: ' + err.message);
+                }
+            });
+        }
+
+        function renderTrash() {
+            const container = document.getElementById('trashGrid');
+            if (deletedPapersDatabase.length === 0) {
+                container.innerHTML = '<div class="block-section"><div style="padding:40px;text-align:center;">No deleted papers</div></div>';
+                return;
+            }
+            container.innerHTML = deletedPapersDatabase.map(paper => `
+                <div class="paper-item">
+                    <div class="paper-header-row">
+                        <span class="paper-name">${escapeHtml(paper.paperNo)}</span>
+                        <span class="paper-intake">${paper.intake === 'march' ? 'March' : 'September'} ${paper.year}</span>
+                    </div>
+                    <div style="font-size:11px;color:#64748b;">📝 ${paper.questions?.length || 0} questions</div>
+                    ${paper.exam_title ? `<div style="font-size:10px; margin-top:4px;">${escapeHtml(paper.exam_title)}</div>` : ''}
+                    <div style="display:flex; gap:8px; margin-top:10px;">
+                        <button class="view-btn" style="border-color:#16a34a; color:#16a34a;" onclick="restorePaper(${paper.id})"><i class="fas fa-undo-alt"></i> Restore</button>
+                        <button class="delete-paper-btn" onclick="permanentDeletePaper(${paper.id})"><i class="fas fa-trash-alt"></i> Delete Forever</button>
+                    </div>
+                </div>
+            `).join('');
+        }
 
         function openPaperQuestions(paperId){
             currentPaperId = paperId;
@@ -515,14 +975,15 @@
             paper.questions.forEach(q => { questionsByPart[q.part || 1].push(q); });
             let html = '';
             const partNames = {1:'PART I: Multiple Choice Questions (MCQs)', 2:'PART II: Short Answer Questions (SAQs)', 3:'PART III: Long/Essay Answer Questions (LAQs)'};
+            
             for(let p=1; p<=3; p++) {
                 if(questionsByPart[p].length === 0) continue;
                 html += `<div class="part-group"><div class="part-head">${partNames[p]}</div>`;
                 questionsByPart[p].forEach((q, idx) => {
                     html += `<div class="single-question">
-                                <div class="question-text-full">${idx+1}. ${escapeHtml(q.text)}</div>
+                                <div class="question-text-full">${idx+1}. ${DOMPurify.sanitize(escapeHtml(q.text))}</div>
                                 <button class="reveal-q" onclick="toggleAnswer(${p}_${idx})"><i class="fas fa-lightbulb"></i> Reveal Answer</button>
-                                <div id="answer-${p}_${idx}" class="answer-full"><i class="fas fa-graduation-cap" style="color:#0891b2;margin-right:8px;"></i>${escapeHtml(q.answer).replace(/\n/g,'<br>')}</div>
+                                <div id="answer-${p}_${idx}" class="answer-full"><i class="fas fa-graduation-cap" style="color:#0891b2;margin-right:8px;"></i>${DOMPurify.sanitize(escapeHtml(q.answer).replace(/\n/g,'<br>'))}</div>
                                 <div class="progress-btns">
                                     <button class="progress-btn-sm progress-attempted" onclick="updateProgress(${q.id}, 'attempted')">⚠️ Attempted</button>
                                     <button class="progress-btn-sm progress-reviewed" onclick="updateProgress(${q.id}, 'reviewed')">🔄 Reviewed</button>
@@ -530,50 +991,106 @@
                                 </div>
                             </div>`;
                 });
+                // Insert ad after each part
+                if (adPlacement === 'part' && adImageUrl && adImageUrl.trim() !== '') {
+                    const adHtml = `<div class="ad-place">
+                        <a href="${escapeHtml(adLinkUrl)}" target="_blank" rel="noopener noreferrer">
+                            <img src="${escapeHtml(adImageUrl)}" alt="Advertisement">
+                        </a>
+                    </div>`;
+                    html += DOMPurify.sanitize(adHtml);
+                }
                 html += `</div>`;
             }
+            
+            // If frequency-based placement, we need to re-render with ads between questions
+            if (adPlacement === 'frequency' && adImageUrl && adImageUrl.trim() !== '') {
+                // Rebuild with ads after every N questions
+                let allQuestions = [];
+                for(let p=1; p<=3; p++) {
+                    questionsByPart[p].forEach(q => allQuestions.push(q));
+                }
+                let newHtml = '';
+                let qCounter = 0;
+                const partCounts = {1: questionsByPart[1].length, 2: questionsByPart[2].length, 3: questionsByPart[3].length};
+                let partStart = 0;
+                for(let p=1; p<=3; p++) {
+                    if(questionsByPart[p].length === 0) continue;
+                    newHtml += `<div class="part-group"><div class="part-head">${partNames[p]}</div>`;
+                    for(let i=0; i<questionsByPart[p].length; i++) {
+                        const q = questionsByPart[p][i];
+                        qCounter++;
+                        newHtml += `<div class="single-question">
+                                    <div class="question-text-full">${i+1}. ${DOMPurify.sanitize(escapeHtml(q.text))}</div>
+                                    <button class="reveal-q" onclick="toggleAnswer(${p}_${i})"><i class="fas fa-lightbulb"></i> Reveal Answer</button>
+                                    <div id="answer-${p}_${i}" class="answer-full"><i class="fas fa-graduation-cap" style="color:#0891b2;margin-right:8px;"></i>${DOMPurify.sanitize(escapeHtml(q.answer).replace(/\n/g,'<br>'))}</div>
+                                    <div class="progress-btns">
+                                        <button class="progress-btn-sm progress-attempted" onclick="updateProgress(${q.id}, 'attempted')">⚠️ Attempted</button>
+                                        <button class="progress-btn-sm progress-reviewed" onclick="updateProgress(${q.id}, 'reviewed')">🔄 Reviewed</button>
+                                        <button class="progress-btn-sm progress-mastered" onclick="updateProgress(${q.id}, 'mastered')">🏆 Mastered</button>
+                                    </div>
+                                </div>`;
+                        if (adFrequency > 0 && qCounter % adFrequency === 0 && qCounter < allQuestions.length) {
+                            newHtml += `<div class="ad-place">
+                                <a href="${escapeHtml(adLinkUrl)}" target="_blank" rel="noopener noreferrer">
+                                    <img src="${escapeHtml(adImageUrl)}" alt="Advertisement">
+                                </a>
+                            </div>`;
+                        }
+                    }
+                    newHtml += `</div>`;
+                }
+                html = newHtml;
+            }
+            
             document.getElementById('modalQuestions').innerHTML = html;
             document.getElementById('questionModal').classList.add('show');
         }
+        
         window.toggleAnswer = function(id) { document.getElementById(`answer-${id}`)?.classList.toggle('show'); };
         function closeQuestionModal(){ document.getElementById('questionModal').classList.remove('show'); currentPaperId = null; }
+        async function deleteCurrentPaper() { if (currentPaperId) await softDeletePaper(currentPaperId); }
 
-        async function deletePaper(paperId) {
-            if (!confirm('Are you sure you want to delete this paper and all its questions? This cannot be undone.')) return;
+        async function updateProgress(questionId, status) {
             try {
-                // Delete all questions for this paper
-                const { error: qError } = await supabase.from('nursing_questions').delete().eq('paper_id', paperId);
-                if (qError) throw qError;
-                // Delete the paper
-                const { error: pError } = await supabase.from('nursing_papers').delete().eq('id', paperId);
-                if (pError) throw pError;
-                // Refresh data
-                await loadData();
-                // If modal is open for this paper, close it
-                if (currentPaperId === paperId) closeQuestionModal();
-                // Show success message
-                const msgDiv = document.createElement('div');
-                msgDiv.className = 'success-msg';
-                msgDiv.style.display = 'block';
-                msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> Paper deleted successfully.';
-                const container = document.getElementById('papersGrid');
-                container.insertBefore(msgDiv, container.firstChild);
-                setTimeout(() => msgDiv.remove(), 3000);
+                const { error } = await supabase.from('nursing_progress').upsert({ user_id: currentUser.id, question_id: questionId, status }, { onConflict: 'user_id, question_id' });
+                if (error) throw error;
+                userProgress[questionId] = status;
+                updateProgressStats();
+                renderProgressList();
             } catch (err) {
                 console.error(err);
-                alert('Error deleting paper: ' + err.message);
+                alert('Error updating progress: ' + err.message);
             }
         }
-
-        async function deleteCurrentPaper() {
-            if (currentPaperId) await deletePaper(currentPaperId);
+        
+        function updateProgressStats() {
+            let total = 0, attempted = 0, mastered = 0;
+            papersDatabase.forEach(p => { p.questions.forEach(q => { total++; const s = userProgress[q.id]; if (s === 'attempted' || s === 'reviewed' || s === 'mastered') attempted++; if (s === 'mastered') mastered++; }); });
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statAttempted').textContent = attempted;
+            document.getElementById('statMastered').textContent = mastered;
+        }
+        
+        function renderProgressList() {
+            const container = document.getElementById('progressList');
+            const items = [];
+            papersDatabase.forEach(paper => {
+                paper.questions.forEach(q => {
+                    const s = userProgress[q.id];
+                    if (s) {
+                        items.push(`<div class="paper-item" style="cursor:pointer;" onclick="openPaperQuestions(${paper.id})">
+                            <div class="paper-header-row"><span class="paper-name">${escapeHtml(paper.paperNo)}</span><span class="paper-intake">${paper.intake==='march'?'March':'September'} ${paper.year}</span></div>
+                            <div style="font-size:12px;margin-top:6px;">${escapeHtml(q.text.substring(0,80))}...</div>
+                            <div style="margin-top:6px;"><span style="background:${s==='mastered'?'#dcfce7':'#fef3c7'};padding:2px 8px;border-radius:12px;font-size:10px;">${s==='mastered'?'✅ Mastered':s==='reviewed'?'🔄 Reviewed':'⚠️ Attempted'}</span></div>
+                        </div>`);
+                    }
+                });
+            });
+            container.innerHTML = items.length ? items.join('') : '<div class="block-section"><div style="padding:40px;text-align:center;">No progress yet. Start practicing!</div></div>';
         }
 
-        async function updateProgress(questionId,status){ const {error}=await supabase.from('nursing_progress').upsert({user_id:currentUser.id,question_id:questionId,status},{onConflict:'user_id, question_id'}); if(!error) userProgress[questionId]=status; else userProgress[questionId]=status; updateProgressStats(); renderProgressList(); }
-        function updateProgressStats(){ let total=0,attempted=0,mastered=0; papersDatabase.forEach(p=>{p.questions.forEach(q=>{total++; const s=userProgress[q.id]; if(s==='attempted'||s==='reviewed'||s==='mastered') attempted++; if(s==='mastered') mastered++;});}); document.getElementById('statTotal').textContent=total; document.getElementById('statAttempted').textContent=attempted; document.getElementById('statMastered').textContent=mastered; }
-        function renderProgressList(){ const container=document.getElementById('progressList'); const items=[]; papersDatabase.forEach(paper=>{paper.questions.forEach(q=>{const s=userProgress[q.id]; if(s) items.push(`<div class="paper-item" style="cursor:pointer;" onclick="openPaperQuestions(${paper.id})"><div class="paper-header-row"><span class="paper-name">${escapeHtml(paper.paperNo)}</span><span class="paper-intake">${paper.intake==='march'?'March':'September'} ${paper.year}</span></div><div style="font-size:12px;margin-top:6px;">${escapeHtml(q.text.substring(0,80))}...</div><div style="margin-top:6px;"><span style="background:${s==='mastered'?'#dcfce7':'#fef3c7'};padding:2px 8px;border-radius:12px;font-size:10px;">${s==='mastered'?'✅ Mastered':s==='reviewed'?'🔄 Reviewed':'⚠️ Attempted'}</span></div></div>`);});}); container.innerHTML=items.length?items.join(''):'<div class="block-section"><div style="padding:40px;text-align:center;">No progress yet. Start practicing!</div></div>'; }
-
-        async function savePaper(){
+        async function savePaper() {
             const block = document.getElementById('newBlock').value;
             const paperNo = document.getElementById('newPaperNo').value.trim();
             const intake = document.getElementById('newIntake').value;
@@ -593,48 +1110,53 @@
             if (!paperNo) { alert('Enter Paper Number'); return; }
             if (allQuestions.length === 0) { alert('Add at least one question'); return; }
 
-            const { data: paperData, error: paperError } = await supabase
-                .from('nursing_papers')
-                .insert({
-                    block, paper_no: paperNo, intake, year: year || '2024',
-                    title: `${paperNo} - ${getBlockName(block)}`,
-                    school_name: school,
-                    exam_title: examTitle,
-                    exam_date: examDate,
-                    exam_time: examTime,
-                    instructions: instructions
-                })
-                .select().single();
-            if (paperError) { alert('Error saving paper: '+paperError.message); return; }
+            try {
+                const { data: paperData, error: paperError } = await supabase
+                    .from('nursing_papers')
+                    .insert({
+                        block, paper_no: paperNo, intake, year: year || '2024',
+                        title: `${paperNo} - ${getBlockName(block)}`,
+                        school_name: school,
+                        exam_title: examTitle,
+                        exam_date: examDate,
+                        exam_time: examTime,
+                        instructions: instructions,
+                        deleted_at: null
+                    })
+                    .select().single();
+                if (paperError) throw paperError;
 
-            const qToInsert = allQuestions.map(q => ({
-                paper_id: paperData.id,
-                question_text: q.text,
-                answer: q.answer,
-                part: q.part
-            }));
-            const { error: qe } = await supabase.from('nursing_questions').insert(qToInsert);
-            if (qe) alert('Error saving questions: '+qe.message);
+                const qToInsert = allQuestions.map(q => ({
+                    paper_id: paperData.id,
+                    question_text: q.text,
+                    answer: q.answer,
+                    part: q.part
+                }));
+                const { error: qe } = await supabase.from('nursing_questions').insert(qToInsert);
+                if (qe) throw qe;
 
-            // Reset form
-            document.getElementById('newPaperNo').value = '';
-            document.getElementById('newYear').value = '';
-            document.getElementById('newSchool').value = '';
-            document.getElementById('newExamTitle').value = '';
-            document.getElementById('newExamDate').value = '';
-            document.getElementById('newExamTime').value = '';
-            document.getElementById('newInstructions').value = '';
-            mcqQuestions = []; saqQuestions = []; laqQuestions = [];
-            renderQuestionSection('mcq'); renderQuestionSection('saq'); renderQuestionSection('laq');
-            const msg = document.getElementById('addSuccessMsg');
-            msg.style.display = 'block';
-            setTimeout(()=>msg.style.display='none',3000);
-            await loadData();
-            document.querySelector('.tab-btn[data-tab="papers"]').click();
+                // Reset form
+                document.getElementById('newPaperNo').value = '';
+                document.getElementById('newYear').value = '';
+                document.getElementById('newSchool').value = '';
+                document.getElementById('newExamTitle').value = '';
+                document.getElementById('newExamDate').value = '';
+                document.getElementById('newExamTime').value = '';
+                document.getElementById('newInstructions').value = '';
+                mcqQuestions = []; saqQuestions = []; laqQuestions = [];
+                renderQuestionSection('mcq'); renderQuestionSection('saq'); renderQuestionSection('laq');
+                const msg = document.getElementById('addSuccessMsg');
+                msg.style.display = 'block';
+                setTimeout(() => msg.style.display = 'none', 3000);
+                await loadData();
+                document.querySelector('.tab-btn[data-tab="papers"]').click();
+            } catch (err) {
+                alert('Error saving paper: ' + err.message);
+            }
         }
 
-        // Export/Import functions
-        function exportAllData(){
+        // Export/Import
+        function exportAllData() {
             const exportObj = papersDatabase.map(paper => ({
                 block: paper.block,
                 paper_no: paper.paperNo,
@@ -648,7 +1170,7 @@
                 questions: paper.questions.map(q => ({ question_text: q.text, answer: q.answer, part: q.part || 1 }))
             }));
             const dataStr = JSON.stringify(exportObj, null, 2);
-            const blob = new Blob([dataStr], {type: "application/json"});
+            const blob = new Blob([dataStr], { type: "application/json" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -660,19 +1182,25 @@
             showImportStatus("✅ Export complete!", false);
         }
 
-        async function handleImportFile(file){
-            if(!file) return;
+        async function handleImportFile(file) {
+            if (!file) return;
             const statusDiv = document.getElementById('importStatusMsg');
+            const progressContainer = document.getElementById('progressBarContainer');
+            const progressBar = document.getElementById('progressBar');
             statusDiv.style.display = 'block';
             statusDiv.className = 'success-msg';
             statusDiv.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Processing import...';
-            try{
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+            try {
                 const text = await file.text();
                 let imported = JSON.parse(text);
-                if(!Array.isArray(imported)) throw new Error("Root must be an array of papers.");
+                if (!Array.isArray(imported)) throw new Error("Root must be an array of papers.");
                 let successCount = 0, failCount = 0;
-                for(const paperData of imported){
-                    if(!paperData.block || !paperData.paper_no || !paperData.intake || !paperData.year || !Array.isArray(paperData.questions)){
+                for (let i = 0; i < imported.length; i++) {
+                    const paperData = imported[i];
+                    progressBar.style.width = `${(i / imported.length) * 100}%`;
+                    if (!paperData.block || !paperData.paper_no || !paperData.intake || !paperData.year || !Array.isArray(paperData.questions)) {
                         failCount++;
                         continue;
                     }
@@ -688,12 +1216,13 @@
                             exam_title: paperData.exam_title || '',
                             exam_date: paperData.exam_date || '',
                             exam_time: paperData.exam_time || '',
-                            instructions: paperData.instructions || ''
+                            instructions: paperData.instructions || '',
+                            deleted_at: null
                         })
                         .select().single();
-                    if(pErr){ failCount++; continue; }
+                    if (pErr) { failCount++; continue; }
                     const validQs = paperData.questions.filter(q => q.question_text && q.question_text.trim());
-                    if(validQs.length === 0){ failCount++; continue; }
+                    if (validQs.length === 0) { failCount++; continue; }
                     const qInserts = validQs.map(q => ({
                         paper_id: newPaper.id,
                         question_text: q.question_text,
@@ -701,29 +1230,126 @@
                         part: q.part || 1
                     }));
                     const { error: qErr } = await supabase.from('nursing_questions').insert(qInserts);
-                    if(qErr){ failCount++; } else { successCount++; }
+                    if (qErr) { failCount++; } else { successCount++; }
                 }
+                progressBar.style.width = '100%';
                 statusDiv.innerHTML = `<i class="fas fa-check-circle"></i> Import finished: ${successCount} papers added, ${failCount} failed.`;
-                if(failCount>0) statusDiv.classList.add('error');
+                if (failCount > 0) statusDiv.classList.add('error');
                 else statusDiv.classList.remove('error');
                 await loadData();
-                setTimeout(()=>{ statusDiv.style.display = 'none'; }, 5000);
-            } catch(e){
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                    progressContainer.style.display = 'none';
+                }, 5000);
+            } catch (e) {
                 statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Import error: ${e.message}`;
                 statusDiv.classList.add('error');
-                setTimeout(()=>{ statusDiv.style.display = 'none'; }, 4000);
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                    progressContainer.style.display = 'none';
+                }, 4000);
             }
         }
-        function showImportStatus(msg, isError){ const div=document.getElementById('importStatusMsg'); div.innerHTML=msg; div.style.display='block'; div.classList.toggle('error',isError); setTimeout(()=>{div.style.display='none';},3000); }
+        
+        function showImportStatus(msg, isError) { const div = document.getElementById('importStatusMsg'); div.innerHTML = msg; div.style.display = 'block'; div.classList.toggle('error', isError); setTimeout(() => div.style.display = 'none', 3000); }
+        
+        function showTemporaryMessage(msg, type) {
+            const div = document.createElement('div');
+            div.className = type === 'success' ? 'success-msg' : 'warning-msg';
+            div.innerHTML = msg;
+            div.style.display = 'block';
+            const container = document.getElementById('papersGrid');
+            container.insertBefore(div, container.firstChild);
+            setTimeout(() => div.remove(), 3000);
+        }
 
-        function setupTabs(){ document.querySelectorAll('.tab-btn').forEach(btn=>{ btn.addEventListener('click',()=>{ const tab=btn.dataset.tab; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active')); btn.classList.add('active'); document.getElementById(`${tab}Tab`).classList.add('active'); if(tab==='progress') renderProgressList(); }); }); }
-        function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>]/g, m=> m==='&'?'&amp;':m==='<'?'&lt;':'&gt;'); }
-        let darkMode=localStorage.getItem('darkMode')==='true';
-        function toggleDarkMode(){ darkMode=!darkMode; localStorage.setItem('darkMode',darkMode); document.body.classList.toggle('dark',darkMode); document.querySelector('.icon-btn-mini i').className=darkMode?'fas fa-sun':'fas fa-moon'; }
-        function shareApp(){ if(navigator.share) navigator.share({title:'NursePrep Pro',text:'Nursing past papers',url:window.location.href}); else { navigator.clipboard.writeText(window.location.href); alert('Link copied!'); } }
-        async function init(){ supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); const user=await authenticate(); if(!user){ showWarning("Anonymous auth failed. Enable anonymous sign-ins."); return; } currentUser=user; await loadData(); setupTabs(); if(darkMode) document.body.classList.add('dark'); document.getElementById('searchInput').addEventListener('input',filterPapers); }
+        // PIN protection
+        function showPinModalForAdd() {
+            showPinModal((success) => {
+                if (success) {
+                    addTabUnlocked = true;
+                    document.getElementById('addProtectedContent').style.display = 'block';
+                } else {
+                    document.querySelector('.tab-btn[data-tab="papers"]').click();
+                }
+            });
+        }
+
+        function showPinModalForAds() {
+            showPinModal((success) => {
+                if (success) {
+                    adsTabUnlocked = true;
+                    document.getElementById('adsProtectedContent').style.display = 'block';
+                    loadAdSettings(); // refresh
+                } else {
+                    document.querySelector('.tab-btn[data-tab="papers"]').click();
+                }
+            });
+        }
+
+        function goToAdsTab() {
+            const adsBtn = document.querySelector('.tab-btn[data-tab="ads"]');
+            if (adsBtn) adsBtn.click();
+        }
+
+        function setupTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.dataset.tab;
+                    if (tab === 'add') {
+                        if (!addTabUnlocked) { showPinModalForAdd(); return; }
+                    }
+                    if (tab === 'ads') {
+                        if (!adsTabUnlocked) { showPinModalForAds(); return; }
+                    }
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById(`${tab}Tab`).classList.add('active');
+                    if (tab === 'progress') renderProgressList();
+                    if (tab === 'trash') renderTrash();
+                });
+            });
+        }
+
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+        function toggleDarkMode() { darkMode = !darkMode; localStorage.setItem('darkMode', darkMode); document.body.classList.toggle('dark', darkMode); document.querySelector('.icon-btn-mini i').className = darkMode ? 'fas fa-sun' : 'fas fa-moon'; }
+        function shareApp() { if (navigator.share) navigator.share({ title: 'NursePrep Pro', text: 'Nursing past papers', url: window.location.href }); else { navigator.clipboard.writeText(window.location.href); alert('Link copied!'); } }
+        
+        async function init() {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            const user = await authenticate();
+            if (!user) { showWarning("Anonymous auth failed. Enable anonymous sign-ins."); return; }
+            currentUser = user;
+            await loadAdSettings();
+            await loadData();
+            setupTabs();
+            if (darkMode) document.body.classList.add('dark');
+            document.getElementById('searchInput').addEventListener('input', filterPapers);
+        }
         init();
-        window.toggleBlock=toggleBlock; window.filterPapers=filterPapers; window.openPaperQuestions=openPaperQuestions; window.toggleAnswer=window.toggleAnswer; window.closeQuestionModal=closeQuestionModal; window.addQuestionField=addQuestionField; window.removeQuestion=removeQuestion; window.savePaper=savePaper; window.updateProgress=updateProgress; window.toggleDarkMode=toggleDarkMode; window.shareApp=shareApp; window.exportAllData=exportAllData; window.handleImportFile=handleImportFile; window.deletePaper=deletePaper; window.deleteCurrentPaper=deleteCurrentPaper;
+        
+        // Expose global functions
+        window.toggleBlock = toggleBlock;
+        window.filterPapers = filterPapers;
+        window.openPaperQuestions = openPaperQuestions;
+        window.toggleAnswer = window.toggleAnswer;
+        window.closeQuestionModal = closeQuestionModal;
+        window.addQuestionField = addQuestionField;
+        window.removeQuestion = removeQuestion;
+        window.savePaper = savePaper;
+        window.updateProgress = updateProgress;
+        window.toggleDarkMode = toggleDarkMode;
+        window.shareApp = shareApp;
+        window.exportAllData = exportAllData;
+        window.handleImportFile = handleImportFile;
+        window.softDeletePaper = softDeletePaper;
+        window.restorePaper = restorePaper;
+        window.permanentDeletePaper = permanentDeletePaper;
+        window.saveAdSettings = saveAdSettings;
+        window.goToAdsTab = goToAdsTab;
+        window.goToPage = goToPage;
     </script>
 </body>
 </html>
